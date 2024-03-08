@@ -1,0 +1,17 @@
+trang chủ
+giới thiệu
+danh mục: địa điểm, đơn vị ql, loại
+bản đồ
+hỗ trợ
+
+
+
+địa điểm -> đơn vị quản lý(có ảnh ở trên đầu về địa điểm, thông tin về h mở cửa, ngày hoạt động) -> di sản -> thông tin chi tiết(chia đoạn)
+
+
+với mỗi bài viết thông tin di sản: nội dung, rất nhiều ảnh, video, di sản liên quan, bài viết liên quan, mô tả điều hướng, chia sẻ 3 nền tảng, tab mô tả sidebar
+
+https://vinpearl.com/vi/tham-quan-bao-tang-ha-noi
+https://www.klook.com/vi/blog/bao-tang-ha-noi/
+
+https://console.cloud.google.com/projectselector2/apis/dashboard?pli=1&supportedpurview=project&creatingProject=true

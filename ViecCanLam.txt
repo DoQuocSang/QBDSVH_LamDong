@@ -1,0 +1,25 @@
+================
+| Việc cần làm |
+================
+
+***Viết báo cáo, nội dung:
+
++ Công cụ sử dụng
+- Docker(MySQL, localhost)
+- TablePlus (GUI cho MySQL)
+- Postman (test API)
+
++ Công nghệ sử dụng
+- Golang
+- GIN (API)
+- GORM (làm việc với MySQL)
+
++ Đã làm được: Viết API thêm xóa sửa cho các bảng
+
+***Link tham khảo:
++ [Hướng dẫn code] https://www.youtube.com/watch?v=GL8tcGLIvaQ&list=PLOsM_3jFFQRl3tAqDVU-nPJOHBfXJVnaM&index=11
++ [Golang lý thuyết] https://www.youtube.com/watch?v=-KRlr0LC5hM&list=PLOsM_3jFFQRnzp7jWU3WLmQ1sF4IX45zr&index=5 
+
+
+
+

@@ -1,0 +1,52 @@
+***Chuỗi kết nối mongo
+mongodb+srv://2014483:2014483@team10-dapm.deh3da8.mongodb.net/?retryWrites=true&w=majority
+
+***Fix lỗi
+Điều chỉnh biến môi trường nếu lỗi golang
+
+***Công cụ sử dụng
+Docker(MySQL, localhost)
+TablePlus (GUI cho MySQL)
+Postman (test API)
+
+***Công nghệ sử dụng
+Golang
+GIN (API)
+GORM (làm việc với MySQL)
+
+***Thông tin
+- mysql name: root, pass: my-secret-pw
+
+***MySQL
+where ở cột nào thì đánh index ở cột đó
+
+***Postman
+- post: chuyển tab body, chọn kiểu json và nhập data
+
+***GORM API 
+- Gõ nhanh fu để tạo hàm
+- db.Where("Id = ?", id).Delete(nil) ----- truyền nil vì đã có where theo id
+- TenLoai string `json:"TenLoai" gorm:"column:TenLoai;" ` ----- Map theo tên key chuỗi json và map theo tên cột ở dưới db
+- Các create, update đều có tham số dât nhưng delete thì ko. Vì xóa không cần truyền tham số, chỉ cần điều kiện và xác định bảng
+- method TableName gorm sẽ tự gọi sau khi so sánh cấu trúc dữ liệu nên ko cần gọi thủ công
+- offset số phần tử của trang trước
+- *Time.time nếu như dưới db là null thì biến sẽ có giá trị là nil
+- Time.time mặc định luôn có giá trị nên nếu dưới db là null thì luôn trả về format thời gian chứ ko phải nil
+- Thêm * vô kiểu dữ liệu trong struct để có thể cập nhật giá trị nil
+
+***Go
+go mod init <name>
+shift alt F format code golang
++ Định nghĩa bảng
+- Khai báo viết hoa để export
+= tạo con trỏ *time.Time nếu như dưới db thuộc tính là null thì biến sẽ đc khởi tạo là null
+- Mục đích của con trỏ là đồng bộ giá trị khi thay đổi, vì con trỏ trỏ đến vùng nhớ chứ không phải giá trị của biến
+- i:= 42, p := &i lấy giá trị trong ô nhớ của i, *p = 21 thay đổi giá trị của i
+- * lấy giá trị, & để lấy địa chỉ ô nhớ
+- biến khai báo phải đc dùng nếu ko sẽ lỗi
+- interface rỗng = biến any (nhận bất kì giá trị nào)
+- reflect được dùng để kiểm tra giá trị của biến trong runtime, phù hợp với các biến chưa biết trước kiểu dữ liệu
+- preload("HeritageType") GORM tải trước dữ liệu HeritageType cho tất cả các đối tượng Heritage để cải thiện hiệu suất và tránh vấn đề N+1. Dùng để chỉ định cho GORM lấy dữ liệu HeritageType liên quan cho mỗi đối tượng Heritage. GORM sẽ tự động tạo câu lệnh JOIN cần thiết để lấy dữ liệu liên quan.
+*** Vấn đề N+1:
+- Ví dụ: Nếu bạn có 10 đối tượng Heritage, việc sử dụng lazy loading mặc định (không preload) có thể dẫn đến thực hiện 1 truy vấn để lấy dữ liệu của 10 đối tượng Heritage, sau đó 10 truy vấn riêng biệt nữa để lấy dữ liệu liên quan (HeritageType) cho mỗi đối tượng Heritage. Tổng cộng, có 11 truy vấn được thực hiện.
+- Việc sử dụng preload (Preload("HeritageType")) giúp giải quyết vấn đề N+1 bằng cách tải trước dữ liệu liên quan cho tất cả các đối tượng chính trong một truy vấn duy nhất. Như vậy, trong ví dụ trên, chỉ có 2 truy vấn được thực hiện - một để lấy dữ liệu của 10 đối tượng Heritage và một để lấy dữ liệu liên quan (HeritageType).

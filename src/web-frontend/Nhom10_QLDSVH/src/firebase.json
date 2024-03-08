@@ -1,0 +1,22 @@
+{
+    "functions": {
+      "source": "."
+    },
+    "hosting": {
+      "public": "public",
+      "rewrites": [
+        {
+          "source": "/models/**",
+          "function": "corsProxy"
+        },
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    "storage": {
+        "rules": "storage.rules" 
+      }
+  }
+  

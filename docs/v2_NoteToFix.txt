@@ -1,0 +1,3 @@
+Phân tích chức năng  -> Thiết kế giao diện -> Gắn ứng dụng
+sơ đồ use-case như phân tích thiết kế pm
+chỉ trình cày cấu trúc và quy trình ko đi chi tiết

@@ -1,0 +1,8 @@
+hiện di sản theo địa điểm bảo tàng, viện văn hóa
+vô địa điểm để xem danh sách theo kinh tế xh, đời sống trc 1975, đồ của chủ tịch HCM
+
+tổ chức theo nhóm địa điểm
+thêm bảng địa điểm
+1 di sản có nhiều hình
+bỏ post vì 1 di sản 1 post, gộp lại vào bảng di sản, bỏ thuộc tính ngày xuất bản
+tập trung di sản

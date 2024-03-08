@@ -1,0 +1,995 @@
+{
+	"info": {
+		"_postman_id": "20b1a504-3e4a-4653-b511-13f3e4aab04b",
+		"name": "Web API QLDSVH",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27081933",
+		"_collection_link": "https://solar-meteor-993779.postman.co/workspace/QLDSVH~98993163-e0a9-4141-b882-9c60f00f352f/collection/27081933-20b1a504-3e4a-4653-b511-13f3e4aab04b?action=share&creator=27081933&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Loại di sản",
+			"item": [
+				{
+					"name": "Tạo item loại di sản",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"tên loại demo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/v1/heritage",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"v1",
+								"heritage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy item loại di sản theo id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"Chưa xác định\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/v1/loai-di-san/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"v1",
+								"loai-di-san",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa item loại di sản theo id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"Chưa xác định\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/v1/heritage/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"v1",
+								"heritage",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách loại di sản",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/v1/loai-di-san?page=2&limit=2",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"v1",
+								"loai-di-san"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật item loại di sản theo id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Updated\",\r\n    \"description\": \"Updated\",\r\n    \"urlslug\" : \"updated\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage-type/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage-type",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Di sản văn hóa",
+			"item": [
+				{
+					"name": "Tạo item di sản văn hóa",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Demo\",\r\n    \"heritage_type_id\": 6,\r\n    \"description\": \"demo\",\r\n    \"location_id\": 1,\r\n    \"management_unit_id\": 1,\r\n    \"time\": \"demo\",\r\n    \"urlslug\" : \"demo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy item di sản văn hóa theo id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"Chưa xác định\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật item di sản văn hóa theo id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Updated\",\r\n    \"heritage_type_id\": 6,\r\n    \"description\": \"Updated\",\r\n    \"location_id\": 2,\r\n    \"management_unit_id\": 3,\r\n    \"time\": \"Updated\",\r\n    \"urlslug\" : \"updated\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "15"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa item di sản văn hóa theo id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"Chưa xác định\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/v1/loai-di-san/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"v1",
+								"loai-di-san",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách di sản văn hóa",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/v1/heritage?page=2&limit=5",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"v1",
+								"heritage"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Tìm kiếm theo từ khóa di sản văn hóa",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/v1/heritage?page=2&limit=5",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"v1",
+								"heritage"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Đơn vị quản lý",
+			"item": [
+				{
+					"name": "Tạo item đơn vị quản lý",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Demo\",\r\n    \"description\": \"demo\",\r\n    \"urlslug\" : \"demo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/management-unit",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"management-unit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy item đơn vị quản lý theo id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"Chưa xác định\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật item đơn vị quản lý theo id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Updated\",\r\n    \"description\": \"Updated\",\r\n    \"urlslug\" : \"updated\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/management-unit/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"management-unit",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "15"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa item đơn vị quản lý theo id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"Chưa xác định\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/v1/loai-di-san/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"v1",
+								"loai-di-san",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách đơn vị quản lý",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/management-unit?page=1&limit=5&columnName=id&sortOrder=desc",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"management-unit"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "columnName",
+									"value": "id"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Địa điểm",
+			"item": [
+				{
+					"name": "Tạo item địa điểm",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Demo\",\r\n    \"heritage_type_id\": 6,\r\n    \"description\": \"demo\",\r\n    \"location_id\": 1,\r\n    \"management_unit_id\": 1,\r\n    \"time\": \"demo\",\r\n    \"urlslug\" : \"demo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy item địa điểm theo id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"Chưa xác định\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật item địa điểm theo id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Updated\",\r\n    \"urlslug\" : \"updated\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "15"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa item địa điểm theo id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"Chưa xác định\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/location/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"location",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách địa điểm",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/location?page=1&limit=4&columnName=id&sortOrder=desc",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"location"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "4"
+								},
+								{
+									"key": "columnName",
+									"value": "id"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Nguời dùng",
+			"item": [
+				{
+					"name": "Tạo item nguời dùng",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Demo\",\r\n    \"heritage_type_id\": 6,\r\n    \"description\": \"demo\",\r\n    \"location_id\": 1,\r\n    \"management_unit_id\": 1,\r\n    \"time\": \"demo\",\r\n    \"urlslug\" : \"demo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy item nguời dùng theo id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"Chưa xác định\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật item nguời dùng theo id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user_name\": \"Updated\",\r\n    \"subscribe_day\" : \"updated\",\r\n    \"password\" : \"updated\",\r\n    \"permission\" : 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/heritage/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"heritage",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa item nguời dùng theo id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TenLoai\" : \"Chưa xác định\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/user-not-admin/:id",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user-not-admin",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách nguời dùng",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qldsvh}}/api/v1/user?page=1&limit=4&columnName=id&sortOrder=desc",
+							"host": [
+								"{{qldsvh}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "4"
+								},
+								{
+									"key": "columnName",
+									"value": "id"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{qldsvh}}/ping",
+					"host": [
+						"{{qldsvh}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
