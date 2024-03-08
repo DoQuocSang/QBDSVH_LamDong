@@ -5,7 +5,7 @@ import { faCircle, faCircleInfo, faCircleNotch, faCirclePlus, faPenToSquare, faP
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { AddOrUpdateText } from "../../../components/utils/Utils";
+import { AddOrUpdateText, getModelNameFromURL } from "../../../components/utils/Utils";
 import { isEmptyOrSpaces } from "../../../components/utils/Utils";
 import { generateSlug } from "../../../components/utils/Utils";
 
@@ -24,8 +24,9 @@ import { addHeritageWithParagraphs } from "../../../services/HeritageRepository"
 import { putHeritageWithParagraphs } from "../../../services/HeritageRepository";
 import { splitImageUrls } from "../../../components/utils/Utils";
 import { storage } from "../../../firebase.js"
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
+import ModelViewer from "./ModelViewer";
 
 export default ({ type = "" }) => {
     document.title = 'Thêm/Cập nhật di sản';
@@ -341,102 +342,46 @@ export default ({ type = "" }) => {
     };
 
     const [uploadProgress, setUploadProgress] = useState(0);
-    // const handleFileUpload = async (e) => {
-    //     const file = e.target.files[0];
-    //     setUploadedFile(file);
+    localStorage.setItem('image360url', heritageData.heritage.image_360_url);
 
-    //     if (file) {
-    //         const fileRef = ref(storage, `models/${file.name + v4()}`);
+    const [isModelViewerOpen, setIsModelViewerOpen] = useState(false);
 
-    //         // Upload the file and manually track the progress
-    //         try {
-    //             const snapshot = await uploadBytes(fileRef, file, (snapshot) => {
-    //                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //                 setUploadProgress(progress);
-    //             });
+    const handleOpenModelViewer = () => {
+        setIsModelViewerOpen(true);
+    };
 
-    //             // Get the download URL
-    //             const downloadURL = await getDownloadURL(snapshot.ref);
-    //             alert("Upload file thành công")
-    //             setHeritageData((prevData) => ({
-    //                 ...prevData,
-    //                 heritage: {
-    //                     ...prevData.heritage,
-    //                     image_360_url: downloadURL,
-    //                 },
-    //             }));
-    //         } catch (error) {
-    //             console.error('Error during upload:', error);
-    //         }
-    //     }
-    // };
-
-    // const handleFileUpload = async (e) => {
-    //     const file = e.target.files[0];
-    //     setUploadedFile(file);
-
-    //     if (file) {
-    //         const storageRef = ref(storage, `models/${file.name + uuidv4()}`);
-
-    //         // Upload the file and manually track the progress
-    //         const uploadTask = uploadBytesResumable(storageRef, file);
-
-    //         uploadTask.on('state_changed',
-    //             (snapshot) => {
-    //                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //                 setUploadProgress(progress);
-    //             },
-    //             (error) => {
-    //                 console.error('Error during upload:', error);
-    //             },
-    //             async () => {
-    //                 try {
-    //                     // Get the download URL
-    //                     const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-    //                     alert("Upload file thành công")
-    //                     setHeritageData((prevData) => ({
-    //                         ...prevData,
-    //                         heritage: {
-    //                             ...prevData.heritage,
-    //                             image_360_url: downloadURL,
-    //                         },
-    //                     }));
-    //                 } catch (error) {
-    //                     console.error('Error getting download URL:', error);
-    //                 }
-    //             }
-    //         );
-    //     }
-    // };
+    const handleCloseModelViewer = () => {
+        setIsModelViewerOpen(false);
+    };
 
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         setUploadedFile(file);
-    
+
         if (file) {
             const extension = file.name.split('.').pop(); // Get the file extension
             const uniqueId = uuidv4();
             const modifiedFileName = `${file.name.split('.')[0]}_${uniqueId}.${extension}`;
-    
+
             const storageRef = ref(storage, `models/${modifiedFileName}`);
-    
+
             // Upload the file and manually track the progress
             const uploadTask = uploadBytesResumable(storageRef, file);
-    
+
             uploadTask.on('state_changed',
                 (snapshot) => {
                     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     setUploadProgress(progress);
                 },
                 (error) => {
-                    console.error('Error during upload:', error);
+                    console.error('Lỗi trong quá trình upload:', error);
                 },
                 async () => {
                     try {
                         // Get the download URL after successful upload
                         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
                         alert("Upload file thành công");
-    
+
                         // Use the downloadURL as needed, for example, updating state
                         setHeritageData((prevData) => ({
                             ...prevData,
@@ -445,6 +390,7 @@ export default ({ type = "" }) => {
                                 image_360_url: downloadURL,
                             },
                         }));
+
                     } catch (error) {
                         console.error('Error getting download URL:', error);
                     }
@@ -454,8 +400,30 @@ export default ({ type = "" }) => {
     };
 
     const clearImage = () => {
-        setUploadedFile(null);
+        // Check if there is a modifiedFileName
+        var ModelName = getModelNameFromURL(heritageData.heritage.image_360_url);
+        if (ModelName) {
+            // Create a reference to the file in storage
+            const storageRef = ref(storage, `models/${ModelName}`);
+            console.log("File hiện tại: "+ ModelName);
 
+            // Delete the file from storage
+            deleteObject(storageRef)
+                .then(() => {
+                    alert("Xóa file thành công");
+                    console.log('File deleted successfully');
+
+                    // Remove the item from localStorage
+                    localStorage.removeItem("yourLocalStorageKey");
+                })
+                .catch((error) => {
+                    alert("Có lỗi khi xóa file");
+                    console.error('Error deleting file:', error);
+                });
+        }
+
+        // Clear the uploaded file and reset image_360_url in state
+        setUploadedFile(null);
         setHeritageData((prevData) => ({
             ...prevData,
             heritage: {
@@ -464,6 +432,7 @@ export default ({ type = "" }) => {
             },
         }));
     };
+
 
     return (
         <main>
@@ -737,56 +706,30 @@ export default ({ type = "" }) => {
                         className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400" /> */}
 
                     <div className="mb-6 pt-4">
-                        <div className="mb-8">
-                            <input type="file" name="file" id="file" className="sr-only" onChange={handleFileUpload} />
-                            <label
-                                for="file"
-                                className="relative flex min-h-[200px] items-center justify-center rounded-lg border border-dashed border-[#e0e0e0] p-12 text-center"
-                            >
-                                <div>
-                                    <span className="mb-2 block text-xl font-semibold text-[#07074D]">
-                                        Kéo thả file tại đây
-                                    </span>
-                                    <span className="mb-2 block text-base font-medium text-[#6B7280]">
-                                        Hoặc
-                                    </span>
-                                    <span
-                                        className="cursor-pointer inline-flex rounded border border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D]"
-                                    >
-                                        Tải lên
-                                    </span>
-                                </div>
-                            </label>
-                        </div>
-                        <Link to="/admin/heritage/model-view" className="btn ml-auto flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
-                            Xem model
-                        </Link>
-                        
                         {/* Hiển thị thông tin file đã tải lên nếu có */}
                         {uploadedFile && (
-                            <div>
-                                <div className="relative mt-3">
-                                    <div className="mb-2 flex items-center justify-between">
-                                        <div>
-                                            {uploadProgress < 100 ? (
-                                                <span className="inline-block rounded-full bg-yellow-200 px-3 py-1 text-xs font-semibold uppercase text-orange-600">
+                            <div className="relative mt-3">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <div>
+                                        {uploadProgress < 100 ? (
+                                            <span className="inline-block rounded-full bg-yellow-200 px-3 py-1 text-xs font-semibold uppercase text-orange-600">
                                                 Đang tải lên server
-                                                </span>
-                                            ) : (
-                                                <span className="inline-block rounded-full bg-teal-500 px-3 py-1 text-xs font-semibold uppercase text-white">
-                                                Đã tải xong
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="text-right">
-                                            <span className="inline-block text-sm font-bold text-blue-600">
-                                                {Math.round(uploadProgress)}%
                                             </span>
-                                        </div>
+                                        ) : (
+                                            <span className="inline-block rounded-full bg-teal-500 px-3 py-1 text-xs font-semibold uppercase text-white">
+                                                Đã tải xong
+                                            </span>
+                                        )}
                                     </div>
-                                    <div className="mb-4 flex h-2 overflow-hidden rounded bg-gray-200 text-xs">
-                                        <style>
-                                            {`
+                                    <div className="text-right">
+                                        <span className="inline-block text-sm font-bold text-blue-600">
+                                            {Math.round(uploadProgress)}%
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="mb-4 flex h-2 overflow-hidden rounded bg-gray-200 text-xs">
+                                    <style>
+                                        {`
                                                 /* WebKit (Safari, Chrome) */
                                                 ::-webkit-progress-bar {
                                                 background-color: #E5E7EB; /* Set the background color */
@@ -804,44 +747,91 @@ export default ({ type = "" }) => {
                                                 border-radius: 4px; /* Optional: Set the border radius */
                                                 }
                                             `}
-                                        </style>
-                                        <progress
-                                            value={uploadProgress}
-                                            max="100"
-                                            className="flex flex-col justify-center bg-teal-500 text-white shadow-none w-full"
-                                        ></progress>
-                                    </div>
+                                    </style>
+                                    <progress
+                                        value={uploadProgress}
+                                        max="100"
+                                        className="flex flex-col justify-center bg-teal-500 text-white shadow-none w-full"
+                                    ></progress>
                                 </div>
-                                <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 px-8 border-l-4 border-purple-400">
-                                    <div className="flex items-center justify-between">
-                                        <span className="truncate pr-3 text-base font-medium text-[#07074D]">
-                                            {uploadedFile.name}
+                            </div>
+                        )}
+                        {uploadedFile || heritageData.heritage.image_360_url ? (
+                            <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 px-8 border-l-4 border-purple-400">
+                                <div className="flex items-center justify-between">
+                                    <span className="truncate pr-3 text-base font-medium text-[#07074D]">
+                                         {heritageData.heritage.image_360_url ? getModelNameFromURL(heritageData.heritage.image_360_url) : uploadedFile.name}
+                                        {/* uploadedFile.name */}
+                                    </span>
+                                    <button className="text-[#07074D]" onClick={clearImage}>
+                                        <svg
+                                            width="10"
+                                            height="10"
+                                            viewBox="0 0 10 10"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                clipRule="evenodd"
+                                                d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
+                                                fill="currentColor"
+                                            />
+                                            <path
+                                                fillRule="evenodd"
+                                                clipRule="evenodd"
+                                                d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
+                                                fill="currentColor"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="mb-8">
+                                <input type="file" name="file" id="file" className="sr-only" onChange={handleFileUpload} />
+                                <label
+                                    for="file"
+                                    className="relative flex min-h-[200px] items-center justify-center rounded-lg border border-dashed border-[#e0e0e0] p-12 text-center"
+                                >
+                                    <div>
+                                        <span className="mb-2 block text-xl font-semibold text-[#07074D]">
+                                            Kéo thả file tại đây
                                         </span>
-                                        <button className="text-[#07074D]" onClick={clearImage}>
-                                            <svg
-                                                width="10"
-                                                height="10"
-                                                viewBox="0 0 10 10"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    clipRule="evenodd"
-                                                    d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
-                                                    fill="currentColor"
-                                                />
-                                                <path
-                                                    fillRule="evenodd"
-                                                    clipRule="evenodd"
-                                                    d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
-                                                    fill="currentColor"
-                                                />
-                                            </svg>
-                                        </button>
+                                        <span className="mb-2 block text-base font-medium text-[#6B7280]">
+                                            Hoặc
+                                        </span>
+                                        <span
+                                            className="cursor-pointer inline-flex rounded border border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D]"
+                                        >
+                                            Tải lên
+                                        </span>
                                     </div>
-                                </div>
+                                </label>
+                            </div>
+                        )}
+                        {heritageData.heritage.image_360_url && (
+                            isModelViewerOpen ? (
+                                <button 
+                                    onClick={handleCloseModelViewer}
+                                    className="btn mx-auto flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
+                                    Thu gọn
+                                </button>
+                            )
+                            :
+                            (
+                            <button 
+                                onClick={handleOpenModelViewer}
+                                className="btn mx-auto flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
+                                Xem model hiện tại
+                            </button>
+                            )
+                        )
+                        }
 
+                        {isModelViewerOpen && (
+                            <div className="mt-4">
+                            <ModelViewer />
                             </div>
                         )}
                     </div>
@@ -979,9 +969,6 @@ export default ({ type = "" }) => {
                     </div>
 
                     <NotificationModal mainAction={maintAction} isSuccess={successFlag} isContinue={childToParent} type="heritage" />
-                </div>
-                <div className="flex justify-center">
-                    <img src={heritageData.heritage.image_360_url} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
                 </div>
             </div>
         </main >

@@ -296,3 +296,9 @@ export const getVideoIdFromUrl = (url) => {
         return null;
     }
 }
+
+export const getModelNameFromURL = (modelURL) => {
+    const modelName = modelURL.split('/').pop().split('?')[0];
+    const cleanedFileName = modelName.replace("models%2F", "");
+    return cleanedFileName;
+}
