@@ -401,6 +401,7 @@ export default ({ type = "" }) => {
 
     const clearImage = () => {
         // Check if there is a modifiedFileName
+        setIsModelViewerOpen(false);
         var ModelName = getModelNameFromURL(heritageData.heritage.image_360_url);
         if (ModelName) {
             // Create a reference to the file in storage
