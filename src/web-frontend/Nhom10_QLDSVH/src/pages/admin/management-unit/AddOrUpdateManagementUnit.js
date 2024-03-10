@@ -29,6 +29,7 @@ export default ({ type = "" }) => {
         name: '',
         urlslug: '',
         image_url: '',
+        image_360_url: '',
         note: '',
         address: '',
         description: '',
@@ -301,6 +302,34 @@ export default ({ type = "" }) => {
                         <p className="text-gray-600 mb-4 text-center">Ảnh hiện tại</p>
                         <img src={managementUnit.image_url} className="w-full h-auto mb-4 rounded-lg" />
                     </>}
+
+                    <h2 className="font-semibold text-sm text-teal-500">
+                        Ảnh 360
+                    </h2>
+
+                    <div className="mb-6 pt-4">
+                    <div className="mb-8">
+                        <input type="file" name="file" id="file" className="sr-only" onChange="" />
+                        <label
+                            for="file"
+                            className="relative flex min-h-[200px] items-center justify-center rounded-lg border border-dashed border-[#e0e0e0] p-12 text-center"
+                        >
+                            <div>
+                                <span className="mb-2 block text-xl font-semibold text-[#07074D]">
+                                    Kéo thả file tại đây
+                                </span>
+                                <span className="mb-2 block text-base font-medium text-[#6B7280]">
+                                    Hoặc
+                                </span>
+                                <span
+                                    className="cursor-pointer inline-flex rounded border border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D]"
+                                >
+                                    Tải lên
+                                </span>
+                            </div>
+                        </label>
+                    </div>
+                    </div>
 
 
                     <div className="buttons flex">

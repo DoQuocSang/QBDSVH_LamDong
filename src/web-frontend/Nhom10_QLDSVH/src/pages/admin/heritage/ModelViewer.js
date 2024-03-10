@@ -1,10 +1,12 @@
 import React, { Suspense } from "react";
-import { Loader, PresentationControls, Stage } from "@react-three/drei";
+import { Loader, PresentationControls, Stage, useTexture } from "@react-three/drei";
 import Model from "pages/admin/heritage/ModelView";
-import { Canvas } from "react-three-fiber";
+import * as THREE from 'three'
+import { Canvas, useThree } from "react-three-fiber";
 import { ModelLoader } from "./ModelLoader";
 import { Html } from "@react-three/drei"
 import loading from "../../../images/loading.gif"
+import BackgroundModel from "../../../images/bg-model.jpg"
 
 const LoadingScreen = () => {
   return (
@@ -15,6 +17,17 @@ const LoadingScreen = () => {
         <p className="text-[#8b6565] mt-2 text-lg font-semibold">Vui lòng chờ trong giây lát...</p>
       </div>
     </Html>
+  )
+}
+
+const Background = props => {
+
+  const {gl} = useThree();
+
+  const texture = useTexture(BackgroundModel)
+  const formatted = new THREE.WebGLCubeRenderTarget(texture.image.height).fromEquirectangularTexture(gl, texture)
+  return(
+    <primitive attach="background" object={formatted.texture} />
   )
 }
 
@@ -35,7 +48,10 @@ const ModelViewer = () => {
         camera={{ fov: 45 }}
         style={{ width: "100%", height: "80vh" }}
       >
-        <color attach={"background"} args={["#706a61"]} />
+       <Suspense fallback={null}>
+        <Background />
+      </Suspense>
+        {/* <color attach={"background"} args={["#706a61"]} /> */}
         <Suspense fallback={<LoadingScreen />}>
           <PresentationControls speed={1.5} global zoom={0.5} polar={[-0.1, Math.PI / 4]}>
             <Stage environment={null}>
