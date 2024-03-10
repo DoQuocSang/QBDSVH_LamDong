@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ReactDOM from 'react-dom';
 import Book1 from "images/book1.png"
 import Book2 from "images/book2.jpg"
 import Book3 from "images/book3.jpg"
@@ -18,6 +19,7 @@ import { putManagementUnit } from "../../../services/ManagementUnitRepository";
 import NotificationModal from "../../../components/admin/modal/NotificationModal";
 import { isEmptyOrSpaces } from "../../../components/utils/Utils";
 
+import { useDropzone } from "react-dropzone";
 
 
 export default ({ type = "" }) => {
@@ -37,6 +39,7 @@ export default ({ type = "" }) => {
     }, [managementUnit, setManagementUnit] = useState(initialState);
     const [successFlag, SetSuccessFlag] = useState(false);
     const [errors, setErrors] = useState({});
+    const [uploadedFiles, setUploadedFiles] = useState([]);
 
     let { id } = useParams();
     id = id ?? 0;
@@ -64,8 +67,58 @@ export default ({ type = "" }) => {
                 console.log(data);
             })
         }
+
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('border-blue-500', 'border-2');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('border-blue-500', 'border-2');
+        });
+
     }, [])
 
+    const handleDrop = (e) => {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        handleFiles(files);
+    };
+
+    const handleFileInputChange = (e) => {
+        const files = e.target.files;
+        handleFiles(files);
+    };
+
+    const handleFiles = (files) => {
+        console.log(files);
+        setUploadedFiles((prevFiles) => [...prevFiles, ...files]);
+    };
+
+    const handleRemoveFile = (index) => {
+        setUploadedFiles((prevFiles) => {
+            const updatedFiles = [...prevFiles];
+            updatedFiles.splice(index, 1);
+            return updatedFiles;
+        });
+    };
+
+    const handleRemoveAllFiles = () => {
+        setUploadedFiles([]);
+    };
+    
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
     //validate lỗi bổ trống
     const validateAllInput = () => {
         const validationErrors = {};
@@ -307,30 +360,52 @@ export default ({ type = "" }) => {
                         Ảnh 360
                     </h2>
 
-                    <div className="mb-6 pt-4">
-                    <div className="mb-8">
-                        <input type="file" name="file" id="file" className="sr-only" onChange="" />
-                        <label
-                            for="file"
-                            className="relative flex min-h-[200px] items-center justify-center rounded-lg border border-dashed border-[#e0e0e0] p-12 text-center"
-                        >
-                            <div>
-                                <span className="mb-2 block text-xl font-semibold text-[#07074D]">
-                                    Kéo thả file tại đây
-                                </span>
-                                <span className="mb-2 block text-base font-medium text-[#6B7280]">
-                                    Hoặc
-                                </span>
-                                <span
-                                    className="cursor-pointer inline-flex rounded border border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D]"
-                                >
-                                    Tải lên
-                                </span>
-                            </div>
-                        </label>
-                    </div>
-                    </div>
+                    <div className="mb-6 pt-4" onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+                        <div className="bg-gray-100 p-8 text-center rounded-lg border-dashed border-2 border-gray-300 hover:border-blue-500 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-md" id="dropzone">
+                            <label htmlFor="fileInput" className="cursor-pointer flex flex-col items-center space-y-2">
+                                <svg className="w-16 h-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                <span className="text-gray-600">Kéo thả file tại đây</span>
+                                <span className="text-gray-500 text-sm">(hoặc click để chọn ảnh)</span>
+                            </label>
+                            <input type="file" id="fileInput" className="hidden" multiple onChange={handleFileInputChange} />
+                        </div>
 
+                        <div className="mt-6 text-center" id="fileList">
+                            <div className="grid-container grid grid-cols-5 gap-4">
+                                {uploadedFiles.map((file, index) => (
+                                    <div key={index} className="grid-item relative pt-[100%] overflow-hidden relative flex flex-col items-center text-center bg-gray-100 border rounded">
+                                        <img src={URL.createObjectURL(file)} alt={`Image ${index}`} className="absolute inset-0 z-0 w-full h-full object-cover border-4 border-white" />
+                                        <button
+                                            className='absolute top-0 z-10 right-0 px-2 py-1 cursor-pointer text-white bg-white rounded'
+                                            onClick={() => handleRemoveFile(index)}
+                                        >
+                                            <FontAwesomeIcon className="text-xs text-gray-500" icon={faTrash} />
+                                        </button>
+                                        <div class="absolute bottom-0 left-0 right-0 flex flex-col p-2 text-xs bg-white bg-opacity-50">
+                                        <span class="w-full font-bold text-gray-900 truncate"
+                                            x-text="files[index].name">{file.name}</span>
+                                        <span class="text-xs text-gray-900">{formatBytes(file.size)}</span>
+                                    </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {uploadedFiles.length > 0 && (
+                           <div className="flex justify-between items-center border-t-2 border-gray-100 mt-4 py-2">
+                                <span className="font-semibold text-gray-600 text-sm">Tổng số file: {uploadedFiles.length}</span>
+                                <button
+                                        className="btn rounded-md text-xs transition duration-300 bg-red-500 ease-in-out cursor-pointer hover:bg-red-600 p-2 px-5 font-semibold text-white"
+                                        onClick={handleRemoveAllFiles}
+                                >
+                                    Xóa tất cả
+                                </button>
+                            </div>
+                        )}
+                        
+                    </div>
 
                     <div className="buttons flex">
                         <hr className="mt-4" />
