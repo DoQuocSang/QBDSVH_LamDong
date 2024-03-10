@@ -37,7 +37,7 @@ export default ({ type = "" }) => {
         name: '',
         short_description: '',
         time: '',
-        image_360_url: '',
+        model_360_url: '',
         urlslug: '',
         video_url: '',
         location_id: 0,
@@ -362,7 +362,7 @@ export default ({ type = "" }) => {
     //                 ...prevData,
     //                 heritage: {
     //                     ...prevData.heritage,
-    //                     image_360_url: downloadURL,
+    //                     model_360_url: downloadURL,
     //                 },
     //             }));
     //         } catch (error) {
@@ -398,7 +398,7 @@ export default ({ type = "" }) => {
                             ...prevData,
                             heritage: {
                                 ...prevData.heritage,
-                                image_360_url: downloadURL,
+                                model_360_url: downloadURL,
                             },
                         }));
                     } catch (error) {
@@ -416,7 +416,7 @@ export default ({ type = "" }) => {
             ...prevData,
             heritage: {
                 ...prevData.heritage,
-                image_360_url: '',
+                model_360_url: '',
             },
         }));
     };
@@ -676,16 +676,16 @@ export default ({ type = "" }) => {
                         Ảnh 360 độ
                     </h2>
                     {/* <input
-                        name="image_360_url"
+                        name="model_360_url"
                         required
                         type="text"
-                        value={heritageData.heritage.image_360_url || ''}
+                        value={heritageData.heritage.model_360_url || ''}
                         onChange={e =>
                             setHeritageData(heritageData => ({
                                 ...heritageData,
                                 heritage: {
                                     ...heritageData.heritage,
-                                    image_360_url: e.target.value,
+                                    model_360_url: e.target.value,
                                 }
                             }))
                         }
@@ -934,7 +934,7 @@ export default ({ type = "" }) => {
                     <NotificationModal mainAction={maintAction} isSuccess={successFlag} isContinue={childToParent} type="heritage" />
                 </div>
                 <div className="flex justify-center">
-                    <img src={heritageData.heritage.image_360_url} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+                    <img src={heritageData.heritage.model_360_url} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
                 </div>
             </div>
         </main >

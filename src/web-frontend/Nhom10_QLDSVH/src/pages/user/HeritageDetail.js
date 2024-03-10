@@ -164,7 +164,7 @@ export default () => {
     name: '',
     short_description: '',
     time: '',
-    image_360_url: '',
+    model_360_url: '',
     urlslug: '',
     video_url: '',
     location_id: 0,
@@ -420,7 +420,7 @@ export default () => {
                 </CustomHeading>
               </CustomHeadingContainer>
 
-              {isEmptyOrSpaces(heritageData.heritage.image_360_url) ? (
+              {isEmptyOrSpaces(heritageData.heritage.model_360_url) ? (
                 <BlogImage src={CatDefault} />
               ) : (
                 <p>Có ảnh 360</p>

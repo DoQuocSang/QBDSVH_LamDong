@@ -22,6 +22,7 @@ func SetupRouter() *gin.Engine {
 			heritage.GET("", controllers.GetPagedHeritagesWithImages)
 			heritage.GET("/:id", controllers.GetHeritageByID)
 			heritage.POST("", controllers.CreateHeritage)
+			heritage.PUT("/model/:id", controllers.UpdateHeritageModel)
 			heritage.PUT("/:id", controllers.UpdateHeritage)
 			heritage.DELETE("/:id", controllers.DeleteHeritageWithParagraphsById)
 			heritage.GET("/random", controllers.GetRandomHeritages)

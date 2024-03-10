@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, createRef } from "react";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircle, faCircleInfo, faCircleNotch, faCirclePlus, faPenToSquare, faPencil, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faCircle, faCircleInfo, faCircleNotch, faCirclePlus, faPenToSquare, faPencil, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
@@ -9,7 +9,7 @@ import { AddOrUpdateText, getModelNameFromURL } from "../../../components/utils/
 import { isEmptyOrSpaces } from "../../../components/utils/Utils";
 import { generateSlug } from "../../../components/utils/Utils";
 
-import { getHeritageById } from "services/HeritageRepository";
+import { getHeritageById, putHeritageModel } from "services/HeritageRepository";
 import { getHeritageTypes } from "services/HeritageTypeRepository";
 import { getLocations } from "../../../services/LocationRepository";
 import { getManagementUnits } from "../../../services/ManagementUnitRepository";
@@ -38,7 +38,7 @@ export default ({ type = "" }) => {
         name: '',
         short_description: '',
         time: '',
-        image_360_url: '',
+        model_360_url: '',
         urlslug: '',
         video_url: '',
         location_id: 0,
@@ -342,7 +342,7 @@ export default ({ type = "" }) => {
     };
 
     const [uploadProgress, setUploadProgress] = useState(0);
-    localStorage.setItem('image360url', heritageData.heritage.image_360_url);
+    localStorage.setItem('model360url', heritageData.heritage.model_360_url);
 
     const [isModelViewerOpen, setIsModelViewerOpen] = useState(false);
 
@@ -387,9 +387,14 @@ export default ({ type = "" }) => {
                             ...prevData,
                             heritage: {
                                 ...prevData.heritage,
-                                image_360_url: downloadURL,
+                                model_360_url: downloadURL,
                             },
-                        }));
+                        }
+                        ));
+
+                        putHeritageModel(id, { model_360_url: downloadURL }).then(data => {
+                            console.log(data);
+                        });
 
                     } catch (error) {
                         console.error('Error getting download URL:', error);
@@ -399,10 +404,10 @@ export default ({ type = "" }) => {
         }
     };
 
-    const clearImage = () => {
+    const clearModelFile = () => {
         // Check if there is a modifiedFileName
         setIsModelViewerOpen(false);
-        var ModelName = getModelNameFromURL(heritageData.heritage.image_360_url);
+        var ModelName = getModelNameFromURL(heritageData.heritage.model_360_url);
         if (ModelName) {
             // Create a reference to the file in storage
             const storageRef = ref(storage, `models/${ModelName}`);
@@ -423,17 +428,27 @@ export default ({ type = "" }) => {
                 });
         }
 
-        // Clear the uploaded file and reset image_360_url in state
+        // Clear the uploaded file and reset model_360_url in state
         setUploadedFile(null);
         setHeritageData((prevData) => ({
             ...prevData,
             heritage: {
                 ...prevData.heritage,
-                image_360_url: '',
+                model_360_url: '',
             },
         }));
+
+        putHeritageModel(id, { model_360_url: '' }).then(data => {
+            console.log(data);
+        });
     };
 
+    const scrollToBottom = () => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth',
+        });
+      };
 
     return (
         <main>
@@ -690,16 +705,16 @@ export default ({ type = "" }) => {
                         Model VR hiện vật
                     </h2>
                     {/* <input
-                        name="image_360_url"
+                        name="model_360_url"
                         required
                         type="text"
-                        value={heritageData.heritage.image_360_url || ''}
+                        value={heritageData.heritage.model_360_url || ''}
                         onChange={e =>
                             setHeritageData(heritageData => ({
                                 ...heritageData,
                                 heritage: {
                                     ...heritageData.heritage,
-                                    image_360_url: e.target.value,
+                                    model_360_url: e.target.value,
                                 }
                             }))
                         }
@@ -757,14 +772,14 @@ export default ({ type = "" }) => {
                                 </div>
                             </div>
                         )}
-                        {uploadedFile || heritageData.heritage.image_360_url ? (
+                        {uploadedFile || heritageData.heritage.model_360_url ? (
                             <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 px-8 border-l-4 border-purple-400">
                                 <div className="flex items-center justify-between">
                                     <span className="truncate pr-3 text-base font-medium text-[#07074D]">
-                                         {heritageData.heritage.image_360_url ? getModelNameFromURL(heritageData.heritage.image_360_url) : uploadedFile.name}
+                                         {heritageData.heritage.model_360_url ? getModelNameFromURL(heritageData.heritage.model_360_url) : uploadedFile.name}
                                         {/* uploadedFile.name */}
                                     </span>
-                                    <button className="text-[#07074D]" onClick={clearImage}>
+                                    <button className="text-[#07074D]" onClick={clearModelFile}>
                                         <svg
                                             width="10"
                                             height="10"
@@ -811,7 +826,7 @@ export default ({ type = "" }) => {
                                 </label>
                             </div>
                         )}
-                        {heritageData.heritage.image_360_url && (
+                        {heritageData.heritage.model_360_url && (
                             isModelViewerOpen ? (
                                 <button 
                                     onClick={handleCloseModelViewer}
@@ -968,6 +983,13 @@ export default ({ type = "" }) => {
                             {mainText.buttonText}
                         </button>
                     </div>
+
+                    <button
+                        className="fixed bottom-4 right-4 text-red-500 font-bold px-4 py-2 rounded-lg border-2 border-red-500 transition duration-300 bg-red-500 hover:bg-red-600 text-white"
+                        onClick={scrollToBottom}
+                        >
+                        <FontAwesomeIcon icon={faArrowDown}/>
+                    </button>
 
                     <NotificationModal mainAction={maintAction} isSuccess={successFlag} isContinue={childToParent} type="heritage" />
                 </div>

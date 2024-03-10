@@ -40,6 +40,8 @@ export async function post_api(your_api, formData) {
 export async function put_api(your_api, formData) {
   try {
       const response = await axios.put(your_api, formData); 
+      // console.log(formData);
+      // console.log(response);
       return response.data.success;
       
     } catch (error) {

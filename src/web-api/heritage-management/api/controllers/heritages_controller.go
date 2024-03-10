@@ -119,6 +119,41 @@ func UpdateHeritage(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, heritage)
 }
 
+// UpdateHeritage cập nhật thông tin của một di sản văn hóa dựa trên ID
+func UpdateHeritageModel(c *gin.Context) {
+	id := c.Param("id")
+
+	var heritage models.Heritage_DTO
+
+	// Lấy thông tin về di sản văn hóa dựa trên ID từ cơ sở dữ liệu
+	if err := db.GetDB().Where("id = ?", id).First(&heritage).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusNotFound, "Heritage not found")
+		return
+	}
+
+	// Tạo một struct để chứa thông tin cập nhật chỉ thuộc tính model_360_url
+	var updateData struct {
+		Model_360_URL string `json:"model_360_url"`
+	}
+
+	// Parse thông tin cập nhật từ request body
+	if err := c.ShouldBindJSON(&updateData); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	// Cập nhật chỉ thuộc tính model_360_url
+	heritage.Model_360_URL = updateData.Model_360_URL
+
+	// Lưu thông tin cập nhật vào cơ sở dữ liệu
+	if err := db.GetDB().Save(&heritage).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update heritage")
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, heritage)
+}
+
 // DeleteHeritage xóa một di sản văn hóa dựa trên ID
 func DeleteHeritage(c *gin.Context) {
 	id := c.Param("id")
