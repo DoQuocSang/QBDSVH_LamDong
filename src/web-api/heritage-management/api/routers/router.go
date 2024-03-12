@@ -63,6 +63,7 @@ func SetupRouter() *gin.Engine {
 			management_unit.GET("/:id", controllers.GetManagementUnitByID)
 			management_unit.POST("", controllers.CreateManagementUnit)
 			management_unit.PUT("/:id", controllers.UpdateManagementUnit)
+			management_unit.PUT("/image360/:id", controllers.UpdateManagementUnitImage360)
 			management_unit.DELETE("/:id", controllers.DeleteManagementUnit)
 			management_unit.GET("/slug/:urlSlug/heritages", controllers.GetHeritageByUnitSlug)
 			management_unit.GET("/slug/:urlSlug", controllers.GetManagementUnitBySlug)

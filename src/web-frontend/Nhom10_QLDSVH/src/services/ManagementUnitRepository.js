@@ -48,6 +48,13 @@ export function putManagementUnit(
     return put_api(`http://localhost:8080/api/v1/management-unit/${id}`, formData);
 }
 
+export function putManagementUnitImage360(
+    id = 0,
+    formData
+    ) {
+    return put_api(`http://localhost:8080/api/v1/management-unit/image360/${id}`, formData);
+}
+
 export function getManagementUnitsByQuerySearch(
     key = "",
     column = "name",

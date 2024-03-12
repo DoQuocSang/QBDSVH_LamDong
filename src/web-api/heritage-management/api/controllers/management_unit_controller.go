@@ -349,3 +349,38 @@ func SearchUnit(c *gin.Context) {
 
 	utils.SuccessResponse(c, http.StatusOK, pagination)
 }
+
+// cập nhật image 360 của một đơn vị quản lý
+func UpdateManagementUnitImage360(c *gin.Context) {
+	id := c.Param("id")
+
+	var management_unit models.Management_Unit_DTO
+
+	// Lấy thông tin về di sản văn hóa dựa trên ID từ cơ sở dữ liệu
+	if err := db.GetDB().Where("id = ?", id).First(&management_unit).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusNotFound, "Management Unit not found")
+		return
+	}
+
+	// Tạo một struct để chứa thông tin cập nhật chỉ thuộc tính image_360_url
+	var updateData struct {
+		Image_360_URL string `json:"image_360_url"`
+	}
+
+	// Parse thông tin cập nhật từ request body
+	if err := c.ShouldBindJSON(&updateData); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	// Cập nhật chỉ thuộc tính model_360_url
+	management_unit.Image360Url = updateData.Image_360_URL
+
+	// Lưu thông tin cập nhật vào cơ sở dữ liệu
+	if err := db.GetDB().Save(&management_unit).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not Management Unit")
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, management_unit)
+}

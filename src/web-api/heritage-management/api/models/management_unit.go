@@ -13,8 +13,9 @@ type Management_Unit struct {
 }
 
 type Management_Unit_DTO struct {
-	ID   int    `json:"id" gorm:"column:id;"`
-	Name string `json:"name" gorm:"column:name;"`
+	ID          int    `json:"id" gorm:"column:id;"`
+	Name        string `json:"name" gorm:"column:name;"`
+	Image360Url string `json:"image_360_url" gorm:"column:image_360_url;"`
 }
 
 func (Management_Unit_DTO) TableName() string {
