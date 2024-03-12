@@ -297,8 +297,9 @@ export const getVideoIdFromUrl = (url) => {
     }
 }
 
-export const getModelNameFromURL = (modelURL) => {
+export const getFileNameFromURL = (modelURL, prefix) => {
     const modelName = modelURL.split('/').pop().split('?')[0];
-    const cleanedFileName = modelName.replace("models%2F", "");
+    // const cleanedFileName = modelName.replace("models%2F", "");
+    const cleanedFileName = modelName.replace(prefix, "");
     return cleanedFileName;
 }

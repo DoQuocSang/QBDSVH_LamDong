@@ -1,14 +1,14 @@
 import { Pannellum } from 'pannellum-react';
 import React, { useEffect, useState } from 'react';
-;
 
-const PanoramaViewer = () => {
+
+const PanoramaViewer = ({title, isOpen}) => {
    var image360url = localStorage.getItem('image360url');
    const [currentScene, setCurrentScence] = useState(image360url);
 
    return(
     <>
-      <div className='my-4 rounded-lg overflow-hidden'>
+      <div className={isOpen ? 'my-4 rounded-lg' : 'hidden'}>
         <Pannellum
           width="100%"
           height='50vh'
@@ -23,8 +23,9 @@ const PanoramaViewer = () => {
           draggable={true}
           showControls={true}
           doubleClickZoom={true}
-          title="image 1"
-          author="user"
+          title={title}
+          minPitch={-90}
+          maxPitch={90} 
         >
           {/* <Pannellum.HotSpot
             type="custom"

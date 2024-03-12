@@ -10,7 +10,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
 import { useParams } from "react-router-dom";
-import { AddOrUpdateText, getModelNameFromURL } from "../../../components/utils/Utils";
+import { AddOrUpdateText, getFileNameFromURL } from "../../../components/utils/Utils";
 import { generateSlug } from "../../../components/utils/Utils";
 import { getManagementUnitById, putManagementUnitImage360 } from "../../../services/ManagementUnitRepository";
 
@@ -48,8 +48,10 @@ export default ({ type = "" }) => {
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadProgressVisible, setUploadProgressVisible] = useState(false);
+    const [isPanoramaViewerOpen, setIsPanoramaViewerOpen] = useState(false);
+    const [uploadSectionVisible, setUploadSectionVisible] = useState(false);
     localStorage.setItem('image360url', managementUnit.image_360_url);
-    console.log(localStorage.getItem('image360url'));
+
     let { id } = useParams();
     id = id ?? 0;
     //console.log(id);
@@ -64,6 +66,11 @@ export default ({ type = "" }) => {
 
     useEffect(() => {
         document.title = "Thêm/ cập nhật đơn vị quản lý";
+
+        if(managementUnit.image_360_url === "" || managementUnit.image_360_url === null){
+            setUploadSectionVisible(true);
+            console.log(uploadSectionVisible)
+        }
 
         if (id !== 0) {
             getManagementUnitById(id).then(data => {
@@ -202,6 +209,7 @@ export default ({ type = "" }) => {
 
     const export360Image = async () => {
         setUploadProgressVisible(true);
+        setUploadSectionVisible(false);
         // Replace these paths with the paths to your input images
         const imagePaths = uploadedFiles.map((file) => URL.createObjectURL(file));
 
@@ -279,8 +287,12 @@ export default ({ type = "" }) => {
     };
 
     const clearImageFile = () => {
+        setIsPanoramaViewerOpen(false);
+        setUploadSectionVisible(true);
+        setUploadProgressVisible(false);
+        setUploadProgress(0);
         // Check if there is a modifiedFileName
-        var ModelName = getModelNameFromURL(managementUnit.image_360_url);
+        var ModelName = getFileNameFromURL(managementUnit.image_360_url, 'panoramas%2F');
         if (ModelName) {
             // Create a reference to the file in storage
             const storageRef = ref(storage, `panoramas/${ModelName}`);
@@ -311,6 +323,14 @@ export default ({ type = "" }) => {
         putManagementUnitImage360(id, { image_360_url: '' }).then(data => {
             console.log(data);
         });
+    };
+
+    const handleOpenPanoramaViewer = () => {
+        setIsPanoramaViewerOpen(true);
+    };
+
+    const handleClosePanoramaViewer = () => {
+        setIsPanoramaViewerOpen(false);
     };
 
     return (
@@ -482,17 +502,16 @@ export default ({ type = "" }) => {
                     <h2 className="font-semibold text-sm text-teal-500">
                         Ảnh 360
                     </h2>
-
                     <div>
-                        <canvas ref={canvasRef} className="hidden"></canvas>
-                    </div>
-                    <div>
-                        <PanoramaViewer />
-                    </div>
-
-                    <div>
-                        <div className="mb-6 pt-4" onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
-                            <div className="bg-gray-100 p-8 text-center rounded-lg border-dashed border-2 border-gray-300 hover:border-blue-500 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-md" id="dropzone">
+                        <div className="" onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+                            {!uploadSectionVisible && uploadedFiles.length > 0 &&
+                                (
+                                    <h2 className="font-semibold mt-4 text-xs text-gray-500 bg-gray-100 px-4 py-2 border-l-4 border-amber-500">
+                                        Các ảnh ban đầu
+                                    </h2>
+                                )
+                            }
+                            <div className={(uploadSectionVisible && !managementUnit.image_360_url) ? "mt-4 bg-gray-100 p-8 text-center rounded-lg border-dashed border-2 border-gray-300 hover:border-blue-500 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-md" : "hidden"} id="dropzone">
                                 <label htmlFor="fileInput" className="cursor-pointer flex flex-col items-center space-y-2">
                                     <svg className="w-16 h-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -525,7 +544,7 @@ export default ({ type = "" }) => {
                             </div>
                             {uploadedFiles.length > 0 && (
                                 <>
-                                    <div className="flex justify-between items-center border-t-2 border-gray-100 mt-4 py-2">
+                                    <div className="flex justify-between items-center mb-4 border-t-2 border-gray-100 mt-4 py-2">
                                         <span className="font-semibold text-gray-600 text-sm">Tổng số file: {uploadedFiles.length}</span>
                                         <div className="flex gap-4 items-center">
                                             <button
@@ -542,8 +561,11 @@ export default ({ type = "" }) => {
                                             </button>
                                         </div>
                                     </div>
-                                    {uploadedFiles.length > 0 && uploadProgressVisible && (
+                                    {uploadProgressVisible && (
                                         <div className="relative mt-3">
+                                            {/* <h2 className="font-semibold my-4 text-xs text-gray-500 bg-gray-100 px-4 py-2 border-l-4 border-amber-500">
+                                                Upload và tạo ảnh 360
+                                            </h2> */}
                                             <div className="mb-2 flex items-center justify-between">
                                                 <div>
                                                     {uploadProgress < 100 ? (
@@ -591,47 +613,67 @@ export default ({ type = "" }) => {
                                             </div>
                                         </div>
                                     )}
-                                    {uploadedFiles.length > 0 || managementUnit.image_360_url ? (
-                                        <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 px-8 border-l-4 border-purple-400">
-                                            <div className="flex items-center justify-between">
-                                                <span className="truncate pr-3 text-base font-medium text-[#07074D]">
-                                                    {managementUnit.image_360_url ? getModelNameFromURL(managementUnit.image_360_url) : "none"}
-                                                </span>
-                                                <button className="text-[#07074D]" onClick={clearImageFile}>
-                                                    <svg
-                                                        width="10"
-                                                        height="10"
-                                                        viewBox="0 0 10 10"
-                                                        fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                    >
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            clipRule="evenodd"
-                                                            d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
-                                                            fill="currentColor"
-                                                        />
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            clipRule="evenodd"
-                                                            d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
-                                                            fill="currentColor"
-                                                        />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <></>
-                                    )}
+
                                 </>
-
-
                             )}
                         </div>
+                        {(managementUnit.image_360_url || !uploadSectionVisible) && (
+                                <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 px-8 border-l-4 border-purple-400">
+                                    <div className="flex items-center justify-between">
+                                        <span className="truncate pr-3 text-base font-medium text-[#07074D]">
+                                            {managementUnit.image_360_url ? getFileNameFromURL(managementUnit.image_360_url, 'panoramas%2F') : "Đang tạo ảnh 360..."}
+                                        </span>
+                                        <button className="text-[#07074D]" onClick={clearImageFile}>
+                                            <svg
+                                                width="10"
+                                                height="10"
+                                                viewBox="0 0 10 10"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    clipRule="evenodd"
+                                                    d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
+                                                    fill="currentColor"
+                                                />
+                                                <path
+                                                    fillRule="evenodd"
+                                                    clipRule="evenodd"
+                                                    d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
+                                                    fill="currentColor"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+
+                        <canvas ref={canvasRef} className="hidden"></canvas>
+
+                        {managementUnit.image_360_url && (
+                            isPanoramaViewerOpen ? (
+                                <button
+                                    onClick={handleClosePanoramaViewer}
+                                    className="btn mx-auto text-sm flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
+                                    Thu gọn
+                                </button>
+                            )
+                                :
+                                (
+                                    <button
+                                        onClick={handleOpenPanoramaViewer}
+                                        className="btn mx-auto text-sm flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
+                                        Xem ảnh 360 hiện tại
+                                    </button>
+                                )
+                        )}
+
+                        <PanoramaViewer title={managementUnit.name} isOpen={isPanoramaViewerOpen}/>
                     </div>
 
-                    <div className="buttons flex">
+                    <div className="buttons flex mt-4">
                         <hr className="mt-4" />
                         <Link to="/admin/dashboard/all-management-unit" className="btn ml-auto rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
                             Hủy

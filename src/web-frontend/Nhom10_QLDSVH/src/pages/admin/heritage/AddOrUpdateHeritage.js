@@ -5,7 +5,7 @@ import { faArrowDown, faCircle, faCircleInfo, faCircleNotch, faCirclePlus, faPen
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { AddOrUpdateText, getModelNameFromURL } from "../../../components/utils/Utils";
+import { AddOrUpdateText, getFileNameFromURL } from "../../../components/utils/Utils";
 import { isEmptyOrSpaces } from "../../../components/utils/Utils";
 import { generateSlug } from "../../../components/utils/Utils";
 
@@ -407,7 +407,7 @@ export default ({ type = "" }) => {
     const clearModelFile = () => {
         // Check if there is a modifiedFileName
         setIsModelViewerOpen(false);
-        var ModelName = getModelNameFromURL(heritageData.heritage.model_360_url);
+        var ModelName = getFileNameFromURL(heritageData.heritage.model_360_url, 'models%2F');
         if (ModelName) {
             // Create a reference to the file in storage
             const storageRef = ref(storage, `models/${ModelName}`);
@@ -776,7 +776,7 @@ export default ({ type = "" }) => {
                             <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 px-8 border-l-4 border-purple-400">
                                 <div className="flex items-center justify-between">
                                     <span className="truncate pr-3 text-base font-medium text-[#07074D]">
-                                         {heritageData.heritage.model_360_url ? getModelNameFromURL(heritageData.heritage.model_360_url) : uploadedFile.name}
+                                         {heritageData.heritage.model_360_url ? getFileNameFromURL(heritageData.heritage.model_360_url, 'models%2F') : uploadedFile.name}
                                         {/* uploadedFile.name */}
                                     </span>
                                     <button className="text-[#07074D]" onClick={clearModelFile}>
@@ -830,7 +830,7 @@ export default ({ type = "" }) => {
                             isModelViewerOpen ? (
                                 <button 
                                     onClick={handleCloseModelViewer}
-                                    className="btn mx-auto flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
+                                    className="btn mx-auto text-sm flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
                                     Thu gọn
                                 </button>
                             )
@@ -838,7 +838,7 @@ export default ({ type = "" }) => {
                             (
                             <button 
                                 onClick={handleOpenModelViewer}
-                                className="btn mx-auto flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
+                                className="btn mx-auto text-sm flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
                                 Xem model hiện tại
                             </button>
                             )
