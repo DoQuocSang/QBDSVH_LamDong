@@ -4,7 +4,7 @@ var image360url = localStorage.getItem('image360url');
 
 const Scenes = {
     "insideOne":{
-        title:'interior 1',
+        title:'VR360',
         //https://firebasestorage.googleapis.com/v0/b/qbdsvhlamdong.appspot.com/o/panoramas%2Fpanorama_99cd9ce3-5ae3-4861-a825-ffde7c957608.jpg?alt=media&token=ffca094a-79fb-44a9-8321-2f6bbe6a7f36
         image: image360url,
         yaw: 360,

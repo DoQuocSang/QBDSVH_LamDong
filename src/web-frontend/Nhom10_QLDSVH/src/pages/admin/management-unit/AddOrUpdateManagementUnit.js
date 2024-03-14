@@ -282,6 +282,9 @@ export default ({ type = "" }) => {
                     putManagementUnitImage360(id, { image_360_url: downloadURL }).then(data => {
                         console.log(data);
                     });
+
+                    localStorage.setItem('image360url', downloadURL);
+
                 } catch (error) {
                     alert('Có lỗi khi upload file');
                     console.error('Error getting download URL:', error);
@@ -327,6 +330,8 @@ export default ({ type = "" }) => {
         putManagementUnitImage360(id, { image_360_url: '' }).then(data => {
             console.log(data);
         });
+
+        localStorage.setItem('image360url', '');
     };
 
     const handleOpenPanoramaViewer = () => {
@@ -680,7 +685,7 @@ export default ({ type = "" }) => {
                                 )
                         )}
 
-                        <PanoramaViewer title={managementUnit.name} isOpen={isPanoramaViewerOpen} />
+                        <PanoramaViewer title={managementUnit.name} isOpen={isPanoramaViewerOpen} image360Url={localStorage.getItem('image360url')}/>
                         {/* <MyPanorama /> */}
                         {/* <PanoramaDemo imagePath={managementUnit.image_360_url} /> */}
                     </div>

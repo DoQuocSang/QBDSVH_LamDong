@@ -2,27 +2,27 @@ import { Pannellum } from 'pannellum-react';
 import React, { useEffect, useRef, useState } from 'react';
 import DataScene from "./DataScene.js"
 
-const PanoramaViewer = ({ title, isOpen }) => {
+const PanoramaViewer = ({ title, isOpen, image360Url }) => {
   var image360url = localStorage.getItem('image360url');
   const [scene, setScene] = useState(DataScene['insideOne']);
   const [totalConsoleContent, setTotalConsoleContent] = useState('');
-  const [curentPitch, setCurentPitch] = useState(0);
-  const [curentYaw, setCurentYaw] = useState(0);
+  // const [curentPitch, setCurentPitch] = useState(0);
+  // const [curentYaw, setCurentYaw] = useState(0);
   const [hotSpotArr, setHotSpotArr] = useState([{
     type: 'custom',
-    pitch: curentPitch,
-    yaw: curentYaw,
-    nameModel: 'New Hotspot', 
+    pitch: 0,
+    yaw: 0,
+    nameModel: 'New Hotspot',
     cssClass: 'hotSpotElement',
   }]);
 
   useEffect(() => {
     var consoleFrame = document.getElementById('console-frame');
-    console.log(consoleFrame)
     if (consoleFrame) {
       var consoleContent = '';
 
       function appendLog(msg) {
+        const timestamp = new Date().getTime();
         consoleContent = msg + consoleContent;
         // consoleContent += msg;
         setTotalConsoleContent(consoleContent);
@@ -35,10 +35,15 @@ const PanoramaViewer = ({ title, isOpen }) => {
         msg = msg.toString();
         const matches = msg.match(/Pitch:\s+([-\d.]+).*Yaw:\s+([-\d.]+)/);
         if (matches && matches.length >= 3) {
-          const pitch = parseFloat(matches[1]).toFixed(1);
-          const yaw = parseFloat(matches[2]).toFixed(1);
-          setCurentPitch(pitch);
-          setCurentYaw(yaw);
+          // const pitch = parseFloat(matches[1]).toFixed(1);
+          // const yaw = parseFloat(matches[2]).toFixed(1);
+          const pitch = parseFloat(matches[1]);
+          const yaw = parseFloat(matches[2]);
+          localStorage.setItem('pitch', matches[1])
+          localStorage.setItem('yaw', matches[2]);
+          // setCurentPitch(pitch);
+          // setCurentYaw(yaw);
+          const timestamp = new Date().getTime();
 
           appendLog(
             `<div className="console-msg" style="    
@@ -65,13 +70,41 @@ const PanoramaViewer = ({ title, isOpen }) => {
               ria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
               <path fill-rule="evenodd" d="M3 5.983C3 4.888 3.895 4 5 4h14c1.105 0 2 .888 2 1.983v8.923a1.992 1.992 0 0 1-2 1.983h-6.6l-2.867 2.7c-.955.899-2.533.228-2.533-1.08v-1.62H5c-1.105 0-2-.888-2-1.983V5.983Zm5.706 3.809a1 1 0 1 0-1.412 1.417 1 1 0 1 0 1.412-1.417Zm2.585.002a1 1 0 1 1 .003 1.414 1 1 0 0 1-.003-1.414Zm5.415-.002a1 1 0 1 0-1.412 1.417 1 1 0 1 0 1.412-1.417Z" clip-rule="evenodd"/>
             </svg>
+            <div style="    
+              display: flex;
+              align-items: start;
+              gap: 4px;
+              flex-direction: column;">
+            <div style="    
+              color: #559aed;
+              font-size: 10px;">
+              ${formatTimestamp(timestamp)}
+            </div>
+            <div>
             Góc nhìn: ${pitch}, Góc quay: ${yaw}
+            </div>
             </div> 
+            </div>
             `);
         }
       };
+
     }
   }, []);
+
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  }
 
   const hotSpots = (element, i) => {
     if (element.cssClass === 'hotSpotElement')
@@ -101,19 +134,19 @@ const PanoramaViewer = ({ title, isOpen }) => {
   const addHotspot = () => {
     const newHotspot = {
       type: 'custom',
-      pitch: curentPitch,
-      yaw: curentYaw,
-      nameModel: 'New Hotspot', 
+      pitch: localStorage.getItem('pitch'),
+      yaw: localStorage.getItem('yaw'),
+      nameModel: 'New Hotspot',
       cssClass: 'hotSpotElement',
     };
-  
+
     setHotSpotArr(prevHotSpots => [...prevHotSpots, newHotspot]);
   };
 
   const pannellumRef = useRef(null);
 
-  console.log(Object.values(scene.hotSpot))
-  console.log(hotSpotArr)
+  // console.log(Object.values(scene.hotSpot))
+  // console.log(hotSpotArr)
 
   const removeLastHotspot = () => {
     setHotSpotArr(prevHotSpots => prevHotSpots.slice(0, -1));
@@ -123,6 +156,19 @@ const PanoramaViewer = ({ title, isOpen }) => {
     <>
       {isOpen && (
         <>
+          <div className="flex items-center justify-center mt-4">
+            <div className="h-0.5 flex-grow bg-red-500 rounded-full" />
+            <h2 className="px-5 font-semibold text-base text-red-500 text-center">Hướng dẫn sử dụng</h2>
+            <div className="h-0.5 flex-grow bg-red-500 rounded-full" />
+          </div>
+          <ul className="bg-amber-50 rounded-xl py-5 px-10 space-y-1 my-2 text-gray-500 list-disc font-semibold text-xs ">
+            <li>
+              <p>Để thêm hotSpot chính xác, sau khi di chuyển tâm đến vị trí mong muốn, bạn cần phải nhấn chuột thêm 1-2 lần vào khung ảnh 360 rồi mới bấm nút thêm</p>
+            </li>
+            <li>
+              <p>Phần thông số hotSpot hiển thị góc nhìn (pitch) và góc quay (yaw) tương ứng với tâm màn hình trong khung ảnh 360</p>
+            </li>
+          </ul>
           <div className='mt-4 rounded-lg overflow-hidden shadow-lg'>
             <Pannellum
               width="100%"
@@ -137,8 +183,8 @@ const PanoramaViewer = ({ title, isOpen }) => {
               mouseZoom={true}
               // draggable={true}
               showControls={true}
-              doubleClickZoom={true}
-              image={scene.image}
+              // doubleClickZoom={true}
+              image={image360Url}
               hotspotDebug={true}
               ref={pannellumRef}
             >
@@ -160,7 +206,7 @@ const PanoramaViewer = ({ title, isOpen }) => {
                   </button>
                 </div>
               </div>
-          </div>
+            </div>
           </div>
 
         </>
@@ -181,7 +227,7 @@ const PanoramaViewer = ({ title, isOpen }) => {
             <p className='font-semibold text-sm text-gray-600'>Vui lòng di chuyển chuột trong phần ảnh 360 để xem</p>
           </div>
         </div>
-        
+
       </div>
     </>
   )
