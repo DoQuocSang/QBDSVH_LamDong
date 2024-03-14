@@ -27,6 +27,8 @@ import img2 from "../../../images/book2.jpg"
 import img3 from "../../../images/book3.jpg"
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import PanoramaViewer from "./PanoramaViewer";
+import MyPanorama from "./Demo";
+import PanoramaDemo from "./DemoEx";
 
 export default ({ type = "" }) => {
     document.title = 'Thêm/Cập nhật đơn vị quản lý';
@@ -50,6 +52,8 @@ export default ({ type = "" }) => {
     const [uploadProgressVisible, setUploadProgressVisible] = useState(false);
     const [isPanoramaViewerOpen, setIsPanoramaViewerOpen] = useState(false);
     const [uploadSectionVisible, setUploadSectionVisible] = useState(false);
+    const [yaw, setYaw] = useState(0);
+    const [pitch, setPitch] = useState(0);
     localStorage.setItem('image360url', managementUnit.image_360_url);
 
     let { id } = useParams();
@@ -67,7 +71,7 @@ export default ({ type = "" }) => {
     useEffect(() => {
         document.title = "Thêm/ cập nhật đơn vị quản lý";
 
-        if(managementUnit.image_360_url === "" || managementUnit.image_360_url === null){
+        if (managementUnit.image_360_url === "" || managementUnit.image_360_url === null) {
             setUploadSectionVisible(true);
             console.log(uploadSectionVisible)
         }
@@ -96,6 +100,40 @@ export default ({ type = "" }) => {
             dropzone.classList.remove('border-blue-500', 'border-2');
         });
 
+        // pitch value -------------------------------------------------
+        const pitch_sliderEl = document.querySelector("#pitch-range")
+        const pitch_sliderValue = document.querySelector(".pitch-value")
+
+        pitch_sliderEl.addEventListener("input", (event) => {
+            const tempSliderValue = event.target.value;
+            setPitch(event.target.value);
+            const mappedValue = (tempSliderValue / 100) * (90 - (-90)) + (-90);
+            // (90 - (-90) khoảng cách giữa max và min
+            // + (-90) offset để cho slidẻ bắt đầu từ -90 thay vì 0
+            pitch_sliderValue.textContent = Math.round(mappedValue * 10) / 10;
+
+            const progress = (tempSliderValue / 100) * 100;
+
+            pitch_sliderEl.style.background = `linear-gradient(to right, #f50 ${progress}%, #ccc ${progress}%)`;
+        })
+
+        // yaw value -------------------------------------------------
+        const yaw_sliderEl = document.querySelector("#yaw-range")
+        const yaw_sliderValue = document.querySelector(".yaw-value")
+
+        yaw_sliderEl.addEventListener("input", (event) => {
+            const tempSliderValue = event.target.value;
+            setYaw(event.target.value);
+
+            const mappedValue = (tempSliderValue / 100) * (180 - (-180)) + (-180);
+            // (90 - (-90) khoảng cách giữa max và min
+            // + (-90) offset để cho slidẻ bắt đầu từ -90 thay vì 0
+            yaw_sliderValue.textContent = Math.round(mappedValue * 10) / 10;
+
+            const progress = (tempSliderValue / 100) * 100;
+
+            yaw_sliderEl.style.background = `linear-gradient(to right, #f50 ${progress}%, #ccc ${progress}%)`;
+        })
     }, [])
 
     const handleDrop = (e) => {
@@ -331,6 +369,12 @@ export default ({ type = "" }) => {
 
     const handleClosePanoramaViewer = () => {
         setIsPanoramaViewerOpen(false);
+    };
+
+    const [value, setValue] = useState(15); // Initial value of the slider
+
+    const handleChange = (event) => {
+        setValue(parseInt(event.target.value)); // Update the value when the slider is moved
     };
 
     return (
@@ -618,36 +662,36 @@ export default ({ type = "" }) => {
                             )}
                         </div>
                         {(managementUnit.image_360_url || !uploadSectionVisible) && (
-                                <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 px-8 border-l-4 border-purple-400">
-                                    <div className="flex items-center justify-between">
-                                        <span className="truncate pr-3 text-base font-medium text-[#07074D]">
-                                            {managementUnit.image_360_url ? getFileNameFromURL(managementUnit.image_360_url, 'panoramas%2F') : "Đang tạo ảnh 360..."}
-                                        </span>
-                                        <button className="text-[#07074D]" onClick={clearImageFile}>
-                                            <svg
-                                                width="10"
-                                                height="10"
-                                                viewBox="0 0 10 10"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    clipRule="evenodd"
-                                                    d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
-                                                    fill="currentColor"
-                                                />
-                                                <path
-                                                    fillRule="evenodd"
-                                                    clipRule="evenodd"
-                                                    d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
-                                                    fill="currentColor"
-                                                />
-                                            </svg>
-                                        </button>
-                                    </div>
+                            <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 px-8 border-l-4 border-purple-400">
+                                <div className="flex items-center justify-between">
+                                    <span className="truncate pr-3 text-base font-medium text-[#07074D]">
+                                        {managementUnit.image_360_url ? getFileNameFromURL(managementUnit.image_360_url, 'panoramas%2F') : "Đang tạo ảnh 360..."}
+                                    </span>
+                                    <button className="text-[#07074D]" onClick={clearImageFile}>
+                                        <svg
+                                            width="10"
+                                            height="10"
+                                            viewBox="0 0 10 10"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                clipRule="evenodd"
+                                                d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
+                                                fill="currentColor"
+                                            />
+                                            <path
+                                                fillRule="evenodd"
+                                                clipRule="evenodd"
+                                                d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
+                                                fill="currentColor"
+                                            />
+                                        </svg>
+                                    </button>
                                 </div>
-                            )}
+                            </div>
+                        )}
 
 
                         <canvas ref={canvasRef} className="hidden"></canvas>
@@ -670,8 +714,169 @@ export default ({ type = "" }) => {
                                 )
                         )}
 
-                        <PanoramaViewer title={managementUnit.name} isOpen={isPanoramaViewerOpen}/>
+                        <PanoramaViewer title={managementUnit.name} isOpen={isPanoramaViewerOpen} />
+                        {/* <MyPanorama /> */}
+                        {/* <PanoramaDemo imagePath={managementUnit.image_360_url} /> */}
                     </div>
+                    <div className="bg-gray-100 rounded-lg mt-4 py-4">
+                        <div className="w-full flex justify-center items-center md:py-0 lg:py-0 sm:py-4">
+                            <div className="md:flex justify-center md:items-center gap-10 sm:flex sm:flex-cols">
+                                <div className="text-gray-700 bottom-0 font-semibold flex flex-col gap-1">
+                                    <div>
+                                        <span className="text-xs px-2 py-1 bg-red-500 rounded-bl-lg rounded-tr-lg text-white">Pitch</span>
+                                    </div>
+                                    <span className="text-sm">Góc nhìn</span>
+                                </div>
+                                <div className="flex w-64 items-center h-20">
+                                    <style>
+                                        {`
+                                        input[type="range"] {
+                                            -webkit-appearance: none;
+                                            appearance: none; 
+                                            width: 100%;
+                                            cursor: pointer;
+                                            outline: none;
+                                            border-radius: 15px;
+                                            
+                                            height: 6px;
+                                            background: #ccc;
+                                          }
+                                          
+                                          input[type="range"]::-webkit-slider-thumb {
+                                            -webkit-appearance: none;
+                                            appearance: none; 
+                                            height: 15px;
+                                            width: 15px;
+                                            background-color: #f50;
+                                            border-radius: 50%;
+                                            border: none;
+                                            transition: transform 0.2s ease-in-out; /* Add transition for smoother movement */
+                                        }
+                                        
+                                        input[type="range"]::-moz-range-thumb {
+                                            height: 15px;
+                                            width: 15px;
+                                            background-color: #f50;
+                                            border-radius: 50%;
+                                            border: none;
+                                            transition: transform 0.2s ease-in-out; /* Add transition for smoother movement */
+                                        }
+                                          
+                                          input[type="range"]::-webkit-slider-thumb:hover {
+                                            box-shadow: 0 0 0 10px rgba(255,85,0, .1)
+                                          }
+
+                                          input[type="range"]:active::-webkit-slider-thumb {
+                                            box-shadow: 0 0 0 13px rgba(255,85,0, .2)
+                                          }
+
+                                          input[type="range"]:focus::-webkit-slider-thumb {
+                                            box-shadow: 0 0 0 13px rgba(255,85,0, .2)
+                                          }
+                                          
+                                          input[type="range"]::-moz-range-thumb:hover {
+                                            box-shadow: 0 0 0 10px rgba(255,85,0, .1)
+                                          }
+                                          
+                                          input[type="range"]:active::-moz-range-thumb {
+                                            box-shadow: 0 0 0 13px rgba(255,85,0, .2)
+                                          }
+                                          
+                                          input[type="range"]:focus::-moz-range-thumb {
+                                            box-shadow: 0 0 0 13px rgba(255,85,0, .2)    
+                                          }
+                                    `}
+                                    </style>
+                                    <input type="range" id="pitch-range" />
+                                </div>
+                                <div class="pitch-value text-xs font-semibold text-white bg-red-500 px-4 py-2 rounded-lg ">0</div>
+                            </div>
+                        </div>
+
+                        <div className="w-full flex justify-center items-center md:py-0 pt-8 sm:py-4">
+                            <div className="md:flex justify-center md:items-center gap-10 sm:flex sm:flex-cols">
+                                <div className="text-gray-700 bottom-0 font-semibold flex flex-col gap-1">
+                                    <div>
+                                        <span className="text-xs px-2 py-1 bg-red-500 rounded-bl-lg rounded-tr-lg text-white">Yaw</span>
+                                    </div>
+                                    <span className="text-sm">Góc quay</span>
+                                </div>
+                                <div className="flex w-64 items-center h-20">
+                                    <style>
+                                        {`
+                                        input[type="range"] {
+                                            -webkit-appearance: none;
+                                            appearance: none; 
+                                            width: 100%;
+                                            cursor: pointer;
+                                            outline: none;
+                                            border-radius: 15px;
+                                            
+                                            height: 6px;
+                                            background: #ccc;
+                                          }
+                                          
+                                          input[type="range"]::-webkit-slider-thumb {
+                                            -webkit-appearance: none;
+                                            appearance: none; 
+                                            height: 15px;
+                                            width: 15px;
+                                            background-color: #f50;
+                                            border-radius: 50%;
+                                            border: none;
+                                            transition: transform 0.2s ease-in-out; /* Add transition for smoother movement */
+                                        }
+                                        
+                                        input[type="range"]::-moz-range-thumb {
+                                            height: 15px;
+                                            width: 15px;
+                                            background-color: #f50;
+                                            border-radius: 50%;
+                                            border: none;
+                                            transition: transform 0.2s ease-in-out; /* Add transition for smoother movement */
+                                        }
+                                          
+                                          input[type="range"]::-webkit-slider-thumb:hover {
+                                            box-shadow: 0 0 0 10px rgba(255,85,0, .1)
+                                          }
+
+                                          input[type="range"]:active::-webkit-slider-thumb {
+                                            box-shadow: 0 0 0 13px rgba(255,85,0, .2)
+                                          }
+
+                                          input[type="range"]:focus::-webkit-slider-thumb {
+                                            box-shadow: 0 0 0 13px rgba(255,85,0, .2)
+                                          }
+                                          
+                                          input[type="range"]::-moz-range-thumb:hover {
+                                            box-shadow: 0 0 0 10px rgba(255,85,0, .1)
+                                          }
+                                          
+                                          input[type="range"]:active::-moz-range-thumb {
+                                            box-shadow: 0 0 0 13px rgba(255,85,0, .2)
+                                          }
+                                          
+                                          input[type="range"]:focus::-moz-range-thumb {
+                                            box-shadow: 0 0 0 13px rgba(255,85,0, .2)    
+                                          }
+                                    `}
+                                    </style>
+                                    <input type="range" id="yaw-range" />
+                                </div>
+                                <div class="yaw-value text-xs font-semibold text-white bg-red-500 px-4 py-2 rounded-lg ">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-center gap-4 items-center mt-4">
+                        <button className="px-4 py-2 bg-amber-500 rounded-lg inline-block text-white font-semibold text-xs">
+                            Thêm Hotspot
+                        </button>
+                        <button className="px-4 py-2 bg-red-500 rounded-lg inline-block text-white font-semibold text-xs">
+                            Xóa Hotspot
+                        </button>
+                    </div>
+
 
                     <div className="buttons flex mt-4">
                         <hr className="mt-4" />
