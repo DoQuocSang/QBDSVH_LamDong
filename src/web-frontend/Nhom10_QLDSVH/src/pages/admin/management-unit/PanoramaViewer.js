@@ -6,7 +6,15 @@ const PanoramaViewer = ({ title, isOpen }) => {
   var image360url = localStorage.getItem('image360url');
   const [scene, setScene] = useState(DataScene['insideOne']);
   const [totalConsoleContent, setTotalConsoleContent] = useState('');
-  const mountRef = useRef(null);
+  const [curentPitch, setCurentPitch] = useState(0);
+  const [curentYaw, setCurentYaw] = useState(0);
+  const [hotSpotArr, setHotSpotArr] = useState([{
+    type: 'custom',
+    pitch: curentPitch,
+    yaw: curentYaw,
+    nameModel: 'New Hotspot', 
+    cssClass: 'hotSpotElement',
+  }]);
 
   useEffect(() => {
     var consoleFrame = document.getElementById('console-frame');
@@ -15,10 +23,12 @@ const PanoramaViewer = ({ title, isOpen }) => {
       var consoleContent = '';
 
       function appendLog(msg) {
-        consoleContent += msg;
+        consoleContent = msg + consoleContent;
+        // consoleContent += msg;
         setTotalConsoleContent(consoleContent);
         consoleFrame.contentDocument.body.innerHTML = consoleContent;
-        consoleFrame.contentWindow.scrollTo(0, consoleFrame.contentDocument.body.scrollHeight);
+        consoleFrame.contentWindow.scrollTo(0, 0);
+        // consoleFrame.contentWindow.scrollTo(0, consoleFrame.contentDocument.body.scrollHeight);
       }
 
       console.log = function (msg) {
@@ -27,8 +37,11 @@ const PanoramaViewer = ({ title, isOpen }) => {
         if (matches && matches.length >= 3) {
           const pitch = parseFloat(matches[1]).toFixed(1);
           const yaw = parseFloat(matches[2]).toFixed(1);
+          setCurentPitch(pitch);
+          setCurentYaw(yaw);
+
           appendLog(
-            `<div style="    
+            `<div className="console-msg" style="    
                 box-shadow: 0 0 10px #d8d8d8;
                 display: flex;
                 background-color: #ffffff;
@@ -36,6 +49,13 @@ const PanoramaViewer = ({ title, isOpen }) => {
                 gap: 8px;
                 margin: 10px 0px;
                 padding: 10px 10px;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+                font-size: 14px;
+                color: #516f87;
+                font-weight: 500;
+                border-left: 5px solid #00cae1;
                 border-radius: 5px;">
             <svg style="    
               color: #00cae1;
@@ -78,13 +98,32 @@ const PanoramaViewer = ({ title, isOpen }) => {
       );
   }
 
+  const addHotspot = () => {
+    const newHotspot = {
+      type: 'custom',
+      pitch: curentPitch,
+      yaw: curentYaw,
+      nameModel: 'New Hotspot', 
+      cssClass: 'hotSpotElement',
+    };
+  
+    setHotSpotArr(prevHotSpots => [...prevHotSpots, newHotspot]);
+  };
+
   const pannellumRef = useRef(null);
+
+  console.log(Object.values(scene.hotSpot))
+  console.log(hotSpotArr)
+
+  const removeLastHotspot = () => {
+    setHotSpotArr(prevHotSpots => prevHotSpots.slice(0, -1));
+  };
 
   return (
     <>
       {isOpen && (
         <>
-          <div className='mt-4 rounded-lg overflow-hidden'>
+          <div className='mt-4 rounded-lg overflow-hidden shadow-lg'>
             <Pannellum
               width="100%"
               height='50vh'
@@ -100,34 +139,50 @@ const PanoramaViewer = ({ title, isOpen }) => {
               showControls={true}
               doubleClickZoom={true}
               image={scene.image}
-              minPitch={-90}
-              maxPitch={90}
               hotspotDebug={true}
               ref={pannellumRef}
-              onMouseup={evt => {
-
-              }}
             >
-              {Object.values(scene.hotSpot).map((element, i) => (hotSpots(element, i)))}
+              {/* {Object.values(scene.hotSpot).map((element, i) => (hotSpots(element, i)))} */}
+              {hotSpotArr.length > 0 && Object.values(hotSpotArr).map((element, i) => hotSpots(element, i))}
             </Pannellum>
+            <div className={totalConsoleContent ? '' : 'hidden'}>
+              <div className='flex justify-between items-center px-8 py-4 border border-gray-100'>
+                <div className='font-semibold text-gray-700 text-sm'>Số hotspot đã tạo: {hotSpotArr.length}</div>
+                <div className="flex justify-end gap-4 items-center">
+                  <button className="px-4 py-2 bg-teal-500 rounded-md inline-block text-white font-semibold text-xs" onClick={addHotspot}>
+                    Tạo Hotspot
+                  </button>
+                  <button className="px-4 py-2 bg-amber-500 rounded-md inline-block text-white font-semibold text-xs" >
+                    Sửa Hotspot
+                  </button>
+                  <button className="px-4 py-2 bg-red-500 rounded-md inline-block text-white font-semibold text-xs" onClick={removeLastHotspot}>
+                    Xóa Hotspot
+                  </button>
+                </div>
+              </div>
           </div>
-          
+          </div>
 
         </>
       )}
+
       <div className={isOpen ? '' : 'hidden'}>
-            <div className={totalConsoleContent ? '' : 'hidden'}>
-              <div className='px-4 py-2 bg-gray-100 rounded-lg my-4'>
-                <iframe id="console-frame" className='bg-gray-100 rounded-lg' width="100%" height="300"></iframe>
-              </div>
-            </div>
-            <div className={totalConsoleContent ? 'hidden' : ''}>
-              <div className='px-10 py-6 bg-gray-100 rounded-lg my-4 flex flex-col gap-1 justify-center border-l-4 border-teal-500' >
-                <p className='font-semibold text-xl text-teal-500'>Thông báo</p>
-                <p className='font-semibold text-sm text-gray-600'>Vui lòng di chuyển chuột trong phần ảnh 360 để xem</p>
-              </div>
+        <div className={totalConsoleContent ? '' : 'hidden'}>
+          <div className='bg-gray-100 rounded-lg mt-8 mb-4'>
+            <span className='bg-red-500 font-semibold text-white text-xs top-0 left-0 px-4 py-2 rounded-tl-lg rounded-br-lg'> Thông số hotspot </span>
+            <div className='px-4 py-2 my-4'>
+              <iframe id="console-frame" className='bg-gray-100 rounded-lg' width="100%" height="300"></iframe>
             </div>
           </div>
+        </div>
+        <div className={totalConsoleContent ? 'hidden' : ''}>
+          <div className='px-10 py-6 bg-gray-100 rounded-lg my-4 flex flex-col gap-1 justify-center border-l-4 border-teal-500' >
+            <p className='font-semibold text-xl text-teal-500'>Thông báo</p>
+            <p className='font-semibold text-sm text-gray-600'>Vui lòng di chuyển chuột trong phần ảnh 360 để xem</p>
+          </div>
+        </div>
+        
+      </div>
     </>
   )
 };
