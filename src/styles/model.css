@@ -1,0 +1,169 @@
+.model {
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: flex-end;
+    align-items: center;
+    display: none;
+}
+
+/* Cái ảnh */
+.panel {
+    position: absolute;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    width: 500px;
+    min-height: 100px;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: flex-end;
+    align-items: center;
+    display: none;
+}
+
+.is-open {
+    display: flex;
+}
+
+.close-model {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    height: 40px;
+    width: 40px;
+    padding: 0.5em;
+    border: none;
+    border-radius: 30%;
+    background-color: #4c007d;
+    color: #fff;
+    background-image: url(/public/images/icons/close_white.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+}
+
+.close-model:hover {
+    transform: scale(1.1);
+}
+
+.model-container,
+.container3d {
+    position: absolute;
+    overflow: visible;
+    opacity: 1;
+    z-index: 3001;
+    background: rgba(34, 34, 34, 0.3);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0.2);
+    cursor: default;
+    pointer-events: auto;
+    width: 800px;
+    height: 550px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2.5em;
+    border-radius: 10px;
+}
+
+.btn-info {
+    position: absolute;
+    overflow: visible;
+    cursor: pointer;
+    pointer-events: auto;
+    background: url(https://3d.baotanglamdong.com.vn/leedoskin/myvtourskin.png) 0px -490px / 70px 560px;
+    border-style: solid;
+    border-color: rgb(0, 0, 0);
+    border-width: 0px;
+    border-radius: 0px;
+    width: 35px;
+    height: 35px;
+    margin-left: 75vh;
+    opacity: 1;
+}
+
+
+.block-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: #4c007d;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin: 1em 0;
+}
+
+.bottom-taskbar {
+    position: fixed;
+    bottom: 0;
+    z-index: 50;
+    width: 1100px;
+    height: 35px;
+    background-color: #77724abb;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    margin-left: 30vh;
+}
+
+.audio-button {
+    background: url(https://3d.baotanglamdong.com.vn/leedoskin/myvtourskin.png) -32px -416px / 64px 512px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    cursor: pointer;
+    margin: 0 2em;
+}
+
+.map-button {
+    background: url(https://3d.baotanglamdong.com.vn/leedoskin/myvtourskin.png) -2px 640px / 69px 512px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    cursor: pointer;
+    margin: 0 2em;
+}
+
+.mini-map-container {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.mini-map {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+.image-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 100px;
+    margin-top: 2rem;
+    padding: 25px;
+    width: 80%;
+    height: 80%;
+}
+
+.audio-button.playing {
+    background-position: 0px -416px;
+}
+
+

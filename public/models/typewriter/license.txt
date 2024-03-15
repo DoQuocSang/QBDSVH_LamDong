@@ -1,0 +1,11 @@
+Model Information:
+* title:	Typewriter
+* source:	https://sketchfab.com/3d-models/typewriter-98a95df516034e049e06ca0b83e36567
+* author:	FioreDiMatteo (https://sketchfab.com/FioreDiMatteo)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Typewriter" (https://sketchfab.com/3d-models/typewriter-98a95df516034e049e06ca0b83e36567) by FioreDiMatteo (https://sketchfab.com/FioreDiMatteo) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

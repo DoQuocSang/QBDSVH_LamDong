@@ -1,0 +1,11 @@
+Model Information:
+* title:	Edgefield Pottery Collection 203
+* source:	https://sketchfab.com/3d-models/edgefield-pottery-collection-203-219b9e1842f04865b1437184360766cf
+* author:	SCDNR-HTP (https://sketchfab.com/SCDNR-HTP)
+
+Model License:
+* license type:	CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions can not be distributed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Edgefield Pottery Collection 203" (https://sketchfab.com/3d-models/edgefield-pottery-collection-203-219b9e1842f04865b1437184360766cf) by SCDNR-HTP (https://sketchfab.com/SCDNR-HTP) licensed under CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
