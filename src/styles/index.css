@@ -1,0 +1,40 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.pannellum-hotspot:hover .pannellum-tooltip {
+  display: block;
+}
+
+.pannellum-tooltip {
+  position: absolute;
+  z-index: 100;
+  display: none;
+}
+
+.pannellum-tooltip img {
+  width: 200px;
+}
+
+div.pnlm-tooltip span {
+  visibility: hidden
+}
+
+.pnlm-load-box {
+  /* display: none */
+  opacity: 0;
+}
+
+.customIcon::before {
+  content: url("../images/trans.gif");
+
+}
+
+.customIcon {
+  background: none !important;
+}
+
+.hotspot .in {
+  background-color: none;
+}
