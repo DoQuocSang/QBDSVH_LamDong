@@ -1,0 +1,11 @@
+Model Information:
+* title:	Batavialand rijkscollectie tabaksdoos OL79-424a
+* source:	https://sketchfab.com/3d-models/batavialand-rijkscollectie-tabaksdoos-ol79-424a-0a7aab11c63d4d34902c5064cdb13e23
+* author:	Stichting Maritieme Archeologie (https://sketchfab.com/stichtingmaritiemearcheologie)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Batavialand rijkscollectie tabaksdoos OL79-424a" (https://sketchfab.com/3d-models/batavialand-rijkscollectie-tabaksdoos-ol79-424a-0a7aab11c63d4d34902c5064cdb13e23) by Stichting Maritieme Archeologie (https://sketchfab.com/stichtingmaritiemearcheologie) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
