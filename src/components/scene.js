@@ -5,6 +5,8 @@ import useModel from "../hooks/useModel";
 import Model from "./model3D";
 import ModelContainer from "./modelContainer";
 
+import hoverHandler from "./scene";
+
 import { gsap } from 'gsap';
 
 import Taskbar from "./mediaTaskbar";
@@ -80,32 +82,33 @@ export default function Scene() {
         ></Pannellum.Hotspot>
       );
 
-      // else if (Element.cssClass === "customIcon")
-      // return (
-      //   <Pannellum.Hotspots
-      //     key={i}
-      //     type={Element.type}
-      //     yaw={Element.yaw}
-      //     text={Element.text}
-      //     pitch={Element.pitch}
-      //     hoverContents={<img src={Element.image} alt="Map Tour" />}
-      //     handleClick={() => animateTransition(dataScene[Element.scene])}
-      //     //hoverHandler={(hotSpotDiv) => hoverHandler(hotSpotDiv, Element.image)}
-      //     cssClass={Element.cssClass}
-      //   ></Pannellum.Hotspots>
-      // );
+//  else if (Element.cssClass === "customIcon")
+//   return (
+//     <Pannellum.Hotspots
+//       key={i}
+//       type={Element.type}
+//       yaw={Element.yaw}
+//       text={Element.text}
+//       pitch={Element.pitch}
+//       hoverContents={<img src={Element.image} alt="Map Tour" />}
+//       handleClick={() => animateTransition(dataScene[Element.scene])}
+//       hoverHandler={(hotSpotDiv) => hoverHandler(hotSpotDiv, Element.image)}
+//       cssClass={Element.cssClass}
+//     ></Pannellum.Hotspots>
+//   );
+
       
-    else if (Element.cssClass === "moveScene")
-      return (
-        <Pannellum.Hotspot
-          key={i}
-          type={Element.type}
-          yaw={Element.yaw}
-          pitch={Element.pitch}
-          cssClass={Element.cssClass}
-          handleClick={() => animateTransition(dataScene[Element.scene])}
-        />
-      );
+else if (Element.cssClass === "moveScene")
+return (
+  <Pannellum.Hotspot
+    key={i}
+    type={Element.type}
+    yaw={Element.yaw}
+    pitch={Element.pitch}
+    cssClass={Element.cssClass}
+    handleClick={() => animateTransition(dataScene[Element.scene])}
+  />
+);
 
       else if (Element.cssClass === "videoHotspot")
         return (

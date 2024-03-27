@@ -114,3 +114,13 @@
 .audio-button.playing {
     background-position: 0px -416px;
 }
+
+.map-button {
+    background: url(https://3d.baotanglamdong.com.vn/leedoskin/myvtourskin.png) -2px 640px / 69px 512px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    cursor: pointer;
+    margin: 0 2em;
+}
+
