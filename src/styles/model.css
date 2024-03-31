@@ -94,6 +94,7 @@
 .bottom-taskbar {
     position: fixed;
     bottom: 0;
+    z-index: 50;
     width: 1100px;
     height: 35px;
     background-color: #77724abb;
@@ -122,5 +123,47 @@
     border: none;
     cursor: pointer;
     margin: 0 2em;
+}
+
+.dynamic-image {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+.hidden-image-container {
+    visibility: hidden;
+}
+
+.show-image-container {
+    visibility: visible;
+}
+
+.dynamic-image-container {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    height: 100%; /* Chiều cao là 100% của cửa sổ trình duyệt trừ đi 20rem */
+    width: 100%; /* Chiều rộng là 100% của cửa sổ trình duyệt trừ đi 20rem */
+}
+
+.image-wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 100px;
+    padding: 25px;
+    width: 80%; /* Ensure image wrapper does not exceed parent container width */
+    height: 80%; /* Ensure image wrapper does not exceed parent container height */
+    /* background-color: #4c007d; */
+}
+
+.main-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
 }
 

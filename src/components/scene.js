@@ -4,6 +4,7 @@ import dataScene from "../helpers/dataScene";
 import useModel from "../hooks/useModel";
 import Model from "./model3D";
 import ModelContainer from "./modelContainer";
+import DynamicImageComponent from "./map";
 
 import hoverHandler from "./scene";
 
@@ -18,7 +19,7 @@ export default function Scene() {
   const [scene, setScene] = useState(dataScene["outsideOne"]);
 
   const [model, setModel] = useState(null);
-  
+
   const mountRef = useRef(null);
 
   const animateTransition = (newScene) => {
@@ -82,40 +83,26 @@ export default function Scene() {
         ></Pannellum.Hotspot>
       );
 
-//  else if (Element.cssClass === "customIcon")
-//   return (
-//     <Pannellum.Hotspots
-//       key={i}
-//       type={Element.type}
-//       yaw={Element.yaw}
-//       text={Element.text}
-//       pitch={Element.pitch}
-//       hoverContents={<img src={Element.image} alt="Map Tour" />}
-//       handleClick={() => animateTransition(dataScene[Element.scene])}
-//       hoverHandler={(hotSpotDiv) => hoverHandler(hotSpotDiv, Element.image)}
-//       cssClass={Element.cssClass}
-//     ></Pannellum.Hotspots>
-//   );
 
-      
-else if (Element.cssClass === "moveScene")
-return (
-  <Pannellum.Hotspot
-    key={i}
-    type={Element.type}
-    yaw={Element.yaw}
-    pitch={Element.pitch}
-    cssClass={Element.cssClass}
-    handleClick={() => animateTransition(dataScene[Element.scene])}
-  />
-);
 
-      else if (Element.cssClass === "videoHotspot")
-        return (
+    else if (Element.cssClass === "moveScene")
+      return (
+        <Pannellum.Hotspot
+          key={i}
+          type={Element.type}
+          yaw={Element.yaw}
+          pitch={Element.pitch}
+          cssClass={Element.cssClass}
+          handleClick={() => animateTransition(dataScene[Element.scene])}
+        />
+      );
+
+    else if (Element.cssClass === "videoHotspot")
+      return (
         <Pannellum.Video
           video={Element.video}
           loop
-          
+
           // width="100%"
           // height="60px"
           pitch={Element.pitch}
@@ -127,7 +114,7 @@ return (
   };
 
   return (
-    <div>
+    <div className="main-container">
       <Pannellum
         width="100%"
         height="100vh"
@@ -158,10 +145,10 @@ return (
       <Model isOpen={isOpen} isClose={() => closeModel()}>
         {isOpen && <ModelContainer nameModel={model} />}
       </Model>
-      
+      {/* <DynamicImageComponent/> */}
       <Taskbar/>
     </div>
-    
+
 
   );
 }
