@@ -1,6 +1,5 @@
 import React from "react";
 import { Canvas } from "react-three-fiber";
-import Model from "pages/admin/heritage/ModelView";
 import { useGLTF, Stage, PresentationControls } from "@react-three/drei";
 
 export const ModelLoader = (props) => {

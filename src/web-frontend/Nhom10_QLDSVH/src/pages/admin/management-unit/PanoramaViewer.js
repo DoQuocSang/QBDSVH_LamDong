@@ -169,7 +169,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
               <p>Phần thông số hotSpot hiển thị góc nhìn (pitch) và góc quay (yaw) tương ứng với tâm màn hình trong khung ảnh 360</p>
             </li>
           </ul>
-          <div className='mt-4 rounded-lg overflow-hidden shadow-lg'>
+          <div className='mt-4 rounded-lg overflow-hidden shadow-md'>
             <Pannellum
               width="100%"
               height='50vh'
@@ -195,7 +195,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
               <div className='flex justify-between items-center px-8 py-4 border border-gray-100'>
                 <div className='font-semibold text-gray-700 text-sm'>Số hotspot đã tạo: {hotSpotArr.length}</div>
                 <div className="flex justify-end gap-4 items-center">
-                  <button className="px-4 py-2 bg-teal-500 rounded-md inline-block text-white font-semibold text-xs" onClick={addHotspot}>
+                  <button className="px-4 py-2 bg-teal-400 rounded-md inline-block text-white font-semibold text-xs" onClick={addHotspot}>
                     Tạo Hotspot
                   </button>
                   <button className="px-4 py-2 bg-amber-500 rounded-md inline-block text-white font-semibold text-xs" >
@@ -214,8 +214,8 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
 
       <div className={isOpen ? '' : 'hidden'}>
         <div className={totalConsoleContent ? '' : 'hidden'}>
-          <div className='bg-gray-100 rounded-lg mt-8 mb-4'>
-            <span className='bg-red-500 font-semibold text-white text-xs top-0 left-0 px-4 py-2 rounded-tl-lg rounded-br-lg'> Thông số hotspot </span>
+          <div className='bg-gray-100 rounded-lg mt-8 mb-4 shadow-md'>
+            <span className='bg-teal-400 font-semibold text-white text-xs top-0 left-0 px-4 py-2 rounded-tl-lg rounded-br-lg'> Thông số hotspot </span>
             <div className='px-4 py-2 my-4'>
               <iframe id="console-frame" className='bg-gray-100 rounded-lg' width="100%" height="300"></iframe>
             </div>

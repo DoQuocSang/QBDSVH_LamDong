@@ -29,6 +29,8 @@ import AdminAddOrUpdateUser from "pages/admin/user/AddOrUpdateUser"
 
 import AdminLogin from "pages/admin/login/Login"
 
+import AdminAllMedia from "pages/admin/media/AllMedia";
+
 //user
 import HomePage from "pages/user/HomePage"
 import NotFound404 from "pages/user/NotFound404"
@@ -41,12 +43,10 @@ import ContactUs from "pages/user/ContactUs"
 import Gallery from "pages/user/Gallery"
 
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import ModelView from "pages/admin/heritage/ModelView";
 
 import { Environment, OrbitControls, PresentationControls, Stage } from "@react-three/drei";
 import { Canvas } from "react-three-fiber";
 import { Suspense } from "react";
-import { AmbientLight } from "three";
 import ModelViewer from "pages/admin/heritage/ModelViewer";
 
 function App() {
@@ -123,6 +123,7 @@ function App() {
           <Route path="/admin/dashboard/add-user" element={<AdminAddOrUpdateUser type="add" />} />
           <Route path="/admin/dashboard/update-user/:id" element={<AdminAddOrUpdateUser type="update" />} />
 
+          <Route path="/admin/dashboard/all-media/model" element={<AdminAllMedia />} />
         </Route>
         )}
 

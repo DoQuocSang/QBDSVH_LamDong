@@ -104,6 +104,14 @@ func SetupRouter() *gin.Engine {
 			heritage_category.GET("/slug/:urlSlug/heritages/paged", controllers.GetPagedHeritageByCategorySlug)
 			heritage_category.GET("/search", controllers.SearchCategory)
 		}
+		upload_file := v1.Group("/upload-file")
+		{
+			upload_file.GET("", controllers.GetPagedUploadFile)
+			upload_file.GET("/:id", controllers.GetUploadFileByID)
+			upload_file.POST("", controllers.CreateUploadFile)
+			upload_file.PUT("/:id", controllers.UpdateUploadFile)
+			upload_file.DELETE("/:id", controllers.DeleteUploadFile)
+		}
 	}
 
 	return r

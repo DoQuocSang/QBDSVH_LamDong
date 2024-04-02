@@ -64,3 +64,14 @@ export async function specical_case_get_api(your_api) {
         console.log('Error', error.message);
       }
 }
+
+export async function post_api_return_data(your_api, formData) {
+  try {
+      const response = await axios.post(your_api, formData); 
+      console.log(response)
+      return response.data;
+
+    } catch (error) {
+      console.log('Error', error.message);
+    }
+}

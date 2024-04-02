@@ -303,3 +303,43 @@ export const getFileNameFromURL = (modelURL, prefix) => {
     const cleanedFileName = modelName.replace(prefix, "");
     return cleanedFileName;
 }
+
+export const convertSize = (sizeInBytes) => {
+    let result = 0;
+    let type = '';
+    
+    if(sizeInBytes >= 1024 * 1024) {
+        result = sizeInBytes / (1024 * 1024);
+        type = 'MB';
+    } else if(sizeInBytes >= 1024) {
+        result = sizeInBytes / 1024;
+        type = 'KB';
+    } else {
+        result = sizeInBytes;
+        type = 'B';
+    }
+    
+    return `${result.toFixed(2)} ${type}`;
+}
+
+export const uppercasedFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export const truncateString = (str, maxLength) => {
+    if (str.length <= maxLength) {
+      return str;
+    } else {
+      return str.substring(0, maxLength) + "...";
+    }
+}
+
+export const calculateTotalSizePercent = (totalSize) => {
+    const value = Math.round((totalSize / (1024 * 1024 * 1024)) * 100).toString() + "%";
+    return value;
+}
+
+
+
+
+
