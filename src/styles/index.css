@@ -78,7 +78,7 @@ div.pnlm-tooltip span {
 }
 
 .hotSpotCustom {
-  content: url("../images/trans.gif");
+  content: url("../assets/icons/trans.gif");
   width: 4em;
   height: 4em;
   cursor: pointer;
@@ -93,6 +93,16 @@ div.pnlm-tooltip span {
   /* background-position: center; */
   transform: rotate(-450deg);
   /* object-fit: contain; */
+  cursor: pointer;
+}
+
+.hotspot-map {
+  position: absolute;
+  width: 5em;
+  height: 5em;
+  content: url("/public/images/icons/hotspot_ani.gif");
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
   cursor: pointer;
 }
 
@@ -257,10 +267,6 @@ div.pnlm-tooltip span {
   border-left-color: var(--color-background);
 }
 
-.contact-menu__dropdown > svg {
-  fill: var(--color-text);
-}
-
 .side-nav .contact-menu__dropdown a {
   padding: 0;
   transition: all ease 0.2s;
@@ -268,45 +274,6 @@ div.pnlm-tooltip span {
 
 .side-nav .contact-menu__dropdown a:hover {
   opacity: 0.8;
-}
-
-.contact-menu__dropdown .seperator {
-  display: flex;
-  align-items: center;
-  padding: 16px 0;
-}
-
-#contact-email {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#contact-email span {
-  margin-right: 4px;
-}
-
-.seperator .line {
-  flex-grow: 1;
-  border-bottom: 1px solid #eee;
-}
-
-.seperator .text {
-  padding: 0 8px;
-}
-
-.social-icons li + li {
-  margin-left: 8px;
-}
-
-.social-icons li a {
-  background-color: var(--color-background-icon);
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .social-icons li a svg {

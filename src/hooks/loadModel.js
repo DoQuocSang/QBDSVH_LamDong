@@ -59,8 +59,8 @@ export default function Model() {
     loadModel(scene, "./models/radio1950s/scene.gltf", "Radio1950s");
   };
 
-  const bronze_age_vesse = (scene) => {
-    loadModel(scene, "./models/bronze_age_vesse/scene.gltf", "");
+  const roman_pottery = (scene) => {
+    loadModel(scene, "./models/roman_pottery/scene.gltf", "Gốm La Mã");
   };
 
   const iphone_01 = (scene) => {
@@ -77,7 +77,7 @@ export default function Model() {
     buddha_wood,
     batavialand,
     radio1950s,
-    bronze_age_vesse,
+    roman_pottery,
     iphone_01,
     stamp,
   };

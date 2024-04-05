@@ -139,9 +139,11 @@ export default function Scene() {
       <Model isOpen={isOpen} isClose={() => closeModel()}>
         {isOpen && <ModelContainer nameModel={model} />}
       </Model>
-        
+
       <Taskbar />
       {/* <Menu /> */}
     </div>
   );
 }
+
+

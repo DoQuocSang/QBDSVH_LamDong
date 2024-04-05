@@ -1,55 +1,3 @@
-import styled from "styled-components";
-
-// function contain panel info
-export const PanelContainer = styled.section`
-  width: 100%;
-  height: 100%;
-`;
-
-export const Title = styled.h1`
-  font-size: 1.5em;
-  letter-spacing: 0.1em;
-  text-align: center;
-  color: rgb(234, 131, 34);
-`;
-
-export const InfoPanel = styled.ul`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  justify-content: center;
-  margin: auto;
-  position: relative;
-  top: 40%;
-  li {
-    color: #fff;
-    margin-bottom: 15px;
-    padding: 7px;
-    fzont-size: 30px;
-    text-tranform: uppercase;
-    span {
-      &:hover {
-        & ~ div {
-          transform: rotate(-5deg) scale(1);
-          opacity: 1;
-        }
-      }
-    }
-
-    .img-cont {
-      position: absolute;
-      width: 300px;
-      transform: translateX(100px) scale(0.8);
-      opacity: 0;
-      transition: all 0.5s;
-
-      img {
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 15px;
-      }
-    }
-  }
-`;
-
 // Oject contain data for scene
 const Scene = {
   outsideOne: {
@@ -62,13 +10,10 @@ const Scene = {
         type: "custom",
         text: "Sơ đồ tham quan bảo tàng",
         panel: "/public/images/so-do-tham-quan.jpg",
-        // URL: "https://example.com",
         tooltip: "This is a tooltip",
         pitch: -1,
         yaw: -41,
         cssClass: "hotSpotElementImg",
-        // onMouseEnter: () => setPanelVisible(true),
-        // onMouseLeave: () => setPanelVisible(false),
       },
       nextScene: {
         type: "custom",
@@ -84,6 +29,30 @@ const Scene = {
         yaw: -125,
         cssClass: "moveScene",
         scene: "outsideTwo",
+      },
+      oneTour: {
+        type: "custom",
+        pitch: 4,
+        text: "Chùa Linh Ẩn",
+        yaw: -70,
+        cssClass: "moveScene",
+        scene: "LinhAnTour",
+      },
+      twoTour: {
+        type: "custom",
+        pitch: -3,
+        text: "Nhin từ trên cao",
+        yaw: 127,
+        cssClass: "moveScene",
+        scene: "aroundTour",
+      },
+      threeTour: {
+        type: "custom",
+        pitch: -1,
+        text: "Khuôn viên chùa Linh Ẩn",
+        yaw: 89,
+        cssClass: "moveScene",
+        scene: "LinhAnTour_01",
       },
     },
   },
@@ -149,7 +118,7 @@ const Scene = {
         type: "custom",
         pitch: -28,
         yaw: 32,
-        nameModel: "bronze_age_vesse",
+        nameModel: "roman_pottery",
         cssClass: "hotSpotCustom",
       },
       model4: {
@@ -187,6 +156,54 @@ const Scene = {
         yaw: -162,
         cssClass: "moveScene",
         scene: "outsideOne",
+      },
+    },
+  },
+  aroundTour: {
+    title: "Nhin từ trên cao",
+    image: "/images/panos/img1.jpg",
+    pitch: 17,
+    yaw: 5,
+    hotSpots: {
+      outSide: {
+        type: "info",
+        image: "/images/so-do-tham-quan.jpg",
+        text: "Nơi diễn ra các hoạt động trò chơi dân gian",
+        pitch: -0.8,
+        yaw: -111,
+        cssClass: "hotSpotElementImg",
+      },
+    },
+  },
+  LinhAnTour: {
+    title: "Nhin từ trên cao",
+    image: "/images/panos/img2.jpg",
+    pitch: 17,
+    yaw: 5,
+    hotSpots: {
+      outSide: {
+        type: "info",
+        image: "/images/so-do-tham-quan.jpg",
+        text: "Nơi diễn ra các hoạt động trò chơi dân gian",
+        pitch: -0.8,
+        yaw: -111,
+        cssClass: "hotSpotElementImg",
+      },
+    },
+  },
+  LinhAnTour_01: {
+    title: "Nhin từ trên cao",
+    image: "/images/panos/img7.jpg",
+    pitch: 17,
+    yaw: 5,
+    hotSpots: {
+      outSide: {
+        type: "info",
+        image: "/images/so-do-tham-quan.jpg",
+        text: "Nơi diễn ra các hoạt động trò chơi dân gian",
+        pitch: -0.8,
+        yaw: -111,
+        cssClass: "hotSpotElementImg",
       },
     },
   },

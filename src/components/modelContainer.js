@@ -3,9 +3,6 @@ import React, { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { WebGLRenderer } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
-import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 
 import Model from "../hooks/loadModel";
 import "../styles/model.css";
@@ -116,9 +113,9 @@ export default function ModelContainer({ nameModel }) {
     } else if (nameModel === "iphone_01") {
       const { iphone_01 } = Model();
       iphone_01(modelGroup);
-    } else if (nameModel === "bronze_age_vesse") {
-      const { bronze_age_vesse } = Model();
-      bronze_age_vesse(modelGroup);
+    } else if (nameModel === "roman_pottery") {
+      const { roman_pottery } = Model();
+      roman_pottery(modelGroup);
     } else if (nameModel === "radio1950s") {
       const { radio1950s } = Model();
       radio1950s(modelGroup);

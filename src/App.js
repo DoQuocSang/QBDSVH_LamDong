@@ -1,6 +1,6 @@
 import Scene from "./components/scene";
-import Map from "./components/map";
 import "./styles/index.css";
+
 
 function App() {
   return (
