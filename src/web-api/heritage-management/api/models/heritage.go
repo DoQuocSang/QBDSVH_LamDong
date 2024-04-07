@@ -57,3 +57,14 @@ type Heritage_Gallery struct {
 func (Heritage_Gallery) TableName() string {
 	return "heritages"
 }
+
+// Heritage struct
+type Heritage_Combobox struct {
+	ID         int            `json:"id" gorm:"column:id;"`
+	Name       string         `json:"name" gorm:"column:name;"`
+	UploadFile UploadFile_DTO `json:"upload_file,omitempty" gorm:"-"`
+}
+
+func (Heritage_Combobox) TableName() string {
+	return "heritages"
+}

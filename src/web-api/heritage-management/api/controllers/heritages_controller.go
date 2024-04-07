@@ -63,6 +63,33 @@ func GetPagedHeritages(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, pagination)
 }
 
+// GetPagedHeritages trả về danh sách tất cả các di sản văn hóa với phân trang
+func GetAllHeritagesForCombobox(c *gin.Context) {
+	// Phân trang
+	columnName := c.DefaultQuery("columnName", "id")
+	sortOrder := c.DefaultQuery("sortOrder", "desc")
+	var heritages []models.Heritage_Combobox
+
+	orderClause := columnName + " " + sortOrder
+	if err := db.GetDB().Order(orderClause).Find(&heritages).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get data")
+		return
+	}
+
+	for i := range heritages {
+		var uploadFile models.UploadFile_DTO
+		if err := db.GetDB().Where("heritage_id = ? AND is_current_use = 1", heritages[i].ID).First(&uploadFile).Error; err != nil {
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get upload file")
+				return
+			}
+		}
+		heritages[i].UploadFile = uploadFile
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, heritages)
+}
+
 // GetHeritageByID trả về thông tin của một di sản văn hóa dựa trên ID
 func GetHeritageByID(c *gin.Context) {
 	id := c.Param("id")

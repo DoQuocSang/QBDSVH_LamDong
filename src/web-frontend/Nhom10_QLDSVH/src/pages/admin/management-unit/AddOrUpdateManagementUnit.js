@@ -27,8 +27,8 @@ import img2 from "../../../images/book2.jpg"
 import img3 from "../../../images/book3.jpg"
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import PanoramaViewer from "./PanoramaViewer";
-import MyPanorama from "./Demo";
-import PanoramaDemo from "./DemoEx";
+import HotspotSidebar from "../hotspot/AllHotspot";
+import AllHotspot from "../hotspot/AllHotspot";
 
 export default ({ type = "" }) => {
     document.title = 'Thêm/Cập nhật đơn vị quản lý';
@@ -99,7 +99,7 @@ export default ({ type = "" }) => {
         dropzone.addEventListener('dragleave', () => {
             dropzone.classList.remove('border-blue-500', 'border-2');
         });
-     
+
     }, [])
 
     const handleDrop = (e) => {

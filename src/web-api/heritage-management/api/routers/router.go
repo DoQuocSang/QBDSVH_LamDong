@@ -20,6 +20,7 @@ func SetupRouter() *gin.Engine {
 		heritage := v1.Group("/heritage")
 		{
 			heritage.GET("", controllers.GetPagedHeritagesWithImages)
+			heritage.GET("/combobox", controllers.GetAllHeritagesForCombobox)
 			heritage.GET("/:id", controllers.GetHeritageByID)
 			heritage.POST("", controllers.CreateHeritage)
 			heritage.PUT("/model/:id", controllers.UpdateHeritageModel)

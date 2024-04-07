@@ -38,7 +38,7 @@ const Scenes = {
                 cssClass: 'moveScene',
                 scene: 'insideTwo'
             }
-        }
+        } 
     },
     "insideTwo":{
         title:'interior 2',

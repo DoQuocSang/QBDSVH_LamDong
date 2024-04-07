@@ -33,7 +33,7 @@ export default () => {
             setTotalSizePercent(calculateTotalSizePercent(totalSize));
             setTotalSize(totalSize);
         }
-        console.log(convertSize(totalSize))
+        // console.log(convertSize(totalSize))
     }
 
     const handleDelete = (id, file_url, thumbnail_url) => {
@@ -64,12 +64,12 @@ export default () => {
             else {
                 setMediaList([]);
             }
-            console.log(Math.round((data.total_size / (1024 * 1024 * 1024)) * 100))
-            console.log(totalSizePercent)
+            // console.log(Math.round((data.total_size / (1024 * 1024 * 1024)) * 100))
+            // console.log(totalSizePercent)
         })
 
     }, [])
-    console.log(totalSizePercent)
+    // console.log(totalSizePercent)
   
     // const temp = 'w-[30%]';
 
