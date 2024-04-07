@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import Map from "./map";
+// import Map from "./map";
 
-function Taskbar() {
+function Taskbar({ OpenMap, MapVisible }) {
   const audioRef = useRef(new Audio("../audio/copyleft-introbaotangld.mp3"));
   const bgAudio = useRef(new Audio("../audio/bgmusic.mp3"));
 
-  const [mapVisible, setMapVisible] = useState(false);
-  const [isMap, setImageMap] = useState(null);
+  // const [mapVisible, setMapVisible] = useState(false);
+  // const [isMap, setImageMap] = useState(null);
   const [tourMap, setTourMap] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -23,8 +23,9 @@ function Taskbar() {
 
   const handleMapBtnClick = () => {
     setTourMap(!tourMap);
-    setImageMap("/images/mapedit.png");
-    setMapVisible(!mapVisible);
+    // setImageMap("/images/mapedit.png");
+    // setMapVisible(!mapVisible);
+    OpenMap(!MapVisible);
   };
 
   useEffect(() => {
@@ -51,7 +52,7 @@ function Taskbar() {
         ></button>
         <button className="map-button" onClick={handleMapBtnClick}></button>
       </div>
-      {mapVisible && <Map imageUrl={isMap} />}
+      {/* {mapVisible && <Map imageUrl={isMap} />} */}
     </>
   );
 }

@@ -21,6 +21,7 @@ const Scene = {
         yaw: 4.1,
         cssClass: "moveScene",
         scene: "insideOne",
+        // SceneID: 0
       },
       nextTour: {
         type: "custom",
@@ -83,6 +84,13 @@ const Scene = {
         yaw: 158,
         cssClass: "moveScene",
         scene: "insideOne",
+      },
+      nextSceneInMap: {
+        type: "custom",
+        pitch: -11,
+        yaw: 158,
+        cssClass: "hotspot-map",
+        scene: "LinhAnTour",
       },
     },
   },

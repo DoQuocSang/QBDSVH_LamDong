@@ -3,7 +3,9 @@ import { Pannellum, PannellumVideo } from "pannellum-react";
 import dataScene from "../helpers/dataScene";
 import useModel from "../hooks/useModel";
 import Model from "./model3D";
+import Map from "../components/map";
 import ModelContainer from "./modelContainer";
+import MainMap from "../assets/images/mapedit.png";
 
 // import panel from "../images/so-do-tham-quan.jpg";
 // Thư viện chuyển cảnh mượt mà
@@ -20,8 +22,13 @@ export default function Scene() {
 
   const [model, setModel] = useState(null);
 
+  const [currentImage, setCurrentImage] = useState("");
+
+  const [mapVisible, setMapVisible] = useState(false);
+
   const mountRef = useRef(null);
 
+  // Chức năng chuyển cảnh có hiệu ứng
   const animateTransition = (newScene) => {
     gsap.to(scene, {
       duration: 1, // duration of the transition in seconds
@@ -41,8 +48,39 @@ export default function Scene() {
     });
   };
 
+  // Chức năng mở map 
+  // Xử lý: ẩn hiện map truyền từ mediaTaskbar.js qua scene.js thông qua props
+  const childToParent_OpenMap = (isOpen) => {
+    setMapVisible(isOpen);
+  };
+  
+  // Chức năng đóng map
+  const childToParent_CloseMap = () => {
+    setMapVisible(false);
+  };
+
+  // Chức năng kiểm tra nếu là image hiện tại thì điểm hotspot trong map sẽ đổi class 'hotspot-map' thành 'set-hotspot-map
+  const childToParent_checkSceneAnimHotspot = (hotspot) => {
+    return currentImage === hotspot.image;
+    // console.log(hotspot);
+  };
+
+  // Chức năng chuyển cảnh khi click vào hotspot
+  const childToParent_ChangeImage = (image, sceneName) => {
+    setCurrentImage(image);
+    // get the scene object based on scene name
+    setScene(dataScene[sceneName]);
+    console.log(image);
+  };
+
   useEffect(() => {
     const currentRef = mountRef.current;
+
+    // if (currentImage === "") {
+    //   setCurrentImage(scene.image);
+    // }
+
+    setCurrentImage(scene.image);
 
     if (currentRef) {
       for (let i = currentRef.children.length - 1; i >= 0; i--) {
@@ -50,7 +88,7 @@ export default function Scene() {
         currentRef.removeChild(child);
       }
     }
-  });
+  }, [currentImage, scene.image]);
 
   const hotSpots = (Element, i) => {
     if (Element.cssClass === "hotSpotCustom")
@@ -114,7 +152,7 @@ export default function Scene() {
         width="100%"
         height="100vh"
         title={scene.title}
-        image={scene.image}
+        image={currentImage}
         pitch={scene.pitch}
         yaw={scene.yaw}
         hfov={110}
@@ -140,10 +178,17 @@ export default function Scene() {
         {isOpen && <ModelContainer nameModel={model} />}
       </Model>
 
-      <Taskbar />
+      <Taskbar OpenMap={childToParent_OpenMap} MapVisible={mapVisible} />
+
+      {mapVisible && (
+        <Map
+          imageUrl={MainMap}
+          changeImage={childToParent_ChangeImage}
+          closeMap={childToParent_CloseMap}
+          checkSceneAnimHotspot={childToParent_checkSceneAnimHotspot}
+        />
+      )}
       {/* <Menu /> */}
     </div>
   );
 }
-
-

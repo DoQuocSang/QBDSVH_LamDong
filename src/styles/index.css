@@ -1,3 +1,4 @@
+
 :root {
   font-family: 'Poppins', sans-serif;
   font-size: 16px;
@@ -42,6 +43,12 @@
   --color-background-icon: var(--color-background-icon-dark);
 }
 
+/* Loading screen */
+/* .pnlm-container {
+  background: url('/public/images/icons/giphy.gif') center center no-repeat ;
+  background-size: cover;
+} */
+
 .experience {
   position: fixed;
   width: 100vw;
@@ -73,7 +80,7 @@ div.pnlm-tooltip span {
 }
 
 .pnlm-load-box {
-  /* display: none */
+  /* display: none; */
   opacity: 0;
 }
 
@@ -96,11 +103,22 @@ div.pnlm-tooltip span {
   cursor: pointer;
 }
 
+/* Default hotspot in map */
 .hotspot-map {
   position: absolute;
-  width: 5em;
-  height: 5em;
-  content: url("/public/images/icons/hotspot_ani.gif");
+  width: 2.5rem;
+  height: 2.5rem;
+  content: url("../assets/icons/hotspot_map.png");
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.set-hotspot-map {
+  position: absolute;
+  width: 4rem;
+  height: 4rem;
+  content: url("../assets/icons/hotspot_ani.gif");
   border-radius: 50%;
   transform: translate(-50%, -50%);
   cursor: pointer;

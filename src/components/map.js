@@ -1,33 +1,27 @@
-import React, { useState } from "react";
-import dataScene from "../helpers/dataScene.js";
-import { Pannellum } from "pannellum-react";
+import React from "react";
+// import dataScene from "../helpers/dataScene.js";
+// import HotspotInMapData from "../helpers/dataHotspotInMap.js";
+import HotspotInMap from "../helpers/dataHotspotInMap.js";
 
-import { connect } from 'react-redux';
-import { useSelector } from 'react-redux';
-
-export default function Map({ imageUrl }) {
-  const [scene, setScene] = useState(dataScene["outsideOne"]);
-
-  // function to get the scene object based on scene name
-  const getSceneByName = (sceneName) => {
-    return dataScene[sceneName]; 
-  };
-
-  const hotspotInMap = (elem, i) => {
-    if (elem.cssClass === "hotspot-map") {
-      return (
-        <Pannellum.Hotspot
-          key={i}
-          type={elem.type}
-          pitch={elem.pitch}
-          yaw={elem.yaw}
-          className={elem.cssClass}
-          handleClick={() => {
-            setScene(getSceneByName(elem.scene));
-          }}
-        />
-      );
+export default function Map({ imageUrl, changeImage, closeMap, checkSceneAnimHotspot }) {
+  const AddHotspotInMap = (elem, i) => {
+    // If the hotspot is the current scene, don't display it
+    if (elem.scene === checkSceneAnimHotspot) {
+      return null;
     }
+    
+    return (
+      <div
+        key={i}
+        className={checkSceneAnimHotspot(elem) ? "set-hotspot-map" : "hotspot-map"}
+        onClick={() => {
+          changeImage(elem.image, elem.scene);
+          closeMap();
+          // alert("Move scene");
+        }}
+        style={{ top: elem.top, left: elem.left }}
+      ></div>
+    );
   };
 
   return (
@@ -36,11 +30,11 @@ export default function Map({ imageUrl }) {
       <div className="image-wrapper">
         <h1 className="map_main-title">Bản đồ khu bảo tàng</h1>
         <img className="mini-map" src={imageUrl} alt="map" />
-        <div
-          className="hotspot-map"
-          style={{ bottom: "0%" }}
-          onClick={() => setScene(dataScene["LinhAnTour"])}
-        ></div>
+        {/* Chuyển cảnh qua các scene */}
+        {HotspotInMap &&
+          Object.values(HotspotInMap).map((elem, i) =>
+            AddHotspotInMap(elem, i)
+          )}
       </div>
     </div>
   );
