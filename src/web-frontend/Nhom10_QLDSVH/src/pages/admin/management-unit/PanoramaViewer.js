@@ -5,8 +5,15 @@ import AllHotspot from "../hotspot/AllHotspot.js";
 import loadingGif from "../../../images/loading-pano.gif";
 import ModelViewerOverlay from "./ModelViewerOverlay.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo, faCircleQuestion, faRotate, faXmark, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
-import MainLogo from '../../../images/logo2.png';
+import {
+  faCircleInfo,
+  faCircleQuestion,
+  faRotate,
+  faXmark,
+  faXmarkCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import MainLogo from "../../../images/logo2.png";
+import HotspotNull from "../../../images/hotspot-null.png";
 
 const PanoramaViewer = ({ title, isOpen, image360Url }) => {
   var image360url = localStorage.getItem("image360url");
@@ -14,19 +21,24 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
   const [scene, setScene] = useState(DataScene["insideOne"]);
   const [totalConsoleContent, setTotalConsoleContent] = useState("");
   const [hotspotArrChange, setHotspotArrChange] = useState(false);
+  const [showModelInfo, setShowModelInfo] = useState(false);
+  const [addHospotInfo, setAddHospotInfo] = useState(false);
   // const [curentPitch, setCurentPitch] = useState(0);
   // const [curentYaw, setCurentYaw] = useState(0);
   const [hotspotArr, setHotspotArr] = useState([]);
+  const [currentImage, setCurrentImage] = useState("");
 
   const initialState = {
-    id: 0,
-    type: "",
-    pitch: 0,
-    yaw: 0,
-    cssClass: "",
-    modelId: 0,
-    modelUrl: "",
-  }, [currentModel, setCurrentModel] = useState(initialState);
+      id: 0,
+      category: 1,
+      type: "",
+      pitch: 0,
+      yaw: 0,
+      css_class: "",
+      model_id: 0,
+      model_url: "",
+    },
+    [currentModel, setCurrentModel] = useState(initialState);
 
   const [isOpenModelView, setIsOpenModelView] = useState(false);
   const closeModeView = () => setIsOpenModelView(false);
@@ -140,33 +152,36 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
   };
 
   const hotspots = (element, i) => {
-    if (element.cssClass === "hotspotElement")
+    // Hotspot hiện vật
+    if (element.category === 1)
       return (
         <Pannellum.Hotspot
           key={i}
           type="custom"
           pitch={element.pitch}
           yaw={element.yaw}
-          cssClass={element.cssClass}
+          cssClass={element.css_class}
           handleClick={() => {
             // alert(element.id + " " + element.modelUrl);
             OpenModelView();
             setCurrentModel(element);
-            
+
             handleOpenModelView();
           }}
         />
       );
-    else if (element.cssClass === "moveScene")
+    // Hotspot chuyển cảnh
+    else if (element.category === 2)
       return (
         <Pannellum.Hotspot
           key={i}
           type="custom"
           pitch={element.pitch}
           yaw={element.yaw}
-          cssClass={element.cssClass}
+          cssClass={element.css_class}
           handleClick={() => {
-            setScene(DataScene["insideTwo"]);
+            // setScene(DataScene["insideTwo"]);
+            setCurrentImage(element.image_url)
           }}
         />
       );
@@ -176,12 +191,13 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
     lastId++;
     const newHotspot = {
       id: lastId,
-      type: 2,
+      type: "custom",
+      category: 1,
       pitch: localStorage.getItem("pitch"),
       yaw: localStorage.getItem("yaw"),
-      modelId: 31,
-      modelUrl: "",
-      cssClass: "hotspotElement",
+      model_id: 31,
+      model_url: "",
+      css_class: "hotspotElement",
     };
 
     setHotspotArr((prevHotspots) => [...prevHotspots, newHotspot]);
@@ -208,6 +224,29 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
 
   const handleOpenModelView = () => {
     setIsOpenModelView(true);
+  };
+
+  const handleOpenModelInfo = () => {
+    setShowModelInfo(true);
+  };
+
+  const handleCloseModelInfo = () => {
+    setShowModelInfo(false);
+  };
+
+  const handleOpenHospotSidebar = () => {
+    setIsOpenModelView(false);
+    setHotspotArrChange(false);
+  };
+
+  const handleAddHospotInfo = () => {
+    setIsOpenModelView(false);
+    setAddHospotInfo(true);
+    setHotspotArrChange(false);
+  };
+
+  const handleCloseEditHospotOvelay = () => {
+    setAddHospotInfo(false);
   };
 
   return (
@@ -269,38 +308,38 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
               {isOpenModelView && (
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 h-3/4 w-3/4">
                   <div className="relative w-full h-full">
-                    <button
-                      onClick={() => {
-                        handleCloseModelView();
-                      }}
-                      className="absolute top-0 right-0 z-50 m-2 transition-all duration-300 text-[#a9a9a9] hover:text-white "
-                    >
-                      <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />
-                    </button>
-
-                    <div
-                      className="absolute bottom-0 left-0 z-50 m-2 w-20"
-                    >
+                    {!showModelInfo && currentModel.model_url && (
+                    <>
+                      <div className="absolute bottom-0 left-0 z-50 m-2 w-20">
                       <img src={MainLogo} />
                     </div>
 
                     <div className="absolute bottom-0 right-0 z-50 m-2 flex item-center gap-2">
-                    <button
-                      className="transition-all duration-300 text-[#a9a9a9] hover:text-white"
-                    >
-                      <FontAwesomeIcon icon={faRotate} className="w-5 h-5" />
-                    </button>
-                    <button
-                      className="transition-all duration-300 text-[#a9a9a9] hover:text-white"
-                    >
-                      <FontAwesomeIcon icon={faCircleInfo} className="w-5 h-5" />
-                    </button>
-                    <button
-                      className="transition-all duration-300 text-[#a9a9a9] hover:text-white"
-                    >
-                      <FontAwesomeIcon icon={faCircleQuestion} className="w-5 h-5" />
-                    </button>
+                      <button className="transition-all duration-300 text-[#a9a9a9] hover:text-white">
+                        <FontAwesomeIcon 
+                          icon={faRotate} 
+                          className="w-5 h-5" 
+                        />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          handleOpenModelInfo();
+                        }}
+                        className="transition-all duration-300 text-[#a9a9a9] hover:text-white">
+                        <FontAwesomeIcon
+                          icon={faCircleInfo}
+                          className="w-5 h-5"
+                        />
+                      </button>
+                      <button className="transition-all duration-300 text-[#a9a9a9] hover:text-white">
+                        <FontAwesomeIcon
+                          icon={faCircleQuestion}
+                          className="w-5 h-5"
+                        />
+                      </button>
                     </div>
+                    </>
+                    )}
                     <button
                       onClick={() => {
                         handleCloseModelView();
@@ -309,23 +348,27 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
                     >
                       <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />
                     </button>
-                    {currentModel.modelUrl ? (
-                      <ModelViewerOverlay
-                      ModelUrl={currentModel.modelUrl}
-                    />
-                    )
-                    :
-                    (
-                      <div 
-                      style={{
-                        backgroundColor: "#4d4d4d8c", // Mờ đục với độ trong suốt 0.6
-                        backdropFilter: "blur(2px)", // Hiệu ứng mờ đục
-                      }}
-                      className="h-full w-full bg-red-500">
+                    
+                    {currentModel.model_url ? (
+                        <ModelViewerOverlay currentModel={currentModel} showModelInfo={showModelInfo} closeModelInfo={handleCloseModelInfo}/>
+                    ) : (
+                      <div
+                        style={{
+                          backgroundColor: "#4d4d4d8c", // Mờ đục với độ trong suốt 0.6
+                          backdropFilter: "blur(2px)", // Hiệu ứng mờ đục
+                        }}
+                        className="h-full w-full flex flex-col justify-center p-10"
+                      >
+                        <div className="h-full w-full flex justify-center">
+                          <img src={HotspotNull} className="h-full w-auto"/>
+                        </div>
+                        <div className="w-full flex justify-center">
+                         <button
+                          onClick={() => {handleAddHospotInfo()}}
+                          className="mb-4 px-4 py-2 bg-amber-500 text-white text-xs rounded-md font-semibold transition-all dration-300 ease-in-out hover:bg-amber-600">Thêm thông tin</button>
+                        </div>
                       </div>
-                    )
-                    }
-                 
+                    )}
                   </div>
                 </div>
               )}
@@ -345,8 +388,8 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
                   </button>
                   <button
                     id="hotspot_buttonmodal"
-                    onClick={(e) => {
-                      setHotspotArrChange(false);
+                    onClick={() => {
+                      handleOpenHospotSidebar();
                     }}
                     className="px-2 py-2 bg-amber-500 rounded-md inline-block text-white font-semibold text-xs"
                   >
@@ -362,7 +405,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url }) => {
               </div>
             </div>
           </div>
-          <AllHotspot Hotspots={hotspotArr} updateItem={childToParent} />
+          <AllHotspot Hotspots={hotspotArr} updateItem={childToParent} addHospotInfo={addHospotInfo} newHotspotNeedAddInfo={currentModel} closeEditHospotOverlay={handleCloseEditHospotOvelay}/>
         </>
       )}
 

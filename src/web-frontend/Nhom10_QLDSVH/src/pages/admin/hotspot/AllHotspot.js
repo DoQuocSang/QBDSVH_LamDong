@@ -5,19 +5,20 @@ import CatNull from "images/cat-hotspot-null.png";
 import { isEmptyOrSpaces } from "components/utils/Utils";
 import { getHeritagesForCombobox } from "services/HeritageRepository";
 
-export default ({ Hotspots = [], updateItem}) => {
+export default ({ Hotspots = [], updateItem, addHospotInfo, closeEditHospotOverlay, newHotspotNeedAddInfo}) => {
   const [tempValue, setTempValue] = useState(0);
   const [heritageList, setHeritageList] = useState([]);
   const [HotspotList, setHotspotList] = useState([]);
 
   const initialState = {
+      name: "",
       type: 0,
       pitch: 0,
       yaw: 0,
-      nameModel: "New Hotspot",
-      modelUrl: "",
-      cssClass: "hotSpotElement",
-      modelId: 0,
+      name_model: "New Hotspot",
+      model_url: "",
+      css_class: "hotSpotElement",
+      model_id: 0,
     },
   [currentHotspot, setCurrentHotspot] = useState(initialState);
 
@@ -45,6 +46,27 @@ export default ({ Hotspots = [], updateItem}) => {
     const modalBackground = document.getElementById("modal_background");
     const closeModalSpace = document.getElementById("close_modal_space");
 
+    if(addHospotInfo){
+      modal.classList.remove("hidden");
+
+      setCurrentHotspot(newHotspotNeedAddInfo);
+
+      setTempValue(newHotspotNeedAddInfo.id);
+
+      setTimeout(() => {
+        modalBackground.classList.remove("bg-opacity-0");
+        modalBackground.classList.add("bg-opacity-50");
+      }, 100);
+
+      setTimeout(() => {
+        modalSidebar.classList.remove("translate-x-full");
+        modalSidebar.classList.add("translate-x-0");
+
+        editHotspot.classList.remove("translate-y-full");
+        editHotspot.classList.add("my-10");
+      }, 200);
+    }
+
     button.addEventListener("click", () => {
       modal.classList.remove("hidden");
 
@@ -60,6 +82,7 @@ export default ({ Hotspots = [], updateItem}) => {
     });
 
     closebutton.addEventListener("click", () => {
+      closeEditHospotOverlay();
       setTimeout(() => {
         modalSidebar.classList.add("translate-x-full");
         modalSidebar.classList.remove("translate-x-0");
@@ -77,6 +100,7 @@ export default ({ Hotspots = [], updateItem}) => {
     });
 
     closeModalSpace.addEventListener("click", () => {
+      closeEditHospotOverlay();
       setTimeout(() => {
         modalSidebar.classList.add("translate-x-full");
         modalSidebar.classList.remove("translate-x-0");
@@ -105,7 +129,7 @@ export default ({ Hotspots = [], updateItem}) => {
       } else setHeritageList([]);
       console.log(data);
     });
-  }, []);
+  }, [addHospotInfo]);
 
   const handleSubmit = (updatedValue) => {
     updateItem(updatedValue);
@@ -142,7 +166,7 @@ export default ({ Hotspots = [], updateItem}) => {
                     <div className="max-h-full bg-white editor mx-auto flex max-w-md flex-col py-4 px-2 text-gray-800 shadow-lg rounded-lg">
                       <div className="flex items-center justify-between mx-4 pb-4">
                         <h2 className="text-xl font-semibold text-red-500 pl-4 border-l-4 border-red-500">
-                          Chỉnh sửa hotspot {tempValue}
+                          Chỉnh sửa Hotspot
                         </h2>
                         <button
                           id="close_edit_hotspot_button"
@@ -173,7 +197,7 @@ export default ({ Hotspots = [], updateItem}) => {
                           name="name"
                           required
                           type="text"
-                          value={currentHotspot.name}
+                          value={currentHotspot.name ? currentHotspot.name : `Hotspot ${tempValue}`}
                           onChange={(e) => {
                             setCurrentHotspot({
                               ...currentHotspot,
@@ -188,24 +212,36 @@ export default ({ Hotspots = [], updateItem}) => {
                           Loại Hotspot
                         </h2>
                         <select
-                          name="heritage_type_id"
+                          name="category"
                           required
-                          value={currentHotspot.type}
+                          onChange={e =>
+                            setCurrentHotspot(currentHotspot => ({
+                                ...currentHotspot,
+                                category: parseInt(e.target.value, 10)
+                            }))
+                          }
+                          value={currentHotspot.category}
                           className=" text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400 appearance-none"
                         >
                           <option value={0}>--- Chọn loại Hotspot ---</option>
-                          <option value={1}>Hotspot chuyển cảnh</option>
-                          <option value={2}>Hotspot hiện vật</option>
+                          <option value={1}>Hotspot hiện vật</option>
+                          <option value={2}>Hotspot chuyển cảnh</option>
                         </select>
 
                         <h2 className="font-semibold text-sm text-teal-500">
                           Góc nhìn (trục dọc)
                         </h2>
                         <input
-                          name="name"
+                          name="pitch"
                           required
                           type="number"
                           value={currentHotspot.pitch}
+                          onChange={(e) => {
+                            setCurrentHotspot({
+                              ...currentHotspot,
+                              pitch: e.target.value,
+                            });
+                          }}
                           placeholder="Nhập giá trị góc nhìn"
                           className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
                         />
@@ -214,33 +250,29 @@ export default ({ Hotspots = [], updateItem}) => {
                           Góc quay (trục ngang)
                         </h2>
                         <input
-                          name="name"
+                          name="yaw"
                           required
                           value={currentHotspot.yaw}
+                          onChange={(e) => {
+                            setCurrentHotspot({
+                              ...currentHotspot,
+                              yaw: e.target.value,
+                            });
+                          }}
                           type="number"
                           placeholder="Nhập giá trị góc quay"
                           className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
                         />
 
-                        <h2 className="font-semibold text-sm text-teal-500">
-                          Tiêu đề
-                        </h2>
-                        <input
-                          name="name"
-                          required
-                          value={currentHotspot.type}
-                          type="text"
-                          placeholder="Nhập tiêu đề"
-                          className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
-                        />
-
-                        <h2 className="font-semibold text-sm text-teal-500">
+                        {currentHotspot.category === 1 && (
+                          <>
+                          <h2 className="font-semibold text-sm text-teal-500">
                           Di sản hiển thị
                         </h2>
                         <select
                           name="heritage_type_id"
                           required
-                          value={currentHotspot.modelId}
+                          value={currentHotspot.model_id}
                           onChange={(e) => {
                             const selectedTypeId = parseInt(e.target.value, 10);
                             const selectedType = heritageList.find(
@@ -251,8 +283,8 @@ export default ({ Hotspots = [], updateItem}) => {
                               : ""; // Set imageUrl to the selected type's imageUrl or an empty string if not found
                             setCurrentHotspot({
                               ...currentHotspot,
-                              modelUrl: modelUrl,
-                              modelId: selectedTypeId,
+                              model_url: modelUrl,
+                              model_id: selectedTypeId,
                             });
                           }}
                           className=" text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400 appearance-none"
@@ -264,6 +296,9 @@ export default ({ Hotspots = [], updateItem}) => {
                             </option>
                           ))}
                         </select>
+                          </>
+                        )}
+                        
 
                         {/* <h2 className="font-semibold text-sm text-teal-500">
                         Hình ảnh
@@ -371,10 +406,10 @@ export default ({ Hotspots = [], updateItem}) => {
                                 </div>
                                 <div className="flex flex-1 w-auto flex-col justify-center gap-1">
                                   <p className="font-dm text-sm font-semibold text-teal-500 group-hover:text-white transition-all duration-300">
-                                    Hotspot {element.id}
+                                    {element.name ? element.name : `Hotspot ${element.id}`}
                                   </p>
                                   <p className="text-xs text-gray-600 group-hover:text-white transition-all duration-300">
-                                    {currentHotspot.name ? currentHotspot.name : "Chưa có tên"}
+                                    {element.name ? element.name : "Chưa có tên"}
                                   </p>
                                 </div>
                               </div>

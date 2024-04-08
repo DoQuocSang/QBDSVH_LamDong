@@ -1,4 +1,4 @@
-import React, { Suspense, startTransition } from "react";
+import React, { Suspense, startTransition, useEffect, useState } from "react";
 import {
   useGLTF,
   PerspectiveCamera,
@@ -15,6 +15,9 @@ import loading from "../../../images/loading.gif";
 import BackgroundModel from "../../../images/bg-model.jpg";
 import { OrbitControls } from "@react-three/drei";
 import { Environment } from "@react-three/drei";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown, faRotate, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { getHeritageById } from "services/HeritageRepository";
 
 const LoadingScreen = () => {
   return (
@@ -36,15 +39,52 @@ const ModelView = ({ url }) => {
   return scene ? <primitive scale={0.01} object={scene} /> : null;
 };
 
-const ModelViewerOverlay = ({ ModelUrl = "" }) => {
+const ModelViewerOverlay = ({
+  currentModel,
+  showModelInfo,
+  closeModelInfo,
+}) => {
   startTransition(() => {
-    useGLTF.preload(ModelUrl);
+    useGLTF.preload(currentModel.modelUrl);
   });
+
+  const handleCloseModelView = () => {
+    closeModelInfo();
+  };
+
+  const initialState = {
+    id: 0,
+    name: '',
+    short_description: '',
+    time: '',
+    model_360_url: '',
+    urlslug: '',
+    video_url: '',
+    location_id: 0,
+    management_unit_id: 0,
+    heritage_type_id: 0,
+    heritage_category_id: 0,
+    view_count: 0,
+  }, [heritage, setHeritage] = useState(initialState);
+
+  useEffect(() => {
+    if (currentModel.model_id !== 0) {
+        getHeritageById(currentModel.model_id).then(data => {
+            if (data)
+                setHeritage({
+                    ...data,
+                });
+            else
+            setHeritage(initialState);
+        })
+    }
+}, [])
 
   return (
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         height: "100%",
@@ -53,9 +93,9 @@ const ModelViewerOverlay = ({ ModelUrl = "" }) => {
         overflow: "hidden",
         zIndex: 30,
         position: "relative",
-        backgroundColor: "#0000004f", 
-        backdropFilter: "blur(3px)", 
-        boxShadow: "0 0 15px rgba(0, 0, 0, 0.35)" 
+        backgroundColor: "#0000004f",
+        backdropFilter: "blur(3px)",
+        boxShadow: "0 0 15px rgba(0, 0, 0, 0.35)",
       }}
     >
       <Canvas
@@ -79,10 +119,56 @@ const ModelViewerOverlay = ({ ModelUrl = "" }) => {
             maxPolarAngle={Math.PI / 2}
           />
           <Stage environment="apartment">
-            <ModelView url={ModelUrl} />
+            <ModelView url={currentModel.model_url} />
           </Stage>
         </Suspense>
       </Canvas>
+      {showModelInfo && (
+        <div className="relative w-full px-10 py-4 text-white text-xl">
+          <div 
+          onClick={() => {
+            handleCloseModelView();
+          }}
+          className="flex justify-center gap-2 hover:text-lg group text-sm z-50 w-full absolute pb-2 top-0 left-1/2 transform -translate-x-1/2 transition-all duration-300 text-white cursor-pointer">
+          <FontAwesomeIcon
+            icon={faCaretDown}
+            className=""
+          />
+          <p className="text-xs text-center hidden group-hover:inline group-hover:text-sm transition-all duration-300">Đóng</p>
+          </div>
+          <div className="z-20 absolute top-0 left-0 inset-0 w-full h-full bg-gradient-to-tr from-amber-800 to-amber-400 opacity-75"></div>
+          <div className="text-white z-30 relative flex flex-col gap-2 justify-center">
+            <h4 className="font-semi-bold text-base">
+              {heritage.name}
+            </h4>
+            <p className="text-xs overflow-auto max-h-16 pr-2 scrollbar">
+              <style>
+                {`
+                  .scrollbar::-webkit-scrollbar {
+                    width: 10px;
+                  }
+                
+                  .scrollbar::-webkit-scrollbar-track {
+                    border-radius: 10px;
+                    background: #efe3d0;
+                  }
+                
+                  .scrollbar::-webkit-scrollbar-thumb {
+                    background: #cd9e2d;
+                    border-radius: 100vh;
+                    border: 3px solid #efe3d0;
+                  }
+                
+                  .scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #c0a0b9;
+                  }
+                `}
+              </style>
+              {heritage.short_description}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
