@@ -51,7 +51,7 @@ CREATE TABLE `heritages` (
   `urlslug` varchar(255) NOT NULL,
   `heritage_category_id` int NOT NULL,
   `short_description` longtext,
-  `image_360_url` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `model_360_url` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `view_count` int DEFAULT NULL,
   `video_url` longtext,
   PRIMARY KEY (`id`),
@@ -261,13 +261,13 @@ INSERT INTO `heritage_types` (`id`, `name`, `description`, `urlslug`) VALUES
 INSERT INTO `heritage_types` (`id`, `name`, `description`, `urlslug`) VALUES
 (4, 'Bảo vật quốc gia', 'Bảo vật quốc gia', 'bao-vat-quoc-gia');
 
-INSERT INTO `heritages` (`id`, `name`, `heritage_type_id`, `location_id`, `management_unit_id`, `time`, `urlslug`, `heritage_category_id`, `short_description`, `image_360_url`, `view_count`, `video_url`) VALUES
+INSERT INTO `heritages` (`id`, `name`, `heritage_type_id`, `location_id`, `management_unit_id`, `time`, `urlslug`, `heritage_category_id`, `short_description`, `model_360_url`, `view_count`, `video_url`) VALUES
 (1, 'Trống đồng Ngọc Lũ', 4, 1, 1, 'Cách ngày nay 2500 - 2000 năm\r\nVăn hóa Đông Sơn', 'trong-dong-ngoc-lu', 11, 'Ngọc Lũ I là một trong những chiếc trống đồng Đông Sơn có kích thước to lớn, hình dáng cổ kính, tập trung hoa văn phong phú nhất, hiện được trưng bày tại Bảo tàng Lịch sử Việt Nam. Tuổi của trống được xác định vào khoảng 2500 năm.', '', 1000026, 'https://youtu.be/uY5pJqzD5y8');
-INSERT INTO `heritages` (`id`, `name`, `heritage_type_id`, `location_id`, `management_unit_id`, `time`, `urlslug`, `heritage_category_id`, `short_description`, `image_360_url`, `view_count`, `video_url`) VALUES
+INSERT INTO `heritages` (`id`, `name`, `heritage_type_id`, `location_id`, `management_unit_id`, `time`, `urlslug`, `heritage_category_id`, `short_description`, `model_360_url`, `view_count`, `video_url`) VALUES
 (2, 'Trống đồng Hoàng Hạ', 4, 1, 1, 'Cách ngày nay 2500 - 2000 năm\r\nVăn hóa Đông Sơn', 'trong-dong-hoang-ha', 11, 'Hoàng Hạ là một trong những chiếc trống đồng Đông Sơn có kích thước lớn, có nhiều hoa văn phong phú, hiện được tàng trữ tại Bảo tàng Lịch sử Việt Nam.', '', 123678, 'https://youtu.be/UnGL5g4AHT0');
-INSERT INTO `heritages` (`id`, `name`, `heritage_type_id`, `location_id`, `management_unit_id`, `time`, `urlslug`, `heritage_category_id`, `short_description`, `image_360_url`, `view_count`, `video_url`) VALUES
+INSERT INTO `heritages` (`id`, `name`, `heritage_type_id`, `location_id`, `management_unit_id`, `time`, `urlslug`, `heritage_category_id`, `short_description`, `model_360_url`, `view_count`, `video_url`) VALUES
 (3, 'Thạp đồng Đào Thịnh', 4, 1, 1, 'Cách ngày nay 2500 - 2000 năm\r\nVăn hóa Đông Sơn', 'thap-dong-dao-thinh', 11, 'Thạp đồng Đào Thịnh là một hiện vật bằng đồng thuộc nền văn hóa Đông Sơn. Thạp được phát hiện năm 1961, được xác định có niên đại từ 2500 - 2000 năm cách ngày nay', '', 21322, 'https://youtu.be/DezB3hkByeU');
-INSERT INTO `heritages` (`id`, `name`, `heritage_type_id`, `location_id`, `management_unit_id`, `time`, `urlslug`, `heritage_category_id`, `short_description`, `image_360_url`, `view_count`, `video_url`) VALUES
+INSERT INTO `heritages` (`id`, `name`, `heritage_type_id`, `location_id`, `management_unit_id`, `time`, `urlslug`, `heritage_category_id`, `short_description`, `model_360_url`, `view_count`, `video_url`) VALUES
 (4, 'Tượng đồng hai người cõng nhau thổi khèn', 4, 1, 1, 'Cách ngày nay 2500 - 2000 năm\r\nVăn hóa Đông Sơn', 'tuong-dong-hai-nguoi-cong-nhau-thoi-khen', 12, 'Tượng được công nhận là bảo vật quốc gia từ năm 2012, đang trưng bày cùng nhiều hiện vật tại khu Di tích văn hóa Đông Sơn ở tầng một, Bảo tàng Lịch sử Quốc gia.', '', 45927, 'https://youtu.be/d4IbnlG9TwY'),
 (5, 'Cây đèn đồng hình người quỳ', 4, 1, 1, 'Cách ngày nay 2000 - 1700 năm\r\nVăn hóa Đông Sơn', 'cay-den-dong-hinh-nguoi-quy', 11, 'Cây đèn đồng hình người quỳ là một hiện vật độc đáo tiêu biểu vào thời kỳ cuối văn hóa Đông Sơn, nằm trong số 30 bảo vật quốc gia đợt 1, năm 2012 và hiện đang được lưu giữ tại Bảo tàng Lịch sử quốc gia.', '', 1564, 'https://youtu.be/beLEQpx-uuI'),
 (6, 'Trống đồng Cảnh Thịnh', 4, 1, 1, 'Năm 1800\r\nThời Tây Sơn', 'trong-dong-canh-thinh', 11, 'Trống đồng Cảnh Thịnh là loại hình hiện vật độc bản có giá trị nghệ thuật cổ tiêu biểu không chỉ cho giai đoạn lịch sử của một triều đại mà giá trị tự thân đã là một bảo vật quốc gia nối mạch cao quý nhiều đời truyền lại.', '', 2572, 'https://youtu.be/SK06pdfh_CU'),

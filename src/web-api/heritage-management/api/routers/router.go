@@ -20,8 +20,10 @@ func SetupRouter() *gin.Engine {
 		heritage := v1.Group("/heritage")
 		{
 			heritage.GET("", controllers.GetPagedHeritagesWithImages)
+			heritage.GET("/combobox", controllers.GetAllHeritagesForCombobox)
 			heritage.GET("/:id", controllers.GetHeritageByID)
 			heritage.POST("", controllers.CreateHeritage)
+			heritage.PUT("/model/:id", controllers.UpdateHeritageModel)
 			heritage.PUT("/:id", controllers.UpdateHeritage)
 			heritage.DELETE("/:id", controllers.DeleteHeritageWithParagraphsById)
 			heritage.GET("/random", controllers.GetRandomHeritages)
@@ -62,6 +64,7 @@ func SetupRouter() *gin.Engine {
 			management_unit.GET("/:id", controllers.GetManagementUnitByID)
 			management_unit.POST("", controllers.CreateManagementUnit)
 			management_unit.PUT("/:id", controllers.UpdateManagementUnit)
+			management_unit.PUT("/image360/:id", controllers.UpdateManagementUnitImage360)
 			management_unit.DELETE("/:id", controllers.DeleteManagementUnit)
 			management_unit.GET("/slug/:urlSlug/heritages", controllers.GetHeritageByUnitSlug)
 			management_unit.GET("/slug/:urlSlug", controllers.GetManagementUnitBySlug)
@@ -101,6 +104,14 @@ func SetupRouter() *gin.Engine {
 			heritage_category.GET("/slug/:urlSlug", controllers.GetHeritageCategoryBySlug)
 			heritage_category.GET("/slug/:urlSlug/heritages/paged", controllers.GetPagedHeritageByCategorySlug)
 			heritage_category.GET("/search", controllers.SearchCategory)
+		}
+		upload_file := v1.Group("/upload-file")
+		{
+			upload_file.GET("", controllers.GetPagedUploadFile)
+			upload_file.GET("/:id", controllers.GetUploadFileByID)
+			upload_file.POST("", controllers.CreateUploadFile)
+			upload_file.PUT("/:id", controllers.UpdateUploadFile)
+			upload_file.DELETE("/:id", controllers.DeleteUploadFile)
 		}
 	}
 

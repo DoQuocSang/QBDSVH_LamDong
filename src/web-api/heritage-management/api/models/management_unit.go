@@ -6,14 +6,16 @@ type Management_Unit struct {
 	Description      string `json:"description" gorm:"column:description;"`
 	UrlSlug          string `json:"urlslug" gorm:"column:urlslug;"`
 	ImageUrl         string `json:"image_url" gorm:"column:image_url;"`
+	Image360Url      string `json:"image_360_url" gorm:"column:image_360_url;"`
 	Address          string `json:"address" gorm:"column:address;"`
 	Note             string `json:"note" gorm:"column:note;"`
 	ShortDescription string `json:"short_description" gorm:"column:short_description;"`
 }
 
 type Management_Unit_DTO struct {
-	ID   int    `json:"id" gorm:"column:id;"`
-	Name string `json:"name" gorm:"column:name;"`
+	ID          int    `json:"id" gorm:"column:id;"`
+	Name        string `json:"name" gorm:"column:name;"`
+	Image360Url string `json:"image_360_url" gorm:"column:image_360_url;"`
 }
 
 func (Management_Unit_DTO) TableName() string {
@@ -26,6 +28,7 @@ type Management_Unit_FullInfo struct {
 	Description      string `json:"description" gorm:"column:description;"`
 	UrlSlug          string `json:"urlslug" gorm:"column:urlslug;"`
 	ImageUrl         string `json:"image_url" gorm:"column:image_url;"`
+	Image360Url      string `json:"image_360_url" gorm:"column:image_360_url;"`
 	Address          string `json:"address" gorm:"column:address;"`
 	Note             string `json:"note" gorm:"column:note;"`
 	ShortDescription string `json:"short_description" gorm:"column:short_description;"`

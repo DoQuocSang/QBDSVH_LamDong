@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef, createRef } from "react";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircle, faCircleInfo, faCircleNotch, faCirclePlus, faPenToSquare, faPencil, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faCircle, faCircleCheck, faCircleInfo, faCircleNotch, faCirclePlus, faCloudArrowUp, faCube, faEye, faHourglass, faHourglassHalf, faImage, faPenToSquare, faPencil, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { AddOrUpdateText } from "../../../components/utils/Utils";
+import { AddOrUpdateText, getFileNameFromURL, truncateString } from "../../../components/utils/Utils";
 import { isEmptyOrSpaces } from "../../../components/utils/Utils";
 import { generateSlug } from "../../../components/utils/Utils";
 
-import { getHeritageById } from "services/HeritageRepository";
+import { getHeritageById, putHeritageModel } from "services/HeritageRepository";
 import { getHeritageTypes } from "services/HeritageTypeRepository";
 import { getLocations } from "../../../services/LocationRepository";
 import { getManagementUnits } from "../../../services/ManagementUnitRepository";
@@ -24,8 +24,14 @@ import { addHeritageWithParagraphs } from "../../../services/HeritageRepository"
 import { putHeritageWithParagraphs } from "../../../services/HeritageRepository";
 import { splitImageUrls } from "../../../components/utils/Utils";
 import { storage } from "../../../firebase.js"
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
+import ModelViewer from "./ModelViewer";
+import { addUploadFile, deleteUploadFileById, patchUploadFile, putUploadFile } from "services/UploadFileRepository";
+import DefaultModel1 from "../../../images/default-model-1.png";
+import DefaultModel2 from "../../../images/default-model-2.png";
+import DefaultModel3 from "../../../images/default-model-3.png";
+import DefaultThumbnail from "../../../images/cat-404-full-2.png";
 
 export default ({ type = "" }) => {
     document.title = 'Thêm/Cập nhật di sản';
@@ -37,7 +43,7 @@ export default ({ type = "" }) => {
         name: '',
         short_description: '',
         time: '',
-        image_360_url: '',
+        model_360_url: '',
         urlslug: '',
         video_url: '',
         location_id: 0,
@@ -59,12 +65,27 @@ export default ({ type = "" }) => {
         }
     ];
 
+    const defaultUploadFile = {
+        id: 0,
+        name: '',
+        file_url: '',
+        size: 0,
+        user_id: 1,
+        upload_date: '2023-06-07T12:00:00Z',
+        extension: '',
+        heritage_id: 0,
+        thumbnail_url: '',
+        is_current_use: 0
+    }
+
     const initialState = {
         heritage: {
             ...defaultHeritage,
         },
-        paragraphs: defaultParagraphs
+        paragraphs: defaultParagraphs,
+        upload_file: defaultUploadFile,
     }, [heritageData, setHeritageData] = useState(initialState);
+
 
     const [heritageTypeList, setHeritageDataTypeList] = useState([]);
     const [heritageCategoryList, setHeritageDataCategoryList] = useState([]);
@@ -73,7 +94,10 @@ export default ({ type = "" }) => {
     const [successFlag, SetSuccessFlag] = useState(false);
     const [heritageErrors, setHeritageErrors] = useState({});
     const [paragraphErrors, setParagraphErrors] = useState([]);
-    const [uploadedFile, setUploadedFile] = useState(null);
+    const [modelUploadFile, setModelUploadFile] = useState(null);
+    const [thumbnailUploadFile, setThumbnailUploadFile] = useState(null);
+    const [isUploadFile, setIsUploadFile] = useState(false);
+    const [loggedInUserID, setLoggedInUserID] = useState(localStorage.getItem('loggedInUserID') || 1);
 
     let { id } = useParams();
     id = id ?? 0;
@@ -100,7 +124,7 @@ export default ({ type = "" }) => {
                     setHeritageData({
                         ...heritageData
                     });
-                    // console.log("Đã bỏ qua id: " + ignoredId);
+                    //    console.log(data);
                 } else {
                     setHeritageData(initialState);
                 }
@@ -143,7 +167,6 @@ export default ({ type = "" }) => {
             //console.log(data)
         })
     }, [])
-    //console.log(heritage)
 
     //validate lỗi bổ trống
     const validateAllHeritageInput = () => {
@@ -226,6 +249,14 @@ export default ({ type = "" }) => {
 
 
     const handleSubmit = () => {
+        setHeritageData((prevData) => ({
+            ...prevData,
+            upload_file: {
+                ...prevData.upload_file,
+                is_current_use: 1,
+            }
+        }));
+
         // Nếu không có lỗi mới xóa hoặc cập nhật
         if (validateAllHeritageInput() === false) {
             if (id === 0) {
@@ -340,111 +371,186 @@ export default ({ type = "" }) => {
         });
     };
 
-    const [uploadProgress, setUploadProgress] = useState(0);
-    // const handleFileUpload = async (e) => {
-    //     const file = e.target.files[0];
-    //     setUploadedFile(file);
+    const [modelUploadProgress, setModelUploadProgress] = useState(0);
+    const [thumbnailUploadProgress, setThumbnailUploadProgress] = useState(0);
+    localStorage.setItem('model360url', heritageData.upload_file.file_url);
 
-    //     if (file) {
-    //         const fileRef = ref(storage, `models/${file.name + v4()}`);
+    const [isModelViewerOpen, setIsModelViewerOpen] = useState(false);
+    const [isThumbnailViewerOpen, setIsThumbnailViewerOpen] = useState(false);
 
-    //         // Upload the file and manually track the progress
-    //         try {
-    //             const snapshot = await uploadBytes(fileRef, file, (snapshot) => {
-    //                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //                 setUploadProgress(progress);
-    //             });
+    const handleOpenModelViewer = () => {
+        setIsModelViewerOpen(true);
+        setIsThumbnailViewerOpen(false);
+    };
 
-    //             // Get the download URL
-    //             const downloadURL = await getDownloadURL(snapshot.ref);
-    //             alert("Upload file thành công")
-    //             setHeritageData((prevData) => ({
-    //                 ...prevData,
-    //                 heritage: {
-    //                     ...prevData.heritage,
-    //                     image_360_url: downloadURL,
-    //                 },
-    //             }));
-    //         } catch (error) {
-    //             console.error('Error during upload:', error);
-    //         }
-    //     }
-    // };
+    const handleCloseModelViewer = () => {
+        setIsModelViewerOpen(false);
+    };
 
-    // const handleFileUpload = async (e) => {
-    //     const file = e.target.files[0];
-    //     setUploadedFile(file);
+    const handleOpenThumbnailViewer = () => {
+        setIsThumbnailViewerOpen(true);
+        setIsModelViewerOpen(false);
 
-    //     if (file) {
-    //         const storageRef = ref(storage, `models/${file.name + uuidv4()}`);
+    };
 
-    //         // Upload the file and manually track the progress
-    //         const uploadTask = uploadBytesResumable(storageRef, file);
+    const handleCloseThumbnailViewer = () => {
+        setIsThumbnailViewerOpen(false);
+    };
 
-    //         uploadTask.on('state_changed',
-    //             (snapshot) => {
-    //                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //                 setUploadProgress(progress);
-    //             },
-    //             (error) => {
-    //                 console.error('Error during upload:', error);
-    //             },
-    //             async () => {
-    //                 try {
-    //                     // Get the download URL
-    //                     const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-    //                     alert("Upload file thành công")
-    //                     setHeritageData((prevData) => ({
-    //                         ...prevData,
-    //                         heritage: {
-    //                             ...prevData.heritage,
-    //                             image_360_url: downloadURL,
-    //                         },
-    //                     }));
-    //                 } catch (error) {
-    //                     console.error('Error getting download URL:', error);
-    //                 }
-    //             }
-    //         );
-    //     }
-    // };
+    const handleAddOrUpdateUploadFile = (val) => {
+        if (heritageData.upload_file.id === 0) {
+            addUploadFile(val).then(data => {
+                console.log(data);
+                setHeritageData((prevData) => ({
+                    ...prevData,
+                    upload_file: {
+                        ...prevData.upload_file,
+                        id: data.data.id,
+                    }
+                }));
+            });
+        } else {
+            putUploadFile(heritageData.upload_file.id, val).then(data => {
+                console.log(heritageData.upload_file.id);
+            });
+        }
+    };
 
-    const handleFileUpload = async (e) => {
+
+    const handleThumbnailFileUpload = async (e) => {
         const file = e.target.files[0];
-        setUploadedFile(file);
-    
+        console.log(file);
+        setThumbnailUploadFile(file);
+
         if (file) {
-            const extension = file.name.split('.').pop(); // Get the file extension
+            // Xóa tất cả các khoảng trắng trong tên tệp
+            const fileNameWithoutSpaces = file.name.replace(/\s/g, '');
+
+            const extension = fileNameWithoutSpaces.split('.').pop(); // Get the file extension
             const uniqueId = uuidv4();
-            const modifiedFileName = `${file.name.split('.')[0]}_${uniqueId}.${extension}`;
-    
-            const storageRef = ref(storage, `models/${modifiedFileName}`);
-    
+            const modifiedFileName = `${fileNameWithoutSpaces.split('.')[0]}_${uniqueId}.${extension}`;
+
+            const storageRef = ref(storage, `model_thumbnails/${modifiedFileName}`);
+
             // Upload the file and manually track the progress
             const uploadTask = uploadBytesResumable(storageRef, file);
-    
+
             uploadTask.on('state_changed',
                 (snapshot) => {
                     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    setUploadProgress(progress);
+                    setThumbnailUploadProgress(progress);
                 },
                 (error) => {
-                    console.error('Error during upload:', error);
+                    console.error('Lỗi trong quá trình upload:', error);
                 },
                 async () => {
                     try {
                         // Get the download URL after successful upload
                         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
                         alert("Upload file thành công");
-    
+
+                        handleAddOrUpdateUploadFile({
+                            user_id: loggedInUserID,
+                            heritage_id: parseInt(id),
+                            thumbnail_url: downloadURL,
+                            upload_date: new Date().toISOString(),
+                        })
+                        // putUploadFile({
+                        //     heritage_id: id,
+                        //     thumbnail_url: downloadURL
+                        // }).then(data => {
+                        //     console.log(data);
+                        // });
+
+                        setHeritageData((prevData) => ({
+                            ...prevData,
+                            upload_file: {
+                                ...prevData.upload_file,
+                                user_id: loggedInUserID,
+                                heritage_id: parseInt(id),
+                                thumbnail_url: downloadURL,
+                                upload_date: new Date().toISOString(),
+                            }
+                        }));
+
+                    } catch (error) {
+                        console.error('Error getting download URL:', error);
+                    }
+                }
+            );
+        }
+    }
+
+    const handleModelFileUpload = async (e) => {
+        const file = e.target.files[0];
+        console.log(file);
+        setModelUploadFile(file);
+
+        if (file) {
+            // Xóa tất cả các khoảng trắng trong tên tệp
+            const fileNameWithoutSpaces = file.name.replace(/\s/g,'');
+
+            const extension = fileNameWithoutSpaces.split('.').pop();
+            const uniqueId = uuidv4();
+            const modifiedFileName = `${fileNameWithoutSpaces.split('.')[0]}_${uniqueId}.${extension}`;
+
+            const storageRef = ref(storage, `models/${modifiedFileName}`);
+
+            // Upload the file and manually track the progress
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    setModelUploadProgress(progress);
+                },
+                (error) => {
+                    console.error('Lỗi trong quá trình upload:', error);
+                },
+                async () => {
+                    try {
+                        // Get the download URL after successful upload
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        alert("Upload file thành công");
+
                         // Use the downloadURL as needed, for example, updating state
                         setHeritageData((prevData) => ({
                             ...prevData,
                             heritage: {
                                 ...prevData.heritage,
-                                image_360_url: downloadURL,
-                            },
+                                model_360_url: downloadURL,
+                            }
+                        }
+                        ));
+
+                        putHeritageModel(id, { model_360_url: downloadURL }).then(data => {
+                            console.log(data);
+                        });
+
+                        handleAddOrUpdateUploadFile({
+                            name: file.name.split('.')[0],
+                            file_url: downloadURL,
+                            size: file.size,
+                            user_id: loggedInUserID,
+                            heritage_id: parseInt(id),
+                            upload_date: new Date().toISOString(),
+                            extension: extension
+                        });
+
+                        setHeritageData((prevData) => ({
+                            ...prevData,
+                            upload_file: {
+                                ...prevData.upload_file,
+                                name: file.name.split('.')[0],
+                                file_url: downloadURL,
+                                size: file.size,
+                                user_id: loggedInUserID,
+                                heritage_id: parseInt(id),
+                                upload_date: new Date().toISOString(),
+                                extension: extension
+                            }
                         }));
+
                     } catch (error) {
                         console.error('Error getting download URL:', error);
                     }
@@ -453,16 +559,167 @@ export default ({ type = "" }) => {
         }
     };
 
-    const clearImage = () => {
-        setUploadedFile(null);
+    const clearModelFile = () => {
+        // Check if there is a modifiedFileName
+        setIsModelViewerOpen(false);
+        // var ModelName = getFileNameFromURL(heritageData.heritage.model_360_url, 'models%2F');
+        // if (ModelName) {
+        //     // Create a reference to the file in storage
+        //     const storageRef = ref(storage, `models/${ModelName}`);
+        //     console.log("File hiện tại: " + ModelName);
 
+        //     // Delete the file from storage
+        //     deleteObject(storageRef)
+        //         .then(() => {
+        //             alert("Xóa file thành công");
+        //             console.log('File deleted successfully');
+
+        //             // Remove the item from localStorage
+        //             // localStorage.removeItem("yourLocalStorageKey");
+        //         })
+        //         .catch((error) => {
+        //             alert("Có lỗi khi xóa file");
+        //             console.error('Error deleting file:', error);
+        //         });
+        // }
+
+        // Clear the uploaded file and reset model_360_url in state
+        setModelUploadFile(null);
+        setIsModelViewerOpen(false);
         setHeritageData((prevData) => ({
             ...prevData,
             heritage: {
                 ...prevData.heritage,
-                image_360_url: '',
+                model_360_url: '',
             },
+            upload_file: {
+                ...prevData.upload_file,
+                name: '',
+                file_url: '',
+                size: 0,
+                user_id: 1,
+                heritage_id: 0,
+                extension: '',
+            }
         }));
+
+        // setUploadFile((prevData) => ({
+        //     ...prevData,
+        //     name: '',
+        //     file_url: '',
+        //     size: 0,
+        //     user_id: 1,
+        //     heritage_id: 0,
+        //     extension: '',
+        // }
+        // ));
+
+        // setUploadFile((prevData) => ({
+        //     ...prevData,
+        //     name: '',
+        //     file_url: '',
+        //     size: 0,
+        //     user_id: 1,
+        //     heritage_id: 0,
+        //     extension: '',
+        // }
+        // ));
+
+        putUploadFile(heritageData.upload_file.id, {
+            name: '',
+            file_url: '',
+            size: 0,
+            user_id: loggedInUserID,
+            heritage_id: 0,
+            extension: '',
+        }).then(data => {
+            console.log(data);
+        });
+
+        if (heritageData.upload_file.thumbnail_url === '') {
+            deleteUploadFileById(heritageData.upload_file.id).then(data => {
+                console.log(data);
+            });
+            setHeritageData((prevData) => ({
+                ...prevData,
+                upload_file: {
+                    ...defaultUploadFile,
+                }
+            }));
+        }
+    };
+
+    const clearThumbnailFile = () => {
+        // Check if there is a modifiedFileName
+        // setIsModelViewerOpen(false);
+        // var ThumbnailName = getFileNameFromURL(UploadFile.thumbnail_url, 'model_thumbnails%2F');
+        // if (ThumbnailName) {
+        //     // Create a reference to the file in storage
+        //     const storageRef = ref(storage, `model_thumbnails/${ThumbnailName}`);
+        //     console.log("File hiện tại: " + ThumbnailName);
+
+        //     // Delete the file from storage
+        //     deleteObject(storageRef)
+        //         .then(() => {
+        //             alert("Xóa file thành công");
+        //             console.log('File deleted successfully');
+
+        //             // Remove the item from localStorage
+        //             // localStorage.removeItem("yourLocalStorageKey");
+        //         })
+        //         .catch((error) => {
+        //             alert("Có lỗi khi xóa file");
+        //             console.error('Error deleting file:', error);
+        //         });
+        // }
+
+        // Clear the uploaded file and reset model_360_url in state
+        setThumbnailUploadFile(null);
+        setIsThumbnailViewerOpen(false);
+        setHeritageData((prevData) => ({
+            ...prevData,
+            heritage: {
+                ...prevData.heritage,
+                model_360_url: '',
+            },
+            upload_file: {
+                ...prevData.upload_file,
+                thumbnail_url: '',
+            }
+        }));
+
+        // setUploadFile((prevData) => ({
+        //     ...prevData,
+        //     thumbnail_url: '',
+        // }
+        // ));
+
+        putUploadFile(heritageData.upload_file.id, {
+            thumbnail_url: ''
+        }).then(data => {
+            console.log(data);
+        });
+
+        if (heritageData.upload_file.file_url === '') {
+            deleteUploadFileById(heritageData.upload_file.id).then(data => {
+                console.log(data);
+            });
+            setHeritageData((prevData) => ({
+                ...prevData,
+                upload_file: {
+                    ...defaultUploadFile,
+                }
+            }));
+        }
+    };
+
+    const scrollToBottom = () => {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth',
+        });
+
+        console.log(heritageData)
     };
 
     return (
@@ -720,16 +977,16 @@ export default ({ type = "" }) => {
                         Model VR hiện vật
                     </h2>
                     {/* <input
-                        name="image_360_url"
+                        name="model_360_url"
                         required
                         type="text"
-                        value={heritageData.heritage.image_360_url || ''}
+                        value={heritageData.heritage.model_360_url || ''}
                         onChange={e =>
                             setHeritageData(heritageData => ({
                                 ...heritageData,
                                 heritage: {
                                     ...heritageData.heritage,
-                                    image_360_url: e.target.value,
+                                    model_360_url: e.target.value,
                                 }
                             }))
                         }
@@ -737,56 +994,31 @@ export default ({ type = "" }) => {
                         className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400" /> */}
 
                     <div className="mb-6 pt-4">
-                        <div className="mb-8">
-                            <input type="file" name="file" id="file" className="sr-only" onChange={handleFileUpload} />
-                            <label
-                                for="file"
-                                className="relative flex min-h-[200px] items-center justify-center rounded-lg border border-dashed border-[#e0e0e0] p-12 text-center"
-                            >
-                                <div>
-                                    <span className="mb-2 block text-xl font-semibold text-[#07074D]">
-                                        Kéo thả file tại đây
-                                    </span>
-                                    <span className="mb-2 block text-base font-medium text-[#6B7280]">
-                                        Hoặc
-                                    </span>
-                                    <span
-                                        className="cursor-pointer inline-flex rounded border border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D]"
-                                    >
-                                        Tải lên
-                                    </span>
-                                </div>
-                            </label>
-                        </div>
-                        <Link to="/admin/heritage/model-view" className="btn ml-auto flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500">
-                            Xem model
-                        </Link>
-                        
                         {/* Hiển thị thông tin file đã tải lên nếu có */}
-                        {uploadedFile && (
-                            <div>
-                                <div className="relative mt-3">
-                                    <div className="mb-2 flex items-center justify-between">
-                                        <div>
-                                            {uploadProgress < 100 ? (
-                                                <span className="inline-block rounded-full bg-yellow-200 px-3 py-1 text-xs font-semibold uppercase text-orange-600">
+                        <div className="flex justify-center items-center gap-4">
+                        {modelUploadFile && (
+                            <div className="flex-1 w-1/2 relative mt-3">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <div>
+                                        {modelUploadProgress < 100 ? (
+                                            <span className="inline-block rounded-full bg-yellow-200 px-3 py-1 text-xs font-semibold uppercase text-orange-600">
                                                 Đang tải lên server
-                                                </span>
-                                            ) : (
-                                                <span className="inline-block rounded-full bg-teal-500 px-3 py-1 text-xs font-semibold uppercase text-white">
-                                                Đã tải xong
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="text-right">
-                                            <span className="inline-block text-sm font-bold text-blue-600">
-                                                {Math.round(uploadProgress)}%
                                             </span>
-                                        </div>
+                                        ) : (
+                                            <span className="inline-block rounded-full bg-teal-500 px-3 py-1 text-xs font-semibold uppercase text-white">
+                                                Đã tải xong
+                                            </span>
+                                        )}
                                     </div>
-                                    <div className="mb-4 flex h-2 overflow-hidden rounded bg-gray-200 text-xs">
-                                        <style>
-                                            {`
+                                    <div className="text-right">
+                                        <span className="inline-block text-sm font-bold text-blue-600">
+                                            {Math.round(modelUploadProgress)}%
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="mb-4 flex h-2 overflow-hidden rounded bg-gray-200 text-xs">
+                                    <style>
+                                        {`
                                                 /* WebKit (Safari, Chrome) */
                                                 ::-webkit-progress-bar {
                                                 background-color: #E5E7EB; /* Set the background color */
@@ -804,45 +1036,280 @@ export default ({ type = "" }) => {
                                                 border-radius: 4px; /* Optional: Set the border radius */
                                                 }
                                             `}
-                                        </style>
-                                        <progress
-                                            value={uploadProgress}
-                                            max="100"
-                                            className="flex flex-col justify-center bg-teal-500 text-white shadow-none w-full"
-                                        ></progress>
-                                    </div>
+                                    </style>
+                                    <progress
+                                        value={modelUploadProgress}
+                                        max="100"
+                                        className="flex flex-col justify-center bg-teal-500 text-white shadow-none w-full"
+                                    ></progress>
                                 </div>
-                                <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 px-8 border-l-4 border-purple-400">
-                                    <div className="flex items-center justify-between">
-                                        <span className="truncate pr-3 text-base font-medium text-[#07074D]">
-                                            {uploadedFile.name}
-                                        </span>
-                                        <button className="text-[#07074D]" onClick={clearImage}>
-                                            <svg
-                                                width="10"
-                                                height="10"
-                                                viewBox="0 0 10 10"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    clipRule="evenodd"
-                                                    d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
-                                                    fill="currentColor"
-                                                />
-                                                <path
-                                                    fillRule="evenodd"
-                                                    clipRule="evenodd"
-                                                    d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
-                                                    fill="currentColor"
-                                                />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-
                             </div>
+                        )}
+
+                        {thumbnailUploadFile && (
+                            <div className="flex-1 w-1/2 relative mt-3">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <div>
+                                        {thumbnailUploadProgress < 100 ? (
+                                            <span className="inline-block rounded-full bg-yellow-200 px-3 py-1 text-xs font-semibold uppercase text-orange-600">
+                                                Đang tải lên server
+                                            </span>
+                                        ) : (
+                                            <span className="inline-block rounded-full bg-teal-500 px-3 py-1 text-xs font-semibold uppercase text-white">
+                                                Đã tải xong
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="inline-block text-sm font-bold text-blue-600">
+                                            {Math.round(thumbnailUploadProgress)}%
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="mb-4 flex h-2 overflow-hidden rounded bg-gray-200 text-xs">
+                                    <style>
+                                        {`
+                                                /* WebKit (Safari, Chrome) */
+                                                ::-webkit-progress-bar {
+                                                background-color: #E5E7EB; /* Set the background color */
+                                                border-radius: 4px; /* Optional: Set the border radius */
+                                                }
+
+                                                ::-webkit-progress-value {
+                                                background-color: #4CAF50; /* Set the progress bar color */
+                                                border-radius: 4px; /* Optional: Set the border radius */
+                                                }
+
+                                                /* Firefox */
+                                                ::-moz-progress-bar {
+                                                background-color: #4CAF50; /* Set the progress bar color */
+                                                border-radius: 4px; /* Optional: Set the border radius */
+                                                }
+                                            `}
+                                    </style>
+                                    <progress
+                                        value={thumbnailUploadProgress}
+                                        max="100"
+                                        className="flex flex-col justify-center bg-teal-500 text-white shadow-none w-full"
+                                    ></progress>
+                                </div>
+                            </div>
+                        )}
+                        </div>
+
+                        <div className="flex items-center justify-center w-full mb-4">
+                            <div className="flex items-center justify-between w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 ">
+                                <div className="flex-1 w-1/2 h-full">
+                                    <input type="file" name="model_file" id="model_file" className="sr-only" onChange={handleModelFileUpload} />
+                                    <label for="model_file" className="text-center flex flex-col items-center justify-center border-dashed pt-5 pb-6 h-full px-10 cursor-pointer">
+                                        <div className="cursor-pointer">
+                                            {(modelUploadFile || (heritageData.upload_file && heritageData.upload_file.file_url)) ? (
+                                                <>
+                                                {/* {modelUploadProgress < 100 ? (
+                                                    <>
+                                                    <div className="flex justify-center">
+                                                        <svg className="w-10 h-10 mb-3 text-amber-400">
+                                                            <FontAwesomeIcon icon={faCloudArrowUp} />
+                                                        </svg>
+                                                    </div>
+                                                        <p className="mb-2 text-amber-400 dark:text-gray-400 font-semibold"><span className="font-semibold"></span> Vui lòng chờ ...</p>
+                                                    </>
+                                             ) 
+                                             :
+                                             (
+                                                <>
+                                                    <div className="flex justify-center mb-3">
+                                                        <svg className="w-10 h-10 text-emerald-400">
+                                                            <FontAwesomeIcon icon={faCircleCheck} />
+                                                        </svg>
+                                                    </div>
+                                                    <p className="mb-2 text-emerald-400 dark:text-gray-400 font-semibold"><span className="font-semibold"></span>  Đã tải lên Model</p>
+                                                </>
+                                             )
+                                            } */}
+                                                    <div className="flex justify-center mb-3">
+                                                        <svg className="w-10 h-10 text-emerald-400">
+                                                            <FontAwesomeIcon icon={faCircleCheck} />
+                                                        </svg>
+                                                    </div>
+                                                    <p className="mb-2 text-emerald-400 dark:text-gray-400 font-semibold"><span className="font-semibold"></span>  Đã tải lên Model</p>
+
+                                                    {(modelUploadProgress === 100 || (heritageData.upload_file && heritageData.upload_file.file_url)) && (
+                                                        isModelViewerOpen ? (
+                                                            <button
+                                                                onClick={handleCloseModelViewer}
+                                                                className="btn text-xs rounded-md transition duration-300 border-2 border-gray-400 ease-in-out cursor-pointer hover:bg-gray-400 p-2 px-5 font-semibold hover:text-white text-gray-400">
+                                                                Thu gọn
+                                                            </button>
+                                                        )
+                                                        :
+                                                        (
+                                                            <button
+                                                                onClick={handleOpenModelViewer}
+                                                                className="btn text-xs rounded-md transition duration-300 border-2 border-emerald-400 ease-in-out cursor-pointer hover:bg-emerald-400 p-2 px-5 font-semibold hover:text-white text-emerald-400">
+                                                                Xem model hiện tại
+                                                            </button>
+                                                        )
+                                                    )}
+                                                    
+                                                </>
+                                            )
+                                                :
+                                                (
+                                                    <>
+                                                        <div className=" flex justify-center mb-3">
+                                                            <svg className="w-10 h-10 text-gray-400">
+                                                                <FontAwesomeIcon icon={faCube} />
+                                                            </svg>
+                                                        </div>
+                                                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click tại đây</span> để tải lên model</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400">(Các file được phép: glb)</p>
+                                                    </>
+                                                )
+                                            }
+
+                                        </div>
+                                    </label>
+                                </div>
+                                <div className="flex-1 w-1/2 h-full">
+                                    <input type="file" name="thumbnail_file" id="thumbnail_file" className="sr-only" onChange={handleThumbnailFileUpload} />
+                                    <label for="thumbnail_file" className="flex flex-col items-center justify-center text center border-l-2 border-dashed border-gray-300 pt-5 pb-6 h-full px-10 cursor-pointer">
+                                        {(thumbnailUploadFile || (heritageData.upload_file && heritageData.upload_file.thumbnail_url)) ? (
+                                            <>
+                                             {/* {(thumbnailUploadProgress < 100 || !heritageData.upload_file.thumbnail_url) ? (
+                                                <>
+                                                    <>
+                                                        <svg className="w-10 h-10 mb-3 text-amber-400">
+                                                            <FontAwesomeIcon icon={faCloudArrowUp} />
+                                                        </svg>
+                                                        <p className="mb-2 text-amber-400 dark:text-gray-400 font-semibold"><span className="font-semibold"></span> Vui lòng chờ ...</p>
+                                                    </>
+                                                </>
+                                             ) 
+                                             :
+                                             (
+                                                <>
+                                                    <svg className="w-10 h-10 mb-3 text-emerald-400">
+                                                        <FontAwesomeIcon icon={faCircleCheck} />
+                                                    </svg>
+                                                    <p className="mb-2 text-emerald-400 dark:text-gray-400 font-semibold"><span className="font-semibold"></span> Đã tải lên thumbnail </p>
+                                                </>
+                                             )
+                                            } */}
+
+                                                    <svg className="w-10 h-10 mb-3 text-emerald-400">
+                                                        <FontAwesomeIcon icon={faCircleCheck} />
+                                                    </svg>
+                                                    <p className="mb-2 text-emerald-400 dark:text-gray-400 font-semibold"><span className="font-semibold"></span> Đã tải lên thumbnail </p>
+
+                                                {(thumbnailUploadProgress === 100 || (heritageData.upload_file && heritageData.upload_file.thumbnail_url)) && (
+                                                        isThumbnailViewerOpen ? (
+                                                            <button
+                                                                onClick={handleCloseThumbnailViewer}
+                                                                className="btn text-xs rounded-md transition duration-300 border-2 border-gray-400 ease-in-out cursor-pointer hover:bg-gray-400 p-2 px-5 font-semibold hover:text-white text-gray-400">
+                                                                Thu gọn
+                                                            </button>
+                                                        )
+                                                        :
+                                                        (
+                                                            <button
+                                                                onClick={handleOpenThumbnailViewer}
+                                                                className="btn text-xs rounded-md transition duration-300 border-2 border-emerald-400 ease-in-out cursor-pointer hover:bg-emerald-400 p-2 px-5 font-semibold hover:text-white text-emerald-400">
+                                                                Xem thumbnail hiện tại
+                                                            </button>
+                                                        )
+                                                    )}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="w-10 h-10 mb-3 text-gray-400">
+                                                    <FontAwesomeIcon icon={faImage} />
+                                                </svg>
+                                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click tại đây</span> để tải lên thumbnail</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">(Các file được phép: jpg, png, jpeg)</p>
+                                            </>
+                                        )}
+
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        {(modelUploadFile || (heritageData.upload_file && heritageData.upload_file.file_url)) && (
+                            <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 pl-8 pr-8 border-l-4 border-purple-400">
+                                <div className="flex items-center justify-between">
+                                    <FontAwesomeIcon icon={faCube} className="text-gray-500 mr-2" />
+                                    <span className="flex-1 truncate pr-3 text-base font-medium text-[#07074D]">
+                                        {heritageData.upload_file.file_url ? getFileNameFromURL(heritageData.upload_file.file_url, 'models%2F') : modelUploadFile.name}
+                                        {/* modelUploadFile.name */}
+                                    </span>
+                                    <button className="text-[#07074D]" onClick={clearModelFile}>
+                                        <svg
+                                            width="10"
+                                            height="10"
+                                            viewBox="0 0 10 10"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                clipRule="evenodd"
+                                                d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
+                                                fill="currentColor"
+                                            />
+                                            <path
+                                                fillRule="evenodd"
+                                                clipRule="evenodd"
+                                                d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
+                                                fill="currentColor"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {(thumbnailUploadFile || (heritageData.upload_file && heritageData.upload_file.thumbnail_url)) && (
+                            <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 pl-8 pr-8 border-l-4 border-purple-400">
+                                <div className="flex items-center justify-between">
+                                    <FontAwesomeIcon icon={faImage} className="text-gray-500 mr-2" />
+                                    <span className="flex-1 truncate pr-3 text-base font-medium text-[#07074D]">
+                                        {heritageData.upload_file.thumbnail_url ? getFileNameFromURL(heritageData.upload_file.thumbnail_url, 'model_thumbnails%2F') : thumbnailUploadFile.name}
+                                        {/* modelUploadFile.name */}
+                                    </span>
+                                    <button className="text-[#07074D]" onClick={clearThumbnailFile}>
+                                        <svg
+                                            width="10"
+                                            height="10"
+                                            viewBox="0 0 10 10"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                clipRule="evenodd"
+                                                d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
+                                                fill="currentColor"
+                                            />
+                                            <path
+                                                fillRule="evenodd"
+                                                clipRule="evenodd"
+                                                d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
+                                                fill="currentColor"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                  
+                        {isModelViewerOpen && (
+                            <div className="mt-4">
+                                <ModelViewer />
+                            </div>
+                        )}
+
+                        {isThumbnailViewerOpen && (
+                            <img className="mt-4 flex justify-cent items-center h-auto w-full rounded-md" src={(heritageData.upload_file &&heritageData.upload_file.thumbnail_url) ? heritageData.upload_file.thumbnail_url : thumbnailUploadFile.name} />
                         )}
                     </div>
 
@@ -978,10 +1445,14 @@ export default ({ type = "" }) => {
                         </button>
                     </div>
 
+                    <button
+                        className="fixed bottom-4 right-4 text-red-500 font-bold px-4 py-2 rounded-lg border-2 border-red-500 transition duration-300 bg-red-500 hover:bg-red-600 text-white"
+                        onClick={scrollToBottom}
+                    >
+                        <FontAwesomeIcon icon={faArrowDown} />
+                    </button>
+
                     <NotificationModal mainAction={maintAction} isSuccess={successFlag} isContinue={childToParent} type="heritage" />
-                </div>
-                <div className="flex justify-center">
-                    <img src={heritageData.heritage.image_360_url} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
                 </div>
             </div>
         </main >

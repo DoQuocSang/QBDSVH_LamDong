@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { get_api } from './Method';
+import { get_api, simple_get_api } from './Method';
 import { delete_api } from './Method';
 import { post_api } from './Method';
 import { put_api } from './Method';
@@ -56,6 +56,12 @@ export function getRelatedHeritagesBySlug(
     // return get_api(`https://localhost:7245/api/users?PageSize=30&PageNumber=1`)
 }
 
+export function getHeritagesForCombobox() {    
+    return get_api(`http://localhost:8080/api/v1/heritage/combobox`)
+    // return get_api(`http://localhost:3000/v1/heritage?page=${page}&limit=${limit}`)
+    // return get_api(`https://localhost:7245/api/users?PageSize=30&PageNumber=1`)
+}
+
 export function getHeritagesForGallery(
     page = 1,
     limit = 30,
@@ -64,6 +70,7 @@ export function getHeritagesForGallery(
     // return get_api(`http://localhost:3000/v1/heritage?page=${page}&limit=${limit}`)
     // return get_api(`https://localhost:7245/api/users?PageSize=30&PageNumber=1`)
 }
+
 
 export function getRandomHeritages(
     limit = 3
@@ -97,6 +104,13 @@ export function putHeritage(
     formData
     ) {
     return put_api(`http://localhost:8080/api/v1/heritage/${id}`, formData);
+}
+
+export function putHeritageModel(
+    id = 0,
+    formData
+    ) {
+    return put_api(`http://localhost:8080/api/v1/heritage/model/${id}`, formData);
 }
 
 export function putHeritageWithParagraphs(

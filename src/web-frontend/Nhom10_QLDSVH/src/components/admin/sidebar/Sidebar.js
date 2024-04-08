@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useHistory, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook, faCalendar, faChartColumn, faComment, faCube, faMountainSun, faTags, faTicket } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faCalendar, faChartColumn, faCloudUpload, faComment, faCube, faMountainSun, faTags, faTicket } from "@fortawesome/free-solid-svg-icons";
 import { faUserPen } from "@fortawesome/free-solid-svg-icons";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines } from "@fortawesome/free-solid-svg-icons";
@@ -34,6 +34,9 @@ export default () => {
       }
       if (location.includes('user')) {
          setActiveBtn(7)
+      }
+      if (location.includes('media/model')) {
+         setActiveBtn(8)
       }
    }, [])
 
@@ -134,14 +137,16 @@ export default () => {
                            </Link>
                         </li>
                      </ul>
-                     {/* <div className="space-y-2 pt-3 px-3">
-                        <p href="#" className="text-sm text-gray-900 font-semibold rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2">
-                           <svg className={activeBtn === 1 ? "w-5 h-5 text-white flex-shrink-0 transition duration-75" : "w-5 h-5 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="gem" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                              <path fill="currentColor" d="M378.7 32H133.3L256 182.7L378.7 32zM512 192l-107.4-141.3L289.6 192H512zM107.4 50.67L0 192h222.4L107.4 50.67zM244.3 474.9C247.3 478.2 251.6 480 256 480s8.653-1.828 11.67-5.062L510.6 224H1.365L244.3 474.9z"></path>
+                     <div className="space-y-2 pt-3 px-3">
+                     <Link to="/admin/dashboard/all-media/model" onClick={() => setActiveBtn(8)}>
+                        <p href="#" className={activeBtn === 8 ? "text-sm text-white font-semibold rounded-lg bg-red-400 hover:bg-red-500 flex items-center p-2 group transition duration-75" : "text-sm text-gray-900 font-semibold rounded-lg hover:bg-gray-100 flex items-center p-2 group transition duration-75"}>
+                           <svg className={activeBtn === 8 ? "w-5 h-5 text-white flex-shrink-0 transition duration-75" : "w-5 h-5 text-red-400 flex-shrink-0 group-hover:text-red-500 transition duration-75"} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                              <FontAwesomeIcon icon={faCloudUpload} />
                            </svg>
-                           <span className="ml-4">Đăng xuất</span>
+                           <span className="ml-3 flex-1 whitespace-nowrap">File phương tiện</span>
                         </p>
-                     </div> */}
+                      </Link>
+                     </div>
 
                   </div>
                </div>
