@@ -113,13 +113,14 @@ func SetupRouter() *gin.Engine {
 			upload_file.PUT("/:id", controllers.UpdateUploadFile)
 			upload_file.DELETE("/:id", controllers.DeleteUploadFile)
 		}
-		panorama_file := v1.Group("/panorama-image")
+		panorama_image := v1.Group("/panorama-image")
 		{
-			panorama_file.GET("", controllers.GetPagedPanoramaImage)
-			panorama_file.GET("/:id", controllers.GetPanoramaImageByID)
-			panorama_file.POST("", controllers.CreatePanoramaImage)
-			panorama_file.PUT("/:id", controllers.UpdatePanoramaImage)
-			panorama_file.DELETE("/:id", controllers.DeletePanoramaImage)
+			panorama_image.GET("", controllers.GetPagedPanoramaImage)
+			panorama_image.GET("/:id", controllers.GetPanoramaImageByID)
+			panorama_image.POST("", controllers.CreatePanoramaImage)
+			panorama_image.PUT("/:id", controllers.UpdatePanoramaImage)
+			panorama_image.DELETE("/:id", controllers.DeletePanoramaImage)
+			panorama_image.GET("/last-inserted-id", controllers.GetLastInsertedPanoramaImageID)
 		}
 	}
 

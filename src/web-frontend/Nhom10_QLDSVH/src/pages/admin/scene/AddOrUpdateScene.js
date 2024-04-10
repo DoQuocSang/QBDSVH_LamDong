@@ -26,7 +26,7 @@ import {
 } from "firebase/storage";
 import PanoramaViewer from "../management-unit/PanoramaViewer";
 import SimplePanoramaViewer from "./SimplePanoramaViewer";
-import { addPanoramaImage, deletePanoramaImageById, putPanoramaImage } from "services/PanoramaImageRepository";
+import { addPanoramaImage, deletePanoramaImageById, getLastPanoramaImageId, putPanoramaImage } from "services/PanoramaImageRepository";
 import UploadingGif from "../../../images/loading.gif";
 
 export default ({
@@ -79,6 +79,8 @@ export default ({
   const [thumbnailUploadProgress, setThumbnailUploadProgress] = useState(0);
   const [isThumbnailViewerOpen, setIsThumbnailViewerOpen] = useState(false);
   const [loggedInUserID, setLoggedInUserID] = useState(parseInt(localStorage.getItem('loggedInUserID') ,10) || 1);
+  const [newSceneId, setNewSceneId] = useState(0);
+  
 
   useEffect(() => {
     // Drop zone (file upload)
@@ -145,6 +147,13 @@ export default ({
         setSceneData(editingScene);
       }
     }
+
+    getLastPanoramaImageId().then((data) => {
+      if (data){
+        setNewSceneId(data.last_inserted_id);
+      }
+      else setNewSceneId(0);
+    });
   }, [isOpen]);
 
   const ResetUploadFileStates = () => {
@@ -393,7 +402,10 @@ if (sceneData.panorama_image.thumbnail_url === '') {
 
   const handleSubmitScene = () => {
     if (action === "add") {
+      // Cập nhật lại id (tạm thời) và tăng id lên 1 cho item kế tiếp
+      sceneData.scene.id = newSceneId;
       onSave(sceneData);
+      setNewSceneId(prevId => prevId + 1);
     } else if (action === "edit") {
       onUpdate(sceneData);
     }

@@ -5,7 +5,15 @@ import CatNull from "images/cat-hotspot-null.png";
 import { isEmptyOrSpaces } from "components/utils/Utils";
 import { getHeritagesForCombobox } from "services/HeritageRepository";
 
-export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditHospotOverlay, newHotspotNeedAddInfo, scenes}) => {
+export default ({
+  Hotspots = [],
+  updateItem,
+  onDelete,
+  addHospotInfo,
+  closeEditHospotOverlay,
+  newHotspotNeedAddInfo,
+  scenes,
+}) => {
   const [tempValue, setTempValue] = useState(0);
   const [heritageList, setHeritageList] = useState([]);
   const [HotspotList, setHotspotList] = useState([]);
@@ -20,8 +28,9 @@ export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditH
       css_class: "hotSpotElement",
       model_id: 0,
       scene_id: 0,
+      move_scene_id: 0,
     },
-  [currentHotspot, setCurrentHotspot] = useState(initialState);
+    [currentHotspot, setCurrentHotspot] = useState(initialState);
 
   function openEditHotspotForm(hotSpot, index) {
     const editHotspot = document.getElementById("edit_hotspot");
@@ -47,7 +56,7 @@ export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditH
     const modalBackground = document.getElementById("modal_background");
     const closeModalSpace = document.getElementById("close_modal_space");
 
-    if(addHospotInfo){
+    if (addHospotInfo) {
       modal.classList.remove("hidden");
 
       setCurrentHotspot(newHotspotNeedAddInfo);
@@ -136,24 +145,28 @@ export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditH
     updateItem(updatedValue);
 
     const updatedHotspotArr = [...Hotspots];
-    
-    const indexToUpdate = updatedHotspotArr.findIndex(item => item.id === updatedValue.id);
-    
+
+    const indexToUpdate = updatedHotspotArr.findIndex(
+      (item) => item.id === updatedValue.id
+    );
+
     if (indexToUpdate !== -1) {
-        updatedHotspotArr[indexToUpdate] = updatedValue;
-        setHotspotList(updatedHotspotArr);
+      updatedHotspotArr[indexToUpdate] = updatedValue;
+      setHotspotList(updatedHotspotArr);
     }
-  }
+  };
 
   const handleDelete = (deletedValue) => {
     onDelete(deletedValue);
 
     const updatedHotspotArr = [...Hotspots];
-  
-    const filteredHotspotArr = updatedHotspotArr.filter(item => item.id !== deletedValue.id);
-  
+
+    const filteredHotspotArr = updatedHotspotArr.filter(
+      (item) => item.id !== deletedValue.id
+    );
+
     setHotspotList(filteredHotspotArr);
-  }
+  };
 
   return (
     <>
@@ -208,7 +221,11 @@ export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditH
                           name="name"
                           required
                           type="text"
-                          value={currentHotspot.name ? currentHotspot.name : `Hotspot ${tempValue}`}
+                          value={
+                            currentHotspot.name
+                              ? currentHotspot.name
+                              : `Hotspot ${tempValue}`
+                          }
                           onChange={(e) => {
                             setCurrentHotspot({
                               ...currentHotspot,
@@ -225,10 +242,10 @@ export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditH
                         <select
                           name="category"
                           required
-                          onChange={e =>
-                            setCurrentHotspot(currentHotspot => ({
-                                ...currentHotspot,
-                                category: parseInt(e.target.value, 10)
+                          onChange={(e) =>
+                            setCurrentHotspot((currentHotspot) => ({
+                              ...currentHotspot,
+                              category: parseInt(e.target.value, 10),
                             }))
                           }
                           value={currentHotspot.category}
@@ -238,30 +255,73 @@ export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditH
                           <option value={1}>Hotspot hiện vật</option>
                           <option value={2}>Hotspot chuyển cảnh</option>
                         </select>
+                       
+                        {currentHotspot.category === 1 && (
+                          <>
+                            <h2 className="font-semibold text-sm text-teal-500">
+                              Di sản hiển thị
+                            </h2>
+                            <select
+                              name="heritage_type_id"
+                              required
+                              value={currentHotspot.model_id}
+                              onChange={(e) => {
+                                const selectedTypeId = parseInt(
+                                  e.target.value,
+                                  10
+                                );
+                                const selectedType = heritageList.find(
+                                  (item) => item.id === selectedTypeId
+                                );
+                                const modelUrl = selectedType
+                                  ? selectedType.upload_file.file_url
+                                  : ""; // Set imageUrl to the selected type's imageUrl or an empty string if not found
+                                setCurrentHotspot({
+                                  ...currentHotspot,
+                                  model_url: modelUrl,
+                                  model_id: selectedTypeId,
+                                });
+                              }}
+                              className=" text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400 appearance-none"
+                            >
+                              <option value={0}>
+                                --- Chọn loại di sản ---
+                              </option>
+                              {heritageList.map((item, index) => (
+                                <option key={index} value={item.id}>
+                                  {item.id} {item.name}
+                                </option>
+                              ))}
+                            </select>
+                          </>
+                        )}
 
-                        <h2 className="font-semibold text-sm text-teal-500">
-                          Khu vực
-                        </h2>
-                        <select
-                          name="scene_id"
-                          required
-                          onChange={e =>
-                            setCurrentHotspot(currentHotspot => ({
-                                ...currentHotspot,
-                                scene_id: parseInt(e.target.value, 10)
-                            }))
-                          }
-                          value={currentHotspot.scene_id}
-                          className=" text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400 appearance-none"
-                        >
-                          <option value={0}>--- Chọn khu vực ---</option>
-                          {scenes.map((item, index) => (
-                            <option key={index} value={index}>
-                              {item.id} {item.scene.name}
-                            </option>
-                          ))}
-                        </select>
-
+                        {currentHotspot.category === 2 && (
+                          <>
+                            <h2 className="font-semibold text-sm text-teal-500">
+                              Khu vực (chuyển cảnh)
+                            </h2>
+                            <select
+                              name="scene_id"
+                              required
+                              onChange={(e) =>
+                                setCurrentHotspot((currentHotspot) => ({
+                                  ...currentHotspot,
+                                  move_scene_id: parseInt(e.target.value, 10),
+                                }))
+                              }
+                              value={currentHotspot.move_scene_id}
+                              className=" text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400 appearance-none"
+                            >
+                              <option value={0}>--- Chọn khu vực ---</option>
+                              {scenes.map((item, index) => (
+                                <option key={index} value={item.scene.id}>
+                                  {item.id} {item.scene.name}
+                                </option>
+                              ))}
+                            </select>
+                          </>
+                        )}
 
                         <h2 className="font-semibold text-sm text-teal-500">
                           Góc nhìn (trục dọc)
@@ -299,41 +359,6 @@ export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditH
                           className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
                         />
 
-                        {currentHotspot.category === 1 && (
-                          <>
-                          <h2 className="font-semibold text-sm text-teal-500">
-                          Di sản hiển thị
-                        </h2>
-                        <select
-                          name="heritage_type_id"
-                          required
-                          value={currentHotspot.model_id}
-                          onChange={(e) => {
-                            const selectedTypeId = parseInt(e.target.value, 10);
-                            const selectedType = heritageList.find(
-                              (item) => item.id === selectedTypeId
-                            );
-                            const modelUrl = selectedType
-                              ? selectedType.upload_file.file_url
-                              : ""; // Set imageUrl to the selected type's imageUrl or an empty string if not found
-                            setCurrentHotspot({
-                              ...currentHotspot,
-                              model_url: modelUrl,
-                              model_id: selectedTypeId,
-                            });
-                          }}
-                          className=" text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400 appearance-none"
-                        >
-                          <option value={0}>--- Chọn loại di sản ---</option>
-                          {heritageList.map((item, index) => (
-                            <option key={index} value={item.id}>
-                              {item.id} {item.name}
-                            </option>
-                          ))}
-                        </select>
-                          </>
-                        )}
-                        
 
                         {/* <h2 className="font-semibold text-sm text-teal-500">
                         Hình ảnh
@@ -360,7 +385,9 @@ export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditH
                       <div className="buttons flex items-center pt-6 px-4">
                         <hr className="mt-4" />
                         <button
-                          onClick={() => { handleDelete(currentHotspot) }} 
+                          onClick={() => {
+                            handleDelete(currentHotspot);
+                          }}
                           className="btn ml-auto rounded-md transition duration-300 ease-in-out cursor-pointer bg-red-400 hover:bg-red-500 p-2 px-5 font-semibold text-white"
                         >
                           Xóa
@@ -368,7 +395,9 @@ export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditH
                         <button
                           id="notification_buttonmodal"
                           type="submit"
-                          onClick={() => { handleSubmit(currentHotspot) }} 
+                          onClick={() => {
+                            handleSubmit(currentHotspot);
+                          }}
                           className="btn ml-2 rounded-md transition duration-300 ease-in-out cursor-pointer !hover:bg-indigo-700 !bg-indigo-500 p-2 px-5 font-semibold text-white"
                         >
                           Lưu thay đổi
@@ -441,10 +470,14 @@ export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditH
                                 </div>
                                 <div className="flex flex-1 w-auto flex-col justify-center gap-1">
                                   <p className="font-dm text-sm font-semibold text-teal-500 group-hover:text-white transition-all duration-300">
-                                    {element.name ? element.name : `Hotspot ${element.id}`}
+                                    {element.name
+                                      ? element.name
+                                      : `Hotspot ${element.id}`}
                                   </p>
                                   <p className="text-xs text-gray-600 group-hover:text-white transition-all duration-300">
-                                    {element.name ? element.name : "Chưa có tên"}
+                                    {element.name
+                                      ? element.name
+                                      : "Chưa có tên"}
                                   </p>
                                 </div>
                               </div>

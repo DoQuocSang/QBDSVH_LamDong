@@ -15,7 +15,7 @@ import {
 import MainLogo from "../../../images/logo2.png";
 import HotspotNull from "../../../images/hotspot-null.png";
 
-const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange }) => {
+const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, isBackToMainScene }) => {
   // var image360url = localStorage.getItem("image360url");
   const [mainImage, setMainImage] = useState("");
   // const [scene, setScene] = useState(DataScene["insideOne"]);
@@ -27,6 +27,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
   // const [curentYaw, setCurentYaw] = useState(0);
   const [hotspotArr, setHotspotArr] = useState([]);
   const [currentImage, setCurrentImage] = useState("");
+  const [currentScene, setCurrentScene] = useState(null);
 
   const initialState = {
       id: 0,
@@ -58,7 +59,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
     //   setHotspotArrChange(true);
     // }
 
-    const updatedScene = { ...scene };
+    const updatedScene = { ...currentScene };
 
     const indexToUpdate = updatedScene.hotspots.findIndex(
       (item) => item.id === updatedValue.id
@@ -81,7 +82,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
   };
 
   const handleDeleteHotspot = (deletedValue) => {
-    const updatedScene = { ...scene };
+    const updatedScene = { ...currentScene };
   
     updatedScene.hotspots = updatedScene.hotspots.filter(item => item.id !== deletedValue.id);
     setHotspotArrChange(true);
@@ -177,18 +178,16 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
     }
 
     // //Xử lý logic
-    // if(scene && scene.hotspots){
-    //   setHotspotArr(scene.hotspots);
-    // }else{
-    //   setHotspotArr([]);
-    // }
+    if(isOpen && (!currentScene || isBackToMainScene)){
+      setCurrentScene(scene);
+    }
 
     // Lỗi vòng lặp vô hạn, treo web
     // const updatedScene = { ...scene };
     // updatedScene.hotspots = hotspotArr;
     // onChange(updatedScene);
 
-  }, []);
+  }, [scene]);
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
@@ -202,6 +201,11 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
     const seconds = String(date.getSeconds()).padStart(2, "0");
 
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  };
+
+  const getSceneById = (id) => {
+    const scene = scenes.find(item => item.scene.id === id);
+    setCurrentScene(scene)
   };
 
   const hotspots = (element, i) => {
@@ -234,14 +238,15 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
           cssClass={element.css_class}
           handleClick={() => {
             // setScene(DataScene["insideTwo"]);
-            setCurrentImage(element.image_url)
+            getSceneById(element.move_scene_id)
+            // setCurrentImage(element.image_url)
           }}
         />
       );
   };
 
   const addHotspot = () => {
-    const updatedScene = { ...scene };
+    const updatedScene = { ...currentScene };
 
     let lastId = updatedScene.hotspots ? updatedScene.hotspots.length : 0;
     lastId++;
@@ -286,7 +291,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
 
   const removeLastHotspot = () => {
     // setHotspotArr((prevHotspots) => prevHotspots.slice(0, -1));
-    const updatedScene = { ...scene };
+    const updatedScene = { ...currentScene };
 
     if (updatedScene.hotspots && Array.isArray(updatedScene.hotspots)) {
       // slice ko thay đổi trực tiếp trên mảng nó được gọi
@@ -367,7 +372,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
                 key={hotspotArrChange}
                 width="100%"
                 height="50vh"
-                title={scene.name}
+                title={(currentScene && currentScene.scene && currentScene.scene.name) ? currentScene.scene.name : "Khu vực không có tên"}
                 yaw={360}
                 hfov={110}
                 autoLoad={true}
@@ -375,10 +380,8 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
                 compass={true}
                 showZoomCtrl={true}
                 mouseZoom={true}
-                // draggable={true}
                 showControls={true}
-                // doubleClickZoom={true}
-                image={scene.panorama_image.file_url}
+                image={(currentScene && currentScene.panorama_image && currentScene.panorama_image.file_url) ? currentScene.panorama_image.file_url : ""}
                 hotspotDebug={true}
                 ref={pannellumRef}
               >
@@ -389,8 +392,8 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
                   <></>
                 )} */}
 
-                {scene.hotspots && scene.hotspots.length > 0 ? (
-                  scene.hotspots.map((element, i) => hotspots(element, i))
+                {currentScene && currentScene.hotspots && currentScene.hotspots.length > 0 ? (
+                  currentScene.hotspots.map((element, i) => hotspots(element, i))
                 ) : (
                   <></>
                 )}
@@ -467,7 +470,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
             <div className={totalConsoleContent ? "" : "hidden"}>
               <div className="flex justify-between items-center px-8 py-4 border border-gray-100">
                 <div className="font-semibold text-gray-700 text-sm">
-                  Số hotspot đã tạo: {scene.hotspots ? scene.hotspots.length : 0}
+                  Số hotspot đã tạo: {(currentScene && currentScene.hotspots) ? currentScene.hotspots.length : 0}
                 </div>
                 <div className="flex justify-end gap-2 items-center">
                   <button
@@ -495,7 +498,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange })
               </div>
             </div>
           </div>
-          <AllHotspot scenes={scenes} Hotspots={scene.hotspots ? scene.hotspots : []} updateItem={childToParent} onDelete={handleDeleteHotspot} addHospotInfo={addHospotInfo} newHotspotNeedAddInfo={currentModel} closeEditHospotOverlay={handleCloseEditHospotOvelay}/>
+          <AllHotspot scenes={scenes} Hotspots={(currentScene && currentScene.hotspots) ? currentScene.hotspots : []} updateItem={childToParent} onDelete={handleDeleteHotspot} addHospotInfo={addHospotInfo} newHotspotNeedAddInfo={currentModel} closeEditHospotOverlay={handleCloseEditHospotOvelay}/>
         </>
       )}
 

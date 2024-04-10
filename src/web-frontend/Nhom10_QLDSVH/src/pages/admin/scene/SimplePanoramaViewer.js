@@ -63,7 +63,7 @@ const SimplePanoramaViewer = ({ isOpen, sceneData }) => {
                 showControls={true}
                 // doubleClickZoom={true}
                 image={sceneData.panorama_image.file_url}
-                hotspotDebug={true}
+                // hotspotDebug={true}
                 ref={pannellumRef}
               >
               </Pannellum>

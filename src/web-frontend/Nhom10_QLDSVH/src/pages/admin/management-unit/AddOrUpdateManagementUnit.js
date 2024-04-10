@@ -49,6 +49,7 @@ import HotspotSidebar from "../hotspot/AllHotspot";
 import AllHotspot from "../hotspot/AllHotspot";
 import ThumbnailDefault from "../../../images/post-default-full.png";
 import AddOrUpdateScene from "../scene/AddOrUpdateScene";
+import { getLastPanoramaImageId } from "services/PanoramaImageRepository";
 
 export default ({ type = "" }) => {
   document.title = "Thêm/Cập nhật đơn vị quản lý";
@@ -99,6 +100,7 @@ export default ({ type = "" }) => {
   const [editingIndex, setEditingIndex] = useState(0);
   const [sceneAction, setSceneAction] = useState("add");
   const [sceneIndexToUpdate, setSceneIndexToUpdate] = useState(0);
+  const [isBackToMainScene, setIsBackToMainScene] = useState(false);
   localStorage.setItem(
     "image360url",
     managementUnitData.managementUnit.image_360_url
@@ -219,10 +221,12 @@ export default ({ type = "" }) => {
     setCurrentScene(managementUnitData.scenes[index])
     setIsPanoramaViewerOpen(true);
     setEditingIndex(index);
+    setIsBackToMainScene(true);
   };
 
   const handleClosePanoramaViewer = () => {
     setIsPanoramaViewerOpen(false);
+    setIsBackToMainScene(false);
   };
 
   const handleOpenAddSceneForm = () => {
@@ -274,7 +278,7 @@ export default ({ type = "" }) => {
     // Check if updatedScene is different from currentScene
     if (updatedScene !== currentScene) {
       const updatedScenes = managementUnitData.scenes.map((scene, index) =>
-        index === editingIndex ? updatedScene : scene
+        scene.scene.id === updatedScene.scene.id ? updatedScene : scene
       );
       setManagementUnitData((prevState) => ({
         ...prevState,
@@ -515,9 +519,7 @@ export default ({ type = "" }) => {
 
           <h2 className="font-semibold text-sm text-teal-500">Khu vực</h2>
 
-          <p>
-            {JSON.stringify(managementUnitData)}
-          </p>
+          {JSON.stringify(managementUnitData)}
 
           <div className="mt-4 mb-6">
             <div className="grid w-full gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3">
@@ -634,6 +636,7 @@ export default ({ type = "" }) => {
               scene={currentScene}
               scenes={managementUnitData.scenes}
               onChange={handleUpdateHotspotScene}
+              isBackToMainScene={isBackToMainScene}
               // sceneIndexToUpdate={editingIndex}
             />
 
