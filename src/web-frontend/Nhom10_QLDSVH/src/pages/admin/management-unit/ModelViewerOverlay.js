@@ -138,7 +138,7 @@ const ModelViewerOverlay = ({
           </div>
           <div className="z-20 absolute top-0 left-0 inset-0 w-full h-full bg-gradient-to-tr from-amber-800 to-amber-400 opacity-75"></div>
           <div className="text-white z-30 relative flex flex-col gap-2 justify-center">
-            <h4 className="font-semi-bold text-base">
+            <h4 className="pt-1 font-semi-bold text-base">
               {heritage.name}
             </h4>
             <p className="text-xs overflow-auto max-h-16 pr-2 scrollbar">

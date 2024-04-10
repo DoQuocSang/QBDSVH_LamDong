@@ -5,7 +5,7 @@ import CatNull from "images/cat-hotspot-null.png";
 import { isEmptyOrSpaces } from "components/utils/Utils";
 import { getHeritagesForCombobox } from "services/HeritageRepository";
 
-export default ({ Hotspots = [], updateItem, addHospotInfo, closeEditHospotOverlay, newHotspotNeedAddInfo}) => {
+export default ({ Hotspots = [], updateItem, onDelete, addHospotInfo, closeEditHospotOverlay, newHotspotNeedAddInfo, scenes}) => {
   const [tempValue, setTempValue] = useState(0);
   const [heritageList, setHeritageList] = useState([]);
   const [HotspotList, setHotspotList] = useState([]);
@@ -19,6 +19,7 @@ export default ({ Hotspots = [], updateItem, addHospotInfo, closeEditHospotOverl
       model_url: "",
       css_class: "hotSpotElement",
       model_id: 0,
+      scene_id: 0,
     },
   [currentHotspot, setCurrentHotspot] = useState(initialState);
 
@@ -144,6 +145,16 @@ export default ({ Hotspots = [], updateItem, addHospotInfo, closeEditHospotOverl
     }
   }
 
+  const handleDelete = (deletedValue) => {
+    onDelete(deletedValue);
+
+    const updatedHotspotArr = [...Hotspots];
+  
+    const filteredHotspotArr = updatedHotspotArr.filter(item => item.id !== deletedValue.id);
+  
+    setHotspotList(filteredHotspotArr);
+  }
+
   return (
     <>
       <div
@@ -161,9 +172,9 @@ export default ({ Hotspots = [], updateItem, addHospotInfo, closeEditHospotOverl
                 <div className="relative flex-1 w-screen h-full p-10 ">
                   <div
                     id="edit_hotspot"
-                    className="transform transition-transform duration-300 animated fadeIn z-50 absolute inset-0 left-1/2 -translate-x-1/2 translate-y-full"
+                    className="transform transition-transform duration-300 animated fadeIn z-50 absolute inset-0 left-1/2 -translate-x-1/2 translate-y-full flex justify-center items-center"
                   >
-                    <div className="max-h-full bg-white editor mx-auto flex max-w-md flex-col py-4 px-2 text-gray-800 shadow-lg rounded-lg">
+                    <div className="flex-1 max-h-full bg-white editor mx-auto flex max-w-md flex-col py-4 px-2 text-gray-800 shadow-lg rounded-lg">
                       <div className="flex items-center justify-between mx-4 pb-4">
                         <h2 className="text-xl font-semibold text-red-500 pl-4 border-l-4 border-red-500">
                           Chỉnh sửa Hotspot
@@ -227,6 +238,30 @@ export default ({ Hotspots = [], updateItem, addHospotInfo, closeEditHospotOverl
                           <option value={1}>Hotspot hiện vật</option>
                           <option value={2}>Hotspot chuyển cảnh</option>
                         </select>
+
+                        <h2 className="font-semibold text-sm text-teal-500">
+                          Khu vực
+                        </h2>
+                        <select
+                          name="scene_id"
+                          required
+                          onChange={e =>
+                            setCurrentHotspot(currentHotspot => ({
+                                ...currentHotspot,
+                                scene_id: parseInt(e.target.value, 10)
+                            }))
+                          }
+                          value={currentHotspot.scene_id}
+                          className=" text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400 appearance-none"
+                        >
+                          <option value={0}>--- Chọn khu vực ---</option>
+                          {scenes.map((item, index) => (
+                            <option key={index} value={index}>
+                              {item.id} {item.scene.name}
+                            </option>
+                          ))}
+                        </select>
+
 
                         <h2 className="font-semibold text-sm text-teal-500">
                           Góc nhìn (trục dọc)
@@ -325,10 +360,10 @@ export default ({ Hotspots = [], updateItem, addHospotInfo, closeEditHospotOverl
                       <div className="buttons flex items-center pt-6 px-4">
                         <hr className="mt-4" />
                         <button
-                          to="/admin/dashboard/all-user"
-                          className="btn ml-auto rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500"
+                          onClick={() => { handleDelete(currentHotspot) }} 
+                          className="btn ml-auto rounded-md transition duration-300 ease-in-out cursor-pointer bg-red-400 hover:bg-red-500 p-2 px-5 font-semibold text-white"
                         >
-                          Hủy
+                          Xóa
                         </button>
                         <button
                           id="notification_buttonmodal"

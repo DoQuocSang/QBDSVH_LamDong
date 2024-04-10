@@ -97,7 +97,7 @@ export default ({ type = "" }) => {
     const [modelUploadFile, setModelUploadFile] = useState(null);
     const [thumbnailUploadFile, setThumbnailUploadFile] = useState(null);
     const [isUploadFile, setIsUploadFile] = useState(false);
-    const [loggedInUserID, setLoggedInUserID] = useState(localStorage.getItem('loggedInUserID') || 1);
+    const [loggedInUserID, setLoggedInUserID] = useState(parseInt(localStorage.getItem('loggedInUserID') ,10) || 1);
 
     let { id } = useParams();
     id = id ?? 0;
@@ -398,6 +398,7 @@ export default ({ type = "" }) => {
     };
 
     const handleAddOrUpdateUploadFile = (val) => {
+        console.log(val)
         if (heritageData.upload_file.id === 0) {
             addUploadFile(val).then(data => {
                 console.log(data);
