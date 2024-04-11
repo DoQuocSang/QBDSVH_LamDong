@@ -232,6 +232,9 @@ export default ({ type = "" }) => {
   const handleOpenAddSceneForm = () => {
     setSceneAction("add");
     setIsOpenSceneForm(true);
+    
+    // Tắt view hiện tại
+    setIsPanoramaViewerOpen(false);
   };
 
   const handleOpenEditSceneForm = (index) => {
@@ -290,7 +293,10 @@ export default ({ type = "" }) => {
       setCurrentScene(updatedScene);
     }
   };
-  
+
+  const handleChangeCurrentScene = (updatedScene) => {
+      setCurrentScene(updatedScene);
+  };
 
   const handleDeleteSceneByIndex = (index) => {
     setManagementUnitData((prevState) => {
@@ -636,11 +642,12 @@ export default ({ type = "" }) => {
               scene={currentScene}
               scenes={managementUnitData.scenes}
               onChange={handleUpdateHotspotScene}
+              onClickMoveScene={handleChangeCurrentScene}
               isBackToMainScene={isBackToMainScene}
               // sceneIndexToUpdate={editingIndex}
             />
 
-            {managementUnitData.managementUnit.image_360_url &&
+            {currentScene && currentScene.panorama_image && currentScene.panorama_image.file_url &&
               isPanoramaViewerOpen && (
                 <button
                   onClick={handleClosePanoramaViewer}

@@ -11,10 +11,6 @@ export function getPanoramaImageById(
     // return get_api(`https://localhost:7245/api/users?PageSize=30&PageNumber=1`)
 }
 
-export function getLastPanoramaImageId() {    
-    return get_api(`http://localhost:8080/api/v1/panorama-image/last-inserted-id`)
-}
-
 export function getPanoramaImages(
     page = 1,
     limit = 30,

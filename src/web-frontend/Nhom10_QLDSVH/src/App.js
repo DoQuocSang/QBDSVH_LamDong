@@ -29,7 +29,9 @@ import AdminAddOrUpdateUser from "pages/admin/user/AddOrUpdateUser"
 
 import AdminLogin from "pages/admin/login/Login"
 
-import AdminAllMedia from "pages/admin/media/AllMedia";
+import AdminAllModel from "pages/admin/media/AllModel";
+import AdminAllPanoramaImage from "pages/admin/media/AllPanoramaImage";
+import AdminMediaLayout from "components/admin/layout/MediaLayout";
 
 //user
 import HomePage from "pages/user/HomePage"
@@ -123,7 +125,10 @@ function App() {
           <Route path="/admin/dashboard/add-user" element={<AdminAddOrUpdateUser type="add" />} />
           <Route path="/admin/dashboard/update-user/:id" element={<AdminAddOrUpdateUser type="update" />} />
 
-          <Route path="/admin/dashboard/all-media/model" element={<AdminAllMedia />} />
+          <Route path="/admin/dashboard/all-media/" element={<AdminMediaLayout />}>
+            <Route path="/admin/dashboard/all-media/model" element={<AdminAllModel />} />
+            <Route path="/admin/dashboard/all-media/panorama-image" element={<AdminAllPanoramaImage />} />
+          </Route>
         </Route>
         )}
 

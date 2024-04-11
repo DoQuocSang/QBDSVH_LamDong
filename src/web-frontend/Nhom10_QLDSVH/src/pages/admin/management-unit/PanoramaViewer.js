@@ -15,7 +15,7 @@ import {
 import MainLogo from "../../../images/logo2.png";
 import HotspotNull from "../../../images/hotspot-null.png";
 
-const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, isBackToMainScene }) => {
+const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, isBackToMainScene, onClickMoveScene }) => {
   // var image360url = localStorage.getItem("image360url");
   const [mainImage, setMainImage] = useState("");
   // const [scene, setScene] = useState(DataScene["insideOne"]);
@@ -118,7 +118,12 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
       }
 
       console.log = function (msg) {
-        msg = msg.toString();
+        // msg = msg.toString();
+        if (msg !== undefined && msg !== null) {
+          msg = msg.toString();
+        } else {
+            msg = "Undefined or null message";
+        }
         const matches = msg.match(/Pitch:\s+([-\d.]+).*Yaw:\s+([-\d.]+)/);
         if (matches && matches.length >= 3) {
           // const pitch = parseFloat(matches[1]).toFixed(1);
@@ -205,7 +210,8 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
 
   const getSceneById = (id) => {
     const scene = scenes.find(item => item.scene.id === id);
-    setCurrentScene(scene)
+    setCurrentScene(scene);
+    onClickMoveScene(scene);
   };
 
   const hotspots = (element, i) => {
@@ -253,14 +259,16 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
 
     const newHotspot = {
       id: lastId,
+      name: "",
       type: "custom",
       category: 1,
-      pitch: localStorage.getItem("pitch"),
-      yaw: localStorage.getItem("yaw"),
-      scene_id: 0,
+      pitch: parseFloat(localStorage.getItem("pitch")),
+      yaw: parseFloat(localStorage.getItem("yaw")),
+      scene_id: currentScene.scene.id,
       model_id: 0,
       model_url: "",
       css_class: "hotspotElement",
+      move_scene_id: 0,
     };
 
     // setHotspotArr((prevHotspots) => [...prevHotspots, newHotspot]);
@@ -333,6 +341,12 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
     setAddHospotInfo(true);
     setHotspotArrChange(false);
   };
+
+  const handleChangeHospotToEdit = () => {
+    // Reset biến để ko lỗi cập nhật Pannellum
+    setHotspotArrChange(false);
+  };
+
 
   const handleCloseEditHospotOvelay = () => {
     setAddHospotInfo(false);
@@ -447,6 +461,8 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
                     ) : (
                       <div
                         style={{
+                          borderRadius: "10px",
+                          overflow: "hidden",
                           backgroundColor: "#4d4d4d8c", // Mờ đục với độ trong suốt 0.6
                           backdropFilter: "blur(2px)", // Hiệu ứng mờ đục
                         }}
@@ -498,7 +514,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
               </div>
             </div>
           </div>
-          <AllHotspot scenes={scenes} Hotspots={(currentScene && currentScene.hotspots) ? currentScene.hotspots : []} updateItem={childToParent} onDelete={handleDeleteHotspot} addHospotInfo={addHospotInfo} newHotspotNeedAddInfo={currentModel} closeEditHospotOverlay={handleCloseEditHospotOvelay}/>
+          <AllHotspot scenes={scenes.filter(scene => scene !== currentScene)} Hotspots={(currentScene && currentScene.hotspots) ? currentScene.hotspots : []} updateItem={childToParent} onDelete={handleDeleteHotspot} addHospotInfo={addHospotInfo} newHotspotNeedAddInfo={currentModel} closeEditHospotOverlay={handleCloseEditHospotOvelay} onChangeHotspotClick={handleChangeHospotToEdit}/>
         </>
       )}
 

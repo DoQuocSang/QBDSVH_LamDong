@@ -1,4 +1,4 @@
-import { faCube, faMarker } from "@fortawesome/free-solid-svg-icons";
+import { faCube, faMarker, faMountainSun } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import CatNull from "images/cat-hotspot-null.png";
@@ -13,17 +13,19 @@ export default ({
   closeEditHospotOverlay,
   newHotspotNeedAddInfo,
   scenes,
+  onChangeHotspotClick,
 }) => {
   const [tempValue, setTempValue] = useState(0);
   const [heritageList, setHeritageList] = useState([]);
   const [HotspotList, setHotspotList] = useState([]);
 
   const initialState = {
+      id: 0,
       name: "",
-      type: 0,
+      type: "custom",
+      category: 0,
       pitch: 0,
       yaw: 0,
-      name_model: "New Hotspot",
       model_url: "",
       css_class: "hotSpotElement",
       model_id: 0,
@@ -39,6 +41,17 @@ export default ({
     setTempValue(hotSpot.id);
     // console.log(hotSpot);
     setCurrentHotspot(hotSpot);
+    // alert(hotSpot.id)
+
+    // Reset biến theo dõi thay đổi để cập nhật Pannellum
+    onChangeHotspotClick();
+  }
+
+  function closeEditHotspotForm() {
+    const editHotspot = document.getElementById("edit_hotspot");
+    editHotspot.classList.add("translate-y-full");
+    editHotspot.classList.remove("my-10");
+    // console.log(hotSpot);
     // alert(hotSpot.id)
   }
 
@@ -154,6 +167,8 @@ export default ({
       updatedHotspotArr[indexToUpdate] = updatedValue;
       setHotspotList(updatedHotspotArr);
     }
+
+    closeEditHotspotForm();
   };
 
   const handleDelete = (deletedValue) => {
@@ -166,6 +181,8 @@ export default ({
     );
 
     setHotspotList(filteredHotspotArr);
+
+    closeEditHotspotForm();
   };
 
   return (
@@ -334,7 +351,7 @@ export default ({
                           onChange={(e) => {
                             setCurrentHotspot({
                               ...currentHotspot,
-                              pitch: e.target.value,
+                              pitch: parseFloat(e.target.value),
                             });
                           }}
                           placeholder="Nhập giá trị góc nhìn"
@@ -351,7 +368,7 @@ export default ({
                           onChange={(e) => {
                             setCurrentHotspot({
                               ...currentHotspot,
-                              yaw: e.target.value,
+                              yaw: parseFloat(e.target.value),
                             });
                           }}
                           type="number"
@@ -451,7 +468,8 @@ export default ({
                                 className="relative flex flex-grow !flex-row justify-center items-center border-1 border-slate-100 shadow-md rounded-md bg-white gap-3 p-4 hover:bg-red-400 group transition-all duration-300 cursor-pointer"
                               >
                                 <div className="flex flex-row items-center">
-                                  <div className="rounded-full bg-amber-100 p-3 group-hover:bg-white transition-all duration-300">
+                                  {element.category === 1 ? (
+                                    <div className="rounded-full bg-amber-100 p-3 group-hover:bg-white transition-all duration-300">
                                     <span className="flex items-center">
                                       <svg
                                         stroke="currentColor"
@@ -467,6 +485,25 @@ export default ({
                                       </svg>
                                     </span>
                                   </div>
+                                  ) : (
+                                    <div className="rounded-full bg-blue-100 p-3 group-hover:bg-white transition-all duration-300">
+                                    <span className="flex items-center">
+                                      <svg
+                                        stroke="currentColor"
+                                        fill="currentColor"
+                                        stroke-width="0"
+                                        viewBox="0 0 512 512"
+                                        className="h-6 w-6 text-blue-400 group-hover:text-red-400 transition-all duration-300"
+                                        height="1em"
+                                        width="1em"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <FontAwesomeIcon icon={faMountainSun} />
+                                      </svg>
+                                    </span>
+                                  </div>
+                                  )}
+                                
                                 </div>
                                 <div className="flex flex-1 w-auto flex-col justify-center gap-1">
                                   <p className="font-dm text-sm font-semibold text-teal-500 group-hover:text-white transition-all duration-300">

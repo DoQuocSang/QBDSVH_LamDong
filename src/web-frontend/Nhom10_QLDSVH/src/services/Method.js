@@ -75,3 +75,26 @@ export async function post_api_return_data(your_api, formData) {
       console.log('Error', error.message);
     }
 }
+
+export async function handleDownload(downloadUrl, filename) {
+  try {
+    const response = await axios.get(downloadUrl, {
+      responseType: 'blob' // Đảm bảo dữ liệu trả về dưới dạng blob (Binary Large Object)
+    });
+
+    // Tạo một URL từ blob dữ liệu
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+
+    // Tạo một phần tử a để tải xuống và kích hoạt click tự động
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename || 'image.jpg'); // Tên tệp khi tải về
+    document.body.appendChild(link);
+    link.click();
+
+    // Xóa URL để tránh rò rỉ bộ nhớ
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error downloading image:', error);
+  }
+};

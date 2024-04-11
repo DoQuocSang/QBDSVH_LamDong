@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -155,21 +154,4 @@ func GetPagedPanoramaImage(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, pagination)
-}
-
-// Lấy id của item cuối cùng được thêm vào bảng
-func GetLastInsertedPanoramaImageID(c *gin.Context) {
-	var lastInsertedID int
-
-	// Sử dụng Last() để lấy dữ liệu cuối cùng từ bảng
-	result := db.GetDB().Raw("SELECT id FROM panorama_images ORDER BY id DESC LIMIT 1").Scan(&lastInsertedID)
-
-	if result.Error != nil {
-		log.Println(result.Error)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
-		return
-	}
-
-	// Trả về ID của item cuối cùng được thêm vào bảng
-	utils.SuccessResponse(c, http.StatusOK, gin.H{"last_inserted_id": lastInsertedID})
 }

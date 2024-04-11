@@ -120,7 +120,11 @@ func SetupRouter() *gin.Engine {
 			panorama_image.POST("", controllers.CreatePanoramaImage)
 			panorama_image.PUT("/:id", controllers.UpdatePanoramaImage)
 			panorama_image.DELETE("/:id", controllers.DeletePanoramaImage)
-			panorama_image.GET("/last-inserted-id", controllers.GetLastInsertedPanoramaImageID)
+			panorama_image.GET("/last-inserted-id", controllers.GetLastInsertedSceneID)
+		}
+		scene := v1.Group("/scene")
+		{
+			scene.GET("/last-inserted-id", controllers.GetLastInsertedSceneID)
 		}
 	}
 

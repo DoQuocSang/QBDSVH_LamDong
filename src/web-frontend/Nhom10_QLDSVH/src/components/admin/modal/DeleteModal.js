@@ -11,8 +11,9 @@ import { deleteUploadFileById } from "services/UploadFileRepository";
 import { storage } from "../../../firebase.js"
 import { ref, deleteObject } from 'firebase/storage';
 import { getFileNameFromURL } from "components/utils/Utils";
+import { deletePanoramaImageById } from "services/PanoramaImageRepository";
 
-export default ({ mainText = 'item', deleteId = 0, type = '', isDelete, deleteModelUrl, deleteThumbnailUrl }) => {
+export default ({ mainText = 'item', deleteId = 0, type = '', isDelete, deleteFileUrl, deleteThumbnailUrl }) => {
     const [changeContent, setChangeContent] = useState(false);
 
     useEffect(() => {
@@ -93,7 +94,8 @@ export default ({ mainText = 'item', deleteId = 0, type = '', isDelete, deleteMo
             })
             //console.log('loai di san')
         }
-        if (type === 'media') {
+
+        if (type === 'model') {
             deleteUploadFileById(deleteId).then(data => {
                 //Ở đây Data có kiểu trả về là boolean
                 //Gọi hàm isDelete để thực thi bên component cha AllHeritage  
@@ -126,11 +128,66 @@ export default ({ mainText = 'item', deleteId = 0, type = '', isDelete, deleteMo
             }
 
             // Check if there is a modifiedFileName
-            var ModelName = getFileNameFromURL(deleteModelUrl, 'models%2F');
+            var ModelName = getFileNameFromURL(deleteFileUrl, 'models%2F');
             if (ModelName) {
                 // Create a reference to the file in storage
                 const storageRef = ref(storage, `models/${ModelName}`);
                 console.log("File hiện tại: " + ModelName);
+
+                // Delete the file from storage
+                deleteObject(storageRef)
+                    .then(() => {
+                        // alert("Xóa file thành công");
+                        console.log('File deleted successfully');
+
+                        // Remove the item from localStorage
+                        // localStorage.removeItem("yourLocalStorageKey");
+                    })
+                    .catch((error) => {
+                        // alert("Có lỗi khi xóa file");
+                        console.error('Error deleting file:', error);
+                    });
+            }
+        }
+
+        if (type === 'panorama-image') {
+            deletePanoramaImageById(deleteId).then(data => {
+                //Ở đây Data có kiểu trả về là boolean
+                //Gọi hàm isDelete để thực thi bên component cha AllHeritage  
+                isDelete(data);
+
+                //Thay đổi nội dung thông báo nếu xóa thành công
+                setChangeContent(true);
+            })
+
+            // Check if there is a modifiedFileName
+            var ThumbnailName = getFileNameFromURL(deleteThumbnailUrl, 'panorama_thumbnails%2F');
+            if (ThumbnailName) {
+                // Create a reference to the file in storage
+                const storageRef = ref(storage, `panorama_thumbnails/${ThumbnailName}`);
+                console.log("File hiện tại: " + ThumbnailName);
+
+                // Delete the file from storage
+                deleteObject(storageRef)
+                    .then(() => {
+                        // alert("Xóa file thành công");
+                        console.log('File deleted successfully');
+
+                        // Remove the item from localStorage
+                        // localStorage.removeItem("yourLocalStorageKey");
+                    })
+                    .catch((error) => {
+                        // alert("Có lỗi khi xóa file");
+                        console.error('Error deleting file:', error);
+                    });
+            }
+
+            // Check if there is a modifiedFileName
+            var PanoramaImageName = getFileNameFromURL(deleteFileUrl, 'panoramas%2F');
+            if (PanoramaImageName) {
+                // Create a reference to the file in storage
+                const storageRef = ref(storage, `panoramas/${PanoramaImageName}`);
+                console.log("File hiện tại: " + PanoramaImageName);
 
                 // Delete the file from storage
                 deleteObject(storageRef)

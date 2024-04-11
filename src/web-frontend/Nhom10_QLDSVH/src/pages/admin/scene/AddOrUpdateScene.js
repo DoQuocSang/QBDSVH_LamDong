@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import {
   faCircleCheck,
@@ -26,8 +26,9 @@ import {
 } from "firebase/storage";
 import PanoramaViewer from "../management-unit/PanoramaViewer";
 import SimplePanoramaViewer from "./SimplePanoramaViewer";
-import { addPanoramaImage, deletePanoramaImageById, getLastPanoramaImageId, putPanoramaImage } from "services/PanoramaImageRepository";
+import { addPanoramaImage, deletePanoramaImageById, putPanoramaImage } from "services/PanoramaImageRepository";
 import UploadingGif from "../../../images/loading.gif";
+import { getLastSceneId } from "services/SceneRepository";
 
 export default ({
   isOpen,
@@ -42,10 +43,8 @@ export default ({
   const defaultScene = {
       id: 0,
       name: "",
-      scene_index: newSceneIndex,
       pitch: 0,
       yaw: 0,
-      thumbnail_url: "",
       management_unit_id: parseInt(managementUnitId, 10),
   }
 
@@ -80,7 +79,7 @@ export default ({
   const [isThumbnailViewerOpen, setIsThumbnailViewerOpen] = useState(false);
   const [loggedInUserID, setLoggedInUserID] = useState(parseInt(localStorage.getItem('loggedInUserID') ,10) || 1);
   const [newSceneId, setNewSceneId] = useState(0);
-  
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     // Drop zone (file upload)
@@ -148,13 +147,37 @@ export default ({
       }
     }
 
-    getLastPanoramaImageId().then((data) => {
-      if (data){
-        setNewSceneId(data.last_inserted_id);
-      }
-      else setNewSceneId(0);
-    });
+    if(newSceneId === 0){
+      getLastSceneId().then((data) => {
+        if (data){
+          setNewSceneId(data.last_inserted_id + 1);
+        }
+        else setNewSceneId(0);
+      });
+    }
   }, [isOpen]);
+
+    //validate lỗi bổ trống
+    const validateAllInput = () => {
+      const validationErrors = {};
+      const validationEmpty = {};
+  
+      if (sceneData.scene.name.trim() === "") {
+        validationErrors.name = "Vui lòng nhập tên khu vực";
+      }
+      
+      if (sceneData.panorama_image.file_url.trim() === "") {
+        validationErrors.file_url = "Vui lòng tải ảnh khu vực";
+      }
+  
+      setErrors(validationErrors);
+      // Kiểm tra nếu có lỗi
+      if (Object.keys(validationErrors).length === 0) {
+        return false;
+      } else {
+        return true;
+      }
+    };
 
   const ResetUploadFileStates = () => {
     // Panorama
@@ -254,6 +277,7 @@ export default ({
 
     // Generate a unique filename
     const uniqueId = uuidv4();
+    const normalFileName = `panorama_${uniqueId}`;
     const modifiedFileName = `panorama_${uniqueId}.jpg`;
 
     // Set the reference path in Firebase Storage
@@ -281,11 +305,11 @@ export default ({
             ...prevData,
             panorama_image: {
                 ...prevData.panorama_image,
-                name: modifiedFileName,
+                name: normalFileName,
                 file_url: downloadURL,
                 size: fileSizeInBytes,
                 user_id: loggedInUserID,
-                scene_id: 0,
+                scene_id: newSceneId,
                 upload_date: new Date().toISOString(),
                 extension: 'jpg'
             }
@@ -293,11 +317,11 @@ export default ({
           ));
 
           handleAddOrUpdateUploadFile({
-            name: modifiedFileName,
+            name: normalFileName,
             file_url: downloadURL,
             size: fileSizeInBytes,
             user_id: loggedInUserID,
-            scene_id: 0,
+            scene_id: newSceneId,
             upload_date: new Date().toISOString(),
             extension: 'jpg'
         });
@@ -401,17 +425,19 @@ if (sceneData.panorama_image.thumbnail_url === '') {
   };
 
   const handleSubmitScene = () => {
-    if (action === "add") {
-      // Cập nhật lại id (tạm thời) và tăng id lên 1 cho item kế tiếp
-      sceneData.scene.id = newSceneId;
-      onSave(sceneData);
-      setNewSceneId(prevId => prevId + 1);
-    } else if (action === "edit") {
-      onUpdate(sceneData);
-    }
-    setSceneData(initialState);
-    ResetUploadFileStates();
-  };
+    if (validateAllInput() === false) {
+      if (action === "add") {
+        // Cập nhật lại id (tạm thời) và tăng id lên 1 cho item kế tiếp
+        sceneData.scene.id = newSceneId;
+        onSave(sceneData);
+        setNewSceneId(prevId => prevId + 1);
+      } else if (action === "edit") {
+        onUpdate(sceneData);
+      }
+      setSceneData(initialState);
+      ResetUploadFileStates();
+    };
+  }
 
   const clearThumbnailFile = () => {
     // Clear the uploaded file and reset model_360_url in state
@@ -504,7 +530,7 @@ if (sceneData.panorama_image.thumbnail_url === '') {
 
             handleAddOrUpdateUploadFile({
               user_id: loggedInUserID,
-              scene_id: 0,
+              scene_id: newSceneId,
               thumbnail_url: downloadURL,
               upload_date: new Date().toISOString(),
             });
@@ -521,7 +547,7 @@ if (sceneData.panorama_image.thumbnail_url === '') {
               panorama_image: {
                 ...prevData.panorama_image,
                 user_id: loggedInUserID,
-                scene_id: parseInt(0),
+                scene_id: newSceneId,
                 thumbnail_url: downloadURL,
                 upload_date: new Date().toISOString(),
               },
@@ -552,7 +578,7 @@ if (sceneData.panorama_image.thumbnail_url === '') {
           id="close_scene_space"
           className="absolute bg-black opacity-50 inset-0 z-0"
         ></div>
-        <div className="bg-white editor mx-auto my-4 max-h-full overflow-auto relative flex w-10/12 max-w-lg flex-col p-6 text-gray-800 shadow-lg rounded-lg border-t-4 border-purple-400">
+        <div className="bg-white editor mx-auto my-4 max-h-full overflow-auto relative flex w-10/12 max-w-lg flex-col p-6 text-gray-800 shadow-lg rounded-lg">
           <div className="flex items-center justify-between mx-4 pb-4">
             <h2 className="text-xl font-semibold text-red-500 pl-4 border-l-4 border-red-500">
               {mainAction} khu vực
@@ -597,6 +623,12 @@ if (sceneData.panorama_image.thumbnail_url === '') {
               placeholder="Nhập tên Hotspot"
               className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
             />
+            {errors.name && (
+            <p className="text-red-500 mb-6 text-sm font-semibold">
+              <FontAwesomeIcon className="mr-2" icon={faXmarkCircle} />
+              {errors.name}
+            </p>
+            )}
 
             <h2 className="font-semibold text-sm text-teal-500">
               Góc nhìn (trục dọc)
@@ -1047,6 +1079,12 @@ if (sceneData.panorama_image.thumbnail_url === '') {
               {/* <MyPanorama /> */}
               {/* <PanoramaDemo imagePath={sceneData.panorama_image.file_url} /> */}
             </div>
+            {errors.file_url && (
+            <p className="text-red-500 mb-6 text-sm font-semibold">
+              <FontAwesomeIcon className="mr-2" icon={faXmarkCircle} />
+              {errors.file_url}
+            </p>
+            )}
           </div>
           <div className="buttons flex items-center pt-6 px-4">
             <hr className="mt-4" />
