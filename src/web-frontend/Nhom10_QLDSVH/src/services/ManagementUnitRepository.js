@@ -11,6 +11,14 @@ export function getManagementUnitById(
     // return get_api(`https://localhost:7245/api/users?PageSize=30&PageNumber=1`)
 }
 
+export function getFullInfoOfManagementUnitById(
+    id = 0,
+    ) {    
+    return get_api(`http://localhost:8080/api/v1/management-unit/full-info/${id}`)
+    // return get_api(`https://localhost:7245/api/users?PageSize=30&PageNumber=1`)
+}
+
+
 export function getManagementUnitBySlug(
     slug = "",
     ) {    
@@ -35,10 +43,22 @@ export function deleteManagementUnitById(
     return delete_api(`http://localhost:8080/api/v1/management-unit/${id}`)
 }
 
+export function deleteManagementUnitWithSceneDataById(
+    id = 0,
+    ) {    
+    return delete_api(`http://localhost:8080/api/v1/management-unit/full-info/${id}`)
+}
+
 export function addManagementUnit(
     formData
     ) {
     return post_api(`http://localhost:8080/api/v1/management-unit`, formData);
+}
+
+export function addManagementUnitAndSceneData(
+    formData
+    ) {
+    return post_api(`http://localhost:8080/api/v1/management-unit/full-info`, formData);
 }
 
 export function putManagementUnit(
@@ -46,6 +66,14 @@ export function putManagementUnit(
     formData
     ) {
     return put_api(`http://localhost:8080/api/v1/management-unit/${id}`, formData);
+}
+
+
+export function putManagementUnitAndSceneData(
+    id = 0,
+    formData
+    ) {
+    return put_api(`http://localhost:8080/api/v1/management-unit/full-info/${id}`, formData);
 }
 
 export function putManagementUnitImage360(

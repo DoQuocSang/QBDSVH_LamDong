@@ -23,7 +23,10 @@ import {
 } from "../../../components/utils/Utils";
 import { generateSlug } from "../../../components/utils/Utils";
 import {
+  addManagementUnitAndSceneData,
+  getFullInfoOfManagementUnitById,
   getManagementUnitById,
+  putManagementUnitAndSceneData,
   putManagementUnitImage360,
 } from "../../../services/ManagementUnitRepository";
 
@@ -78,7 +81,7 @@ export default ({ type = "" }) => {
   ]; 
 
   const initialState = {
-      managementUnit: {
+      management_unit: {
         ...defaultManagementUnit,
       },
       scenes: defaultScenes,
@@ -101,10 +104,10 @@ export default ({ type = "" }) => {
   const [sceneAction, setSceneAction] = useState("add");
   const [sceneIndexToUpdate, setSceneIndexToUpdate] = useState(0);
   const [isBackToMainScene, setIsBackToMainScene] = useState(false);
-  localStorage.setItem(
-    "image360url",
-    managementUnitData.managementUnit.image_360_url
-  );
+  // localStorage.setItem(
+  //   "image360url",
+  //   managementUnitData.management_unit.image_360_url
+  // );
 
   let { id } = useParams();
   id = id ?? 0;
@@ -121,21 +124,23 @@ export default ({ type = "" }) => {
     document.title = "Thêm/ cập nhật đơn vị quản lý";
 
     if (
-      managementUnitData.managementUnit.image_360_url === "" ||
-      managementUnitData.managementUnit.image_360_url === null
+      managementUnitData.management_unit.image_360_url === "" ||
+      managementUnitData.management_unit.image_360_url === null
     ) {
       setUploadSectionVisible(true);
       console.log(uploadSectionVisible);
     }
 
     if (id !== 0) {
-      getManagementUnitById(id).then((data) => {
+      getFullInfoOfManagementUnitById(id).then((data) => {
         if (data)
-          setManagementUnitData((managementUnitData) => ({
-            ...managementUnitData,
-            managementUnit: {
-              ...data,
-            },
+          setManagementUnitData((prevState) => ({
+              ...prevState,
+              management_unit: {
+                  ...prevState.management_unit,
+                  ...data.management_unit,
+              },
+              scenes: data.scenes !== null ? data.scenes : [],
           }));
         else setManagementUnitData(initialState);
         console.log(data);
@@ -143,36 +148,38 @@ export default ({ type = "" }) => {
     }
   }, []);
 
+  console.log(managementUnitData);
+
   //validate lỗi bổ trống
   const validateAllInput = () => {
     const validationErrors = {};
     const validationEmpty = {};
 
-    if (managementUnitData.managementUnit.name.trim() === "") {
+    if (managementUnitData.management_unit.name.trim() === "") {
       validationErrors.name = "Vui lòng nhập tên đơn vị quản lý";
     }
 
-    if (managementUnitData.managementUnit.urlslug.trim() === "") {
+    if (managementUnitData.management_unit.urlslug.trim() === "") {
       validationErrors.urlslug = "Slug chưa được tạo";
     }
 
-    // if (managementUnitData.managementUnit.image_url.trim() === '') {
+    // if (managementUnitData.management_unit.image_url.trim() === '') {
     //     validationErrors.image_url = 'Vui lòng nhập link ảnh';
     // }
 
-    if (managementUnitData.managementUnit.address.trim() === "") {
+    if (managementUnitData.management_unit.address.trim() === "") {
       validationErrors.address = "Vui lòng nhập địa chỉ";
     }
 
-    // if (managementUnitData.managementUnit.note.trim() === '') {
+    // if (managementUnitData.management_unit.note.trim() === '') {
     //     validationErrors.note = 'Vui lòng nhập ghi chú';
     // }
 
-    if (managementUnitData.managementUnit.short_description.trim() === "") {
+    if (managementUnitData.management_unit.short_description.trim() === "") {
       validationErrors.short_description = "Vui lòng nhập mô tả ngắn";
     }
 
-    if (managementUnitData.managementUnit.description.trim() === "") {
+    if (managementUnitData.management_unit.description.trim() === "") {
       validationErrors.description = "Vui lòng nhập mô tả chi tiết";
     }
 
@@ -189,12 +196,11 @@ export default ({ type = "" }) => {
     // Nếu không có lỗi mới xóa hoặc cập nhật
     if (validateAllInput() === false) {
       if (id === 0) {
-        addManagementUnit(managementUnitData.managementUnit).then((data) => {
+        addManagementUnitAndSceneData(managementUnitData).then((data) => {
           SetSuccessFlag(data);
-          //console.log(data);
         });
       } else {
-        putManagementUnit(id, managementUnitData.managementUnit).then(
+        putManagementUnitAndSceneData(id, managementUnitData).then(
           (data) => {
             SetSuccessFlag(data);
             //console.log(data);
@@ -307,6 +313,9 @@ export default ({ type = "" }) => {
         scenes: updatedScenes,
       };
     });
+    
+    // Tắt view hiện tại
+    setIsPanoramaViewerOpen(false);
   };
 
   //  const updateManagementUnitData = (updatedData) => {
@@ -341,12 +350,12 @@ export default ({ type = "" }) => {
             name="name"
             required
             type="text"
-            value={managementUnitData.managementUnit.name || ""}
+            value={managementUnitData.management_unit.name || ""}
             onChange={(e) =>
               setManagementUnitData((managementUnitData) => ({
                 ...managementUnitData,
-                managementUnit: {
-                  ...managementUnitData.managementUnit,
+                management_unit: {
+                  ...managementUnitData.management_unit,
                   name: e.target.value,
                   urlslug: generateSlug(e.target.value),
                 },
@@ -367,7 +376,7 @@ export default ({ type = "" }) => {
             name="urlslug"
             required
             type="text"
-            value={managementUnitData.managementUnit.urlslug || ""}
+            value={managementUnitData.management_unit.urlslug || ""}
             // onChange={e => setHeritage({
             //     ...heritage,
             //     UrlSlug: e.target.value
@@ -387,12 +396,12 @@ export default ({ type = "" }) => {
             name="address"
             required
             type="text"
-            value={managementUnitData.managementUnit.address || ""}
+            value={managementUnitData.management_unit.address || ""}
             onChange={(e) =>
               setManagementUnitData((managementUnitData) => ({
                 ...managementUnitData,
-                managementUnit: {
-                  ...managementUnitData.managementUnit,
+                management_unit: {
+                  ...managementUnitData.management_unit,
                   address: e.target.value,
                 },
               }))
@@ -412,12 +421,12 @@ export default ({ type = "" }) => {
             name="short_description"
             required
             type="text"
-            value={managementUnitData.managementUnit.short_description || ""}
+            value={managementUnitData.management_unit.short_description || ""}
             onChange={(e) =>
               setManagementUnitData((managementUnitData) => ({
                 ...managementUnitData,
-                managementUnit: {
-                  ...managementUnitData.managementUnit,
+                management_unit: {
+                  ...managementUnitData.management_unit,
                   short_description: e.target.value,
                 },
               }))
@@ -440,12 +449,12 @@ export default ({ type = "" }) => {
             name="description"
             required
             type="text"
-            value={managementUnitData.managementUnit.description || ""}
+            value={managementUnitData.management_unit.description || ""}
             onChange={(e) =>
               setManagementUnitData((managementUnitData) => ({
                 ...managementUnitData,
-                managementUnit: {
-                  ...managementUnitData.managementUnit,
+                management_unit: {
+                  ...managementUnitData.management_unit,
                   description: e.target.value,
                 },
               }))
@@ -466,12 +475,12 @@ export default ({ type = "" }) => {
             name="note"
             required
             type="text"
-            value={managementUnitData.managementUnit.note || ""}
+            value={managementUnitData.management_unit.note || ""}
             onChange={(e) =>
               setManagementUnitData((managementUnitData) => ({
                 ...managementUnitData,
-                managementUnit: {
-                  ...managementUnitData.managementUnit,
+                management_unit: {
+                  ...managementUnitData.management_unit,
                   note: e.target.value,
                 },
               }))
@@ -491,12 +500,12 @@ export default ({ type = "" }) => {
             name="image_url"
             required
             type="text"
-            value={managementUnitData.managementUnit.image_url || ""}
+            value={managementUnitData.management_unit.image_url || ""}
             onChange={(e) =>
               setManagementUnitData((managementUnitData) => ({
                 ...managementUnitData,
-                managementUnit: {
-                  ...managementUnitData.managementUnit,
+                management_unit: {
+                  ...managementUnitData.management_unit,
                   image_url: e.target.value,
                 },
               }))
@@ -511,13 +520,13 @@ export default ({ type = "" }) => {
                         </p>
                     } */}
 
-          {!isEmptyOrSpaces(managementUnitData.managementUnit.image_url) && (
+          {!isEmptyOrSpaces(managementUnitData.management_unit.image_url) && (
             <>
               <p className="text-gray-600 mb-4 text-center text-sm">
                 Ảnh hiện tại
               </p>
               <img
-                src={managementUnitData.managementUnit.image_url}
+                src={managementUnitData.management_unit.image_url}
                 className="w-full h-auto mb-6 rounded-lg"
               />
             </>
@@ -525,7 +534,7 @@ export default ({ type = "" }) => {
 
           <h2 className="font-semibold text-sm text-teal-500">Khu vực</h2>
 
-          {JSON.stringify(managementUnitData)}
+          {/* {JSON.stringify(managementUnitData)} */}
 
           <div className="mt-4 mb-6">
             <div className="grid w-full gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3">
@@ -625,7 +634,7 @@ export default ({ type = "" }) => {
 
           {/* --------------------------------------------------------------------------------------------------------- */}
 
-          {managementUnitData.managementUnit.image_360_url &&
+          {managementUnitData.management_unit.image_360_url &&
             isPanoramaViewerOpen && (
               <h2 className="font-semibold text-sm text-teal-500">
                 Thêm/Sửa Hotspot
@@ -636,9 +645,9 @@ export default ({ type = "" }) => {
             {/* <canvas ref={canvasRef} className="hidden"></canvas> */}
             
             <PanoramaViewer
-              title={managementUnitData.managementUnit.name}
+              title={managementUnitData.management_unit.name}
               isOpen={isPanoramaViewerOpen}
-              image360Url={managementUnitData.managementUnit.image_360_url}
+              image360Url={managementUnitData.management_unit.image_360_url}
               scene={currentScene}
               scenes={managementUnitData.scenes}
               onChange={handleUpdateHotspotScene}
@@ -657,7 +666,7 @@ export default ({ type = "" }) => {
                 </button>
               )}
             {/* <MyPanorama /> */}
-            {/* <PanoramaDemo imagePath={managementUnitData.managementUnit.image_360_url} /> */}
+            {/* <PanoramaDemo imagePath={managementUnitData.management_unit.image_360_url} /> */}
           </div>
 
           <div className="buttons flex mt-4">

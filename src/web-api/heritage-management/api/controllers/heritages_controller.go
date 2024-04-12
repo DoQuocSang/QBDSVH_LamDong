@@ -76,16 +76,50 @@ func GetAllHeritagesForCombobox(c *gin.Context) {
 		return
 	}
 
-	for i := range heritages {
-		var uploadFile models.UploadFile_DTO
-		if err := db.GetDB().Where("heritage_id = ? AND is_current_use = 1", heritages[i].ID).First(&uploadFile).Error; err != nil {
-			if !errors.Is(err, gorm.ErrRecordNotFound) {
-				utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get upload file")
-				return
-			}
-		}
-		heritages[i].UploadFile = uploadFile
+	var uploadFiles []models.UploadFile_DTO
+
+	// Khởi tạo slice và cấp phát kích thước mảng bằng chiều dài mảng heritages
+	heritageIDs := make([]int, len(heritages))
+	for i, heritage := range heritages {
+		heritageIDs[i] = heritage.ID
 	}
+
+	// Dùng slice ở trên để lọc upload_file
+	if err := db.GetDB().Where("heritage_id IN (?) AND is_current_use = 1", heritageIDs).Find(&uploadFiles).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get upload files")
+		return
+	}
+
+	// Tạo map có khóa kiểu in và giá trị thuộc kiểu UploadFile_DTO
+	uploadFileMap := make(map[int]models.UploadFile_DTO)
+	for _, uploadFile := range uploadFiles {
+		uploadFileMap[uploadFile.Heritage_ID] = uploadFile
+	}
+
+	// uploadFileMap[heritages[i].ID] dùng để truy cập map theo id di sản và trả về tru nếu tồn tại, sau đó tiến hành gán
+	for i := range heritages {
+		if uploadFile, exists := uploadFileMap[heritages[i].ID]; exists {
+			heritages[i].UploadFile = uploadFile
+		}
+	}
+	// // Truy vấn để lấy danh sách upload_file có id khác 0 và is_current_use = 1
+	// var filteredUploadFiles []models.UploadFile_DTO
+	// if err := db.GetDB().
+	// 	Where("id <> ? AND is_current_use = ?", 0, true).
+	// 	Find(&filteredUploadFiles).Error; err != nil {
+	// 	utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get filtered upload files")
+	// 	return
+	// }
+
+	// // Sử dụng danh sách upload_file được lọc để truy vấn theo id heritage
+	// for i := range heritages {
+	// 	for _, uploadFile := range filteredUploadFiles {
+	// 		if uploadFile.Heritage_ID == heritages[i].ID {
+	// 			heritages[i].UploadFile = uploadFile
+	// 			break // Ngừng tìm kiếm sau khi tìm thấy match
+	// 		}
+	// 	}
+	// }
 
 	utils.SuccessResponse(c, http.StatusOK, heritages)
 }
@@ -96,9 +130,11 @@ func GetHeritageByID(c *gin.Context) {
 
 	var heritage models.Heritage
 
-	if err := db.GetDB().Where("id = ?", id).First(&heritage).Error; err != nil {
-		utils.ErrorResponse(c, http.StatusNotFound, "Heritage not found")
-		return
+	if id != "0" {
+		if err := db.GetDB().Where("id = ?", id).First(&heritage).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusNotFound, "Heritage not found")
+			return
+		}
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, heritage)

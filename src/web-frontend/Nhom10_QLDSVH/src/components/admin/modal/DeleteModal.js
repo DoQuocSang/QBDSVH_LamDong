@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { deleteHeritageById } from "../../../services/HeritageRepository";
 import { deleteHeritageTypeById } from "../../../services/HeritageTypeRepository";
 import { deleteLocationById } from "../../../services/LocationRepository";
-import { deleteManagementUnitById } from "../../../services/ManagementUnitRepository";
+import { deleteManagementUnitById, deleteManagementUnitWithSceneDataById } from "../../../services/ManagementUnitRepository";
 import { deleteUserById } from "../../../services/UserRepository";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
@@ -73,7 +73,7 @@ export default ({ mainText = 'item', deleteId = 0, type = '', isDelete, deleteFi
             //console.log('loai di san')
         }
         if (type === 'management-unit') {
-            deleteManagementUnitById(deleteId).then(data => {
+            deleteManagementUnitWithSceneDataById(deleteId).then(data => {
                 //Ở đây Data có kiểu trả về là boolean
                 //Gọi hàm isDelete để thực thi bên component cha AllHeritage  
                 isDelete(data);

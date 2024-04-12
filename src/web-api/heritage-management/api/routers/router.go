@@ -70,6 +70,11 @@ func SetupRouter() *gin.Engine {
 			management_unit.GET("/slug/:urlSlug", controllers.GetManagementUnitBySlug)
 			management_unit.GET("/slug/:urlSlug/heritages/paged", controllers.GetPagedHeritageByUnitSlug)
 			management_unit.GET("/search", controllers.SearchUnit)
+			management_unit.GET("/full-info/:id", controllers.GetManagementUnitWithSceneDataByID)
+			management_unit.POST("/full-info", controllers.CreateManagementUnitWithSceneData)
+			management_unit.PUT("/full-info/:id", controllers.UpdateManagementUnitWithSceneData)
+			management_unit.DELETE("/full-info/:id", controllers.DeleteManagementUnitWithScenesData)
+
 		}
 		location := v1.Group("/location")
 		{
@@ -125,6 +130,10 @@ func SetupRouter() *gin.Engine {
 		scene := v1.Group("/scene")
 		{
 			scene.GET("/last-inserted-id", controllers.GetLastInsertedSceneID)
+		}
+		hotspot := v1.Group("/hotspot")
+		{
+			hotspot.GET("/last-inserted-id", controllers.GetLastInsertedHotspotID)
 		}
 	}
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faBug, faTrash, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import {
   faCircleCheck,
@@ -80,6 +80,7 @@ export default ({
   const [loggedInUserID, setLoggedInUserID] = useState(parseInt(localStorage.getItem('loggedInUserID') ,10) || 1);
   const [newSceneId, setNewSceneId] = useState(0);
   const [errors, setErrors] = useState({});
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     // Drop zone (file upload)
@@ -155,6 +156,8 @@ export default ({
         else setNewSceneId(0);
       });
     }
+
+    setIsSuccess(false);
   }, [isOpen]);
 
     //validate lỗi bổ trống
@@ -168,6 +171,10 @@ export default ({
       
       if (sceneData.panorama_image.file_url.trim() === "") {
         validationErrors.file_url = "Vui lòng tải ảnh khu vực";
+      }
+
+      if (sceneData.panorama_image.thumbnail_url.trim() === "") {
+        validationErrors.thumbnail_url = "Vui lòng tải ảnh minh họa";
       }
   
       setErrors(validationErrors);
@@ -436,6 +443,7 @@ if (sceneData.panorama_image.thumbnail_url === '') {
       }
       setSceneData(initialState);
       ResetUploadFileStates();
+      setIsSuccess(true);
     };
   }
 
@@ -579,7 +587,7 @@ if (sceneData.panorama_image.thumbnail_url === '') {
           className="absolute bg-black opacity-50 inset-0 z-0"
         ></div>
         <div className="bg-white editor mx-auto my-4 max-h-full overflow-auto relative flex w-10/12 max-w-lg flex-col p-6 text-gray-800 shadow-lg rounded-lg">
-          <div className="flex items-center justify-between mx-4 pb-4">
+          <div className="flex items-center justify-between mx-4 mb-4">
             <h2 className="text-xl font-semibold text-red-500 pl-4 border-l-4 border-red-500">
               {mainAction} khu vực
             </h2>
@@ -604,6 +612,20 @@ if (sceneData.panorama_image.thumbnail_url === '') {
               </svg>
             </button>
           </div>
+          {Object.keys(errors).length > 0 && (
+            <div className="flex items-center mx-4 mb-4 text-red-500 bg-red-100 py-4 px-4 text-sm font-semibold rounded-md">
+            <p className="">
+              Vui lòng kiểm tra lại các ô nhập liệu
+            </p>
+            </div>
+            )}
+           {isSuccess && (
+            <div className="flex items-center mx-4 mb-4 text-emerald-500 bg-emerald-100 py-4 px-4 text-sm font-semibold rounded-md">
+            <p className="">
+              {mainAction} thành công
+            </p>
+            </div>
+            )}
           <div className="overflow-auto px-4">
             <h2 className="font-semibold text-sm text-teal-500">Tên khu vực</h2>
             <input
@@ -620,7 +642,7 @@ if (sceneData.panorama_image.thumbnail_url === '') {
                     }
                 }))
               }
-              placeholder="Nhập tên Hotspot"
+              placeholder="Nhập tên khu vực"
               className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
             />
             {errors.name && (
@@ -647,7 +669,7 @@ if (sceneData.panorama_image.thumbnail_url === '') {
                     }
                 }))
               }
-              placeholder="Nhập tên Hotspot"
+              placeholder="Nhập giá trị góc nhìn"
               className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
             />
 
@@ -668,7 +690,7 @@ if (sceneData.panorama_image.thumbnail_url === '') {
                     }
                 }))
               }
-              placeholder="Nhập tên Hotspot"
+              placeholder="Nhập giá trị góc quay"
               className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
             />
 
@@ -855,6 +877,12 @@ if (sceneData.panorama_image.thumbnail_url === '') {
                 />
               )}
             </div>
+            {errors.thumbnail_url && (
+                <p className="text-red-500 mb-6 text-sm font-semibold">
+                  <FontAwesomeIcon className="mr-2" icon={faXmarkCircle} />
+                  {errors.thumbnail_url}
+                </p>
+                )}
 
             <h2 className="font-semibold text-sm text-teal-500">Ảnh 360</h2>
             <div>
@@ -1066,7 +1094,7 @@ if (sceneData.panorama_image.thumbnail_url === '') {
                 ) : (
                   <button
                     onClick={handleOpenPanoramaViewer}
-                    className="btn mx-auto text-sm flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500"
+                    className="btn mx-auto mb-4 text-sm flex justify-center rounded-md transition duration-300 ease-in-out cursor-pointer hover:bg-gray-500 p-2 px-5 font-semibold hover:text-white text-gray-500"
                   >
                     Xem ảnh 360 hiện tại
                   </button>

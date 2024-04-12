@@ -14,6 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import MainLogo from "../../../images/logo2.png";
 import HotspotNull from "../../../images/hotspot-null.png";
+import { getLastHotspotId } from "services/HotspotRepository copy.js";
 
 const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, isBackToMainScene, onClickMoveScene }) => {
   // var image360url = localStorage.getItem("image360url");
@@ -28,6 +29,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
   const [hotspotArr, setHotspotArr] = useState([]);
   const [currentImage, setCurrentImage] = useState("");
   const [currentScene, setCurrentScene] = useState(null);
+  const [newHotspotId, setNewHotspotId] = useState(0);
 
   const initialState = {
       id: 0,
@@ -36,8 +38,9 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
       pitch: 0,
       yaw: 0,
       css_class: "",
-      model_id: 0,
+      heritage_id: 0,
       model_url: "",
+      scene_id: 0,
     },
     [currentModel, setCurrentModel] = useState(initialState);
 
@@ -191,7 +194,15 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
     // const updatedScene = { ...scene };
     // updatedScene.hotspots = hotspotArr;
     // onChange(updatedScene);
-
+    
+    if(newHotspotId === 0){
+      getLastHotspotId().then((data) => {
+        if (data){
+          setNewHotspotId(data.last_inserted_id + 1);
+        }
+        else setNewHotspotId(0);
+      });
+    }
   }, [scene]);
 
   const formatTimestamp = (timestamp) => {
@@ -254,18 +265,18 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
   const addHotspot = () => {
     const updatedScene = { ...currentScene };
 
-    let lastId = updatedScene.hotspots ? updatedScene.hotspots.length : 0;
-    lastId++;
+    // let lastId = updatedScene.hotspots ? updatedScene.hotspots.length : 0;
+    // lastId++;
 
     const newHotspot = {
-      id: lastId,
+      id: newHotspotId,
       name: "",
       type: "custom",
       category: 1,
       pitch: parseFloat(localStorage.getItem("pitch")),
       yaw: parseFloat(localStorage.getItem("yaw")),
       scene_id: currentScene.scene.id,
-      model_id: 0,
+      heritage_id: 0,
       model_url: "",
       css_class: "hotspotElement",
       move_scene_id: 0,
@@ -281,6 +292,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
 
     // Gọi hàm onChange để cập nhật scene mới
     onChange(updatedScene);
+    setNewHotspotId(prevId => prevId + 1);
 
     // const updatedScene = { ...scene };
     // updatedScene.hotspots = hotspotArr;

@@ -28,7 +28,7 @@ export default ({
       yaw: 0,
       model_url: "",
       css_class: "hotSpotElement",
-      model_id: 0,
+      heritage_id: 0,
       scene_id: 0,
       move_scene_id: 0,
     },
@@ -281,7 +281,7 @@ export default ({
                             <select
                               name="heritage_type_id"
                               required
-                              value={currentHotspot.model_id}
+                              value={currentHotspot.heritage_id}
                               onChange={(e) => {
                                 const selectedTypeId = parseInt(
                                   e.target.value,
@@ -296,7 +296,7 @@ export default ({
                                 setCurrentHotspot({
                                   ...currentHotspot,
                                   model_url: modelUrl,
-                                  model_id: selectedTypeId,
+                                  heritage_id: selectedTypeId,
                                 });
                               }}
                               className=" text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400 appearance-none"
