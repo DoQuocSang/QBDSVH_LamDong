@@ -1,5 +1,6 @@
-import Scene from './components/scene';
-import './styles/index.css';
+import Scene from "./components/scene";
+import "./styles/index.css";
+
 
 function App() {
   return (

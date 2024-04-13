@@ -1,14 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import DynamicImageComponent from './map'; // Import DynamicImageComponent from map.js
+import React, { useState, useRef, useEffect } from "react";
+import Map from "./map";
 
-function Taskbar() {
-  const audioRef = useRef(new Audio('../audio/copyleft-introbaotangld.mp3'));
-  const bgAudio = useRef(new Audio('../audio/bgmusic.mp3'));
+function Taskbar({ OpenMap, MapVisible }) {
+  const audioRef = useRef(new Audio("../audio/copyleft-introbaotangld.mp3"));
+  const bgAudio = useRef(new Audio("../audio/bgmusic.mp3"));
 
+  const [mapVisible, setMapVisible] = useState(false);
+  // const [isMap, setImageMap] = useState(null);
+  const [tourMap, setTourMap] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showPicture, setShowPicture] = useState(false);
-  const [imageToShow, setImageToShow] = useState(null); // State to store the image URL
-  const [mapVisible, setMapmapVisible] = useState(false); 
 
   const handleAudioClick = () => {
     if (isPlaying) {
@@ -21,11 +21,11 @@ function Taskbar() {
     setIsPlaying(!isPlaying);
   };
 
-  const handleMapButtonClick = () => {
-    setShowPicture(!showPicture); // Toggle the showPicture state
-    // Update imageToShow state with the image URL
-    setImageToShow('/images/mapedit.png'); // Set the image URL when the map button is clicked
-    setMapmapVisible(!mapVisible);
+  const handleMapBtnClick = () => {
+    setTourMap(!tourMap);
+    // setImageMap("/images/mapedit.png");
+    // setMapVisible(!mapVisible);
+    OpenMap(!MapVisible);
   };
 
   useEffect(() => {
@@ -36,20 +36,23 @@ function Taskbar() {
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 
   return (
     <>
-    <div className="bottom-taskbar relative">
-      <button className={`audio-button ${isPlaying ? 'playing' : ''}`} onClick={handleAudioClick}></button>
-      <button className={`map-button ${isPlaying ? 'playing' : ''}`} onClick={handleMapButtonClick}></button>
-    </div>
-      {mapVisible && <DynamicImageComponent imageUrl={imageToShow} />} {/* Pass imageToShow as imageUrl */}
+      <div className="bottom-taskbar realative">
+        <button
+          className={`audio-button ${isPlaying ? "playing" : ""}`}
+          onClick={handleAudioClick}
+        ></button>
+        <button className="map-button" onClick={handleMapBtnClick}></button>
+      </div>
+      {/* {mapVisible && <Map imageUrl={isMap} />} */}
     </>
   );
 }

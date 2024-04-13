@@ -1,29 +1,35 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Pannellum } from "pannellum-react";
+import { Pannellum, PannellumVideo } from "pannellum-react";
 import dataScene from "../helpers/dataScene";
 import useModel from "../hooks/useModel";
 import Model from "./model3D";
+import Map from "../components/map";
 import ModelContainer from "./modelContainer";
-import DynamicImageComponent from "./map";
+import MainMap from "../assets/images/mapedit.png";
 
-import hoverHandler from "./scene";
-
-import { gsap } from 'gsap';
+// import panel from "../images/so-do-tham-quan.jpg";
+// Thư viện chuyển cảnh mượt mà
+import { gsap } from "gsap";
 
 import Taskbar from "./mediaTaskbar";
+// import Menu from "./menu";
 
 export default function Scene() {
-
   const { isOpen, openModel, closeModel } = useModel(false);
 
+  // hotspot infoPanel
   const [scene, setScene] = useState(dataScene["outsideOne"]);
 
   const [model, setModel] = useState(null);
 
+  const [currentImage, setCurrentImage] = useState("");
+
+  const [mapVisible, setMapVisible] = useState(false);
+
   const mountRef = useRef(null);
 
+  // Chức năng chuyển cảnh có hiệu ứng
   const animateTransition = (newScene) => {
-    // First, perform the scene transition with a smooth easing function
     gsap.to(scene, {
       duration: 1, // duration of the transition in seconds
       pitch: 0,
@@ -42,8 +48,29 @@ export default function Scene() {
     });
   };
 
+  const childToParent_OpenMap = (isOpen) => {
+    setMapVisible(isOpen);
+  };
+
+  const childToParent_CloseMap = () => {
+    setMapVisible(false);
+  };
+
+  const childToParent_ChangeImage = (image, sceneName) => {
+    setCurrentImage(image);
+    // get the scene object based on scene name
+    setScene(dataScene[sceneName]);
+    console.log(image);
+  };
+
   useEffect(() => {
     const currentRef = mountRef.current;
+
+    // if (currentImage === "") {
+    //   setCurrentImage(scene.image);
+    // }
+
+    setCurrentImage(scene.image);
 
     if (currentRef) {
       for (let i = currentRef.children.length - 1; i >= 0; i--) {
@@ -51,10 +78,10 @@ export default function Scene() {
         currentRef.removeChild(child);
       }
     }
-  },);
+  }, [currentImage, scene.image]);
 
   const hotSpots = (Element, i) => {
-    if (Element.cssClass === "hotSpotElement")
+    if (Element.cssClass === "hotSpotCustom")
       return (
         <Pannellum.Hotspot
           key={i}
@@ -77,14 +104,12 @@ export default function Scene() {
           yaw={Element.yaw}
           text={Element.text}
           pitch={Element.pitch}
-          hoverContents={<img src={Element.image} alt="Map Tour" />}
-          //hoverHandler={(hotSpotDiv) => hoverHandler(hotSpotDiv, Element.image)}
           cssClass={Element.cssClass}
+          handleClick={() => {
+            // alert("Đây là một hotspot info nè!");
+          }}
         ></Pannellum.Hotspot>
       );
-
-
-
     else if (Element.cssClass === "moveScene")
       return (
         <Pannellum.Hotspot
@@ -96,30 +121,28 @@ export default function Scene() {
           handleClick={() => animateTransition(dataScene[Element.scene])}
         />
       );
-
+    // Chưa phát triển chức năng này
     else if (Element.cssClass === "videoHotspot")
       return (
         <Pannellum.Video
           video={Element.video}
           loop
-
-          // width="100%"
-          // height="60px"
           pitch={Element.pitch}
           yaw={Element.yaw}
           hfov={140}
           minHfov={50}
           maxHfov={180}
-        />);
+        />
+      );
   };
 
   return (
-    <div className="main-container">
+    <div>
       <Pannellum
         width="100%"
         height="100vh"
         title={scene.title}
-        image={scene.image}
+        image={currentImage}
         pitch={scene.pitch}
         yaw={scene.yaw}
         hfov={110}
@@ -135,7 +158,6 @@ export default function Scene() {
         // closeHandler={closeAction}
         orientationOnByDefault={true}
         hotspotDebug={true}
-
       >
         {Object.values(scene.hotSpots).map((Element, i) =>
           hotSpots(Element, i)
@@ -145,10 +167,16 @@ export default function Scene() {
       <Model isOpen={isOpen} isClose={() => closeModel()}>
         {isOpen && <ModelContainer nameModel={model} />}
       </Model>
-      {/* <DynamicImageComponent/> */}
-      <Taskbar/>
+
+      <Taskbar OpenMap={childToParent_OpenMap} MapVisible={mapVisible} />
+      {mapVisible && (
+        <Map
+          imageUrl={MainMap}
+          changeImage={childToParent_ChangeImage}
+          closeMap={childToParent_CloseMap}
+        />
+      )}
+      {/* <Menu /> */}
     </div>
-
-
   );
 }

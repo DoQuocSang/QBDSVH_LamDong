@@ -8,8 +8,8 @@ export default function Model() {
       path,
       (model) => {
         console.log(`${name} - Loaded successfully!`);
-        //model.scene.scale.set(2, 2, 2);
-        
+
+        // Sửa xong lỗi hiển thị model 3D đồng nhất kích thước
         const box = new THREE.Box3().setFromObject(model.scene);
 
         const size = box.getSize(new THREE.Vector3());
@@ -39,8 +39,12 @@ export default function Model() {
     );
   };
 
-  const ModelMG = (scene) => {
-    loadModel(scene, "./models/binh_su/Binhsu.gltf", "Machine Gun - Súng máy");
+  const binh_su = (scene) => {
+    loadModel(
+      scene,
+      "./models/binh_su/Binhsu.gltf",
+      "Bình sứ 3D by KietDesign"
+    );
   };
 
   const buddha_wood = (scene) => {
@@ -51,17 +55,30 @@ export default function Model() {
     loadModel(scene, "./models/batavialand/scene.gltf", "Bình");
   };
 
-  const seeker_gun = (scene) => {
+  const radio1950s = (scene) => {
     loadModel(scene, "./models/radio1950s/scene.gltf", "Radio1950s");
   };
 
-  const bronze_age_vesse = (scene) => {
-    loadModel(scene, "./models/bronze_age_vesse/scene.gltf", "");
+  const roman_pottery = (scene) => {
+    loadModel(scene, "./models/roman_pottery/scene.gltf", "Gốm La Mã");
   };
 
-  const galaxy_s21 = (scene) => {
-    loadModel(scene, "./models/iPhone_01.gltf", "");
+  const iphone_01 = (scene) => {
+    loadModel(scene, "./models/iPhone_01.gltf", "iPhone 12 Pro Max");
   };
 
-  return { ModelTypeWriter, ModelMG, buddha_wood, batavialand, seeker_gun, bronze_age_vesse, galaxy_s21 };
+  const stamp = (scene) => {
+    loadModel(scene, "./models/stamp_condau/scene.gltf", "Con đóng dấu");
+  };
+
+  return {
+    ModelTypeWriter,
+    binh_su,
+    buddha_wood,
+    batavialand,
+    radio1950s,
+    roman_pottery,
+    iphone_01,
+    stamp,
+  };
 }

@@ -1,27 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from "react";
+import dataScene from "../helpers/dataScene.js";
+import HotspotInMapData from "../helpers/dataHotspotInMap.js";
+import HotspotInMap from "../helpers/dataHotspotInMap.js";
 
-function DynamicImageComponent({imageUrl = 'https://cdn.britannica.com/37/245037-050-79129D52/world-map-continents-oceans.jpg'}) {
-  // const [imageUrl, setImageUrl] = useState('/default-image.jpg'); // Set a default image URL
+export default function Map({ imageUrl, changeImage, closeMap }) {
+  const [scene, setScene] = useState(dataScene["outsideOne"]);
+  const [currentImage, setCurrentImage] = useState("");
+  const [hotspotInMap, SetHotspotInMap] = useState(HotspotInMapData);
+  // const [scene, setScene] = useState(scenes[0]);
 
-  // useEffect(() => {
-  //   // Function to load a new image after a delay (e.g., 3 seconds)
-  //   const loadNewImage = setTimeout(() => {
-  //     setImageUrl('/images/mapedit.png'); // Load a new image after the delay
-  //   }, 3000); // Change the delay as needed (in milliseconds)
-
-  //   // Cleanup function to clear the timeout when the component unmounts
-  //   return () => clearTimeout(loadNewImage);
-  // }, []); // Empty dependency array ensures this effect runs only once after the component mounts
+  const AddHotspotInMap = (elem, i) => {
+    return (
+      <div
+        key={i}
+        className="hotspot-map"
+        onClick={() => {
+          changeImage(elem.image, elem.scene);
+          closeMap();
+          // alert("Move scene");
+        }}
+        style={{ top: elem.top, left: elem.left }}
+      ></div>
+    );
+  };
 
   return (
-    <div className='dynamic-image-container'>
-      <div className='image-wrapper'>
-      <h1>Bản đồ khu bảo tàng</h1>
-        <img className="dynamic-image" src={imageUrl} alt="Description of the image" />
+    // Map component
+    <div className="mini-map-container">
+      <div className="image-wrapper">
+        <h1 className="map_main-title">Bản đồ khu bảo tàng</h1>
+        <img className="mini-map" src={imageUrl} alt="map" />
+        {/* Chuyển cảnh qua các scene */}
+        {HotspotInMap &&
+          Object.values(HotspotInMap).map((elem, i) =>
+            AddHotspotInMap(elem, i)
+          )}
       </div>
     </div>
   );
-
 }
-
-export default DynamicImageComponent;

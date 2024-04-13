@@ -1,0 +1,11 @@
+Model Information:
+* title:	Roman pottery (Samian ware) and mould
+* source:	https://sketchfab.com/3d-models/roman-pottery-samian-ware-and-mould-0d3df5c869124a30a895b40b8154e591
+* author:	Andy Woodhead (https://sketchfab.com/Andywoodhead)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Roman pottery (Samian ware) and mould" (https://sketchfab.com/3d-models/roman-pottery-samian-ware-and-mould-0d3df5c869124a30a895b40b8154e591) by Andy Woodhead (https://sketchfab.com/Andywoodhead) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)

@@ -3,13 +3,17 @@ import React, { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { WebGLRenderer } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
 import Model from "../hooks/loadModel";
 import "../styles/model.css";
+import { modelInfo } from "../helpers/modelInfo";
 
 export default function ModelContainer({ nameModel }) {
   const mountRef = useRef(null);
 
   const [animationId, setAnimationId] = useState();
+
+  const [currentModel, setCurrentModel] = useState(null);
 
   let currentRef;
 
@@ -17,6 +21,7 @@ export default function ModelContainer({ nameModel }) {
 
   const handleInfoClick = () => {
     setShowInfo(!showInfo);
+    setCurrentModel(nameModel); // Update this line to set the current model
   };
 
 
@@ -105,26 +110,32 @@ export default function ModelContainer({ nameModel }) {
     if (nameModel === "typeWrite") {
       const { ModelTypeWriter } = Model();
       ModelTypeWriter(modelGroup);
-    } else if (nameModel === "galaxy_s21") {
-      const { galaxy_s21 } = Model();
-      galaxy_s21(modelGroup);
-    } else if (nameModel === "bronze_age_vesse") {
-      const { bronze_age_vesse } = Model();
-      bronze_age_vesse(modelGroup);
-    } else if (nameModel === "seeker_gun") {
-      const { seeker_gun } = Model();
-      seeker_gun(modelGroup);
+    } else if (nameModel === "iphone_01") {
+      const { iphone_01 } = Model();
+      iphone_01(modelGroup);
+    } else if (nameModel === "roman_pottery") {
+      const { roman_pottery } = Model();
+      roman_pottery(modelGroup);
+    } else if (nameModel === "radio1950s") {
+      const { radio1950s } = Model();
+      radio1950s(modelGroup);
     } else if (nameModel === "batavialand") {
       const { batavialand } = Model();
       batavialand(modelGroup);
     } else if (nameModel === "buddha_wood") {
       const { buddha_wood } = Model();
       buddha_wood(modelGroup);
-    }
+    } else if (nameModel === "binh_su") {
+      const { binh_su } = Model();
+      binh_su(modelGroup);
+    } else if (nameModel === "stamp") {
+      const { stamp } = Model();
+      stamp(modelGroup);
+    } 
 
     scene.add(modelGroup);
   };
-
+  
   const initRenderer = (currentRef, renderer) => {
     const { clientWidth: width, clientHeight: height } = currentRef;
     renderer.setSize(width, height);
@@ -134,6 +145,6 @@ export default function ModelContainer({ nameModel }) {
 
   return <div className="container3d" ref={mountRef}>
       <button onClick={handleInfoClick} className="btn-info" ></button>
-      {showInfo && <div className="block-text">Thông tin hiện vật: Tượng Phật</div>}
+      {showInfo && <div className="block-text">{ modelInfo[currentModel]}</div>}
   </div>;
 }
