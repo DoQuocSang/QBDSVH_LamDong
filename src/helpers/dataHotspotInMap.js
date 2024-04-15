@@ -1,4 +1,6 @@
+// Hotspots Map
 // Oject contain data for scene
+
 const HotspotInMap = {
   outsideOne: { // Phòng Trưng bày hiện Vật chính 
     // id: 0,
@@ -35,6 +37,3 @@ const HotspotInMap = {
 };
 
 export default HotspotInMap;
-
-
-//
