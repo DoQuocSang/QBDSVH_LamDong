@@ -17,8 +17,8 @@ export function getUploadFiles(
     columnName = "id",
     sortOrder = "DESC"
     ) {    
-    return get_api(`http://localhost:8080/api/v1/upload-file?page=${page}&limit=${limit}&columnName=${columnName}&sortOrder=${sortOrder}`)
-    // return get_api(`https://localhost:7245/api/users?PageSize=30&PageNumber=1`)
+    // return get_api(`http://localhost:8080/api/v1/upload-file?page=${page}&limit=${limit}&columnName=${columnName}&sortOrder=${sortOrder}`)
+    return get_api(`http://localhost:8080/api/v1/upload-file/group`)
 }
 
 export function deleteUploadFileById(

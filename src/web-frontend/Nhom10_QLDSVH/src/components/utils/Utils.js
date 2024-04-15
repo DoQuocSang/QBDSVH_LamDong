@@ -339,6 +339,22 @@ export const calculateTotalSizePercent = (totalSize) => {
     return value;
 }
 
+export const formatDate = (dateString) => {
+    // Create a Date object from the date string
+    const date = new Date(dateString);
+  
+    // Extract day, month, and year from the Date object
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Months are zero-based
+    const year = date.getFullYear();
+  
+    // Add leading zeros to day and month if they are less than 10
+    const formattedDay = day < 10 ? `0${day}` : day;
+    const formattedMonth = month < 10 ? `0${month}` : month;
+  
+    // Format the date as dd/mm/yyyy
+    return `${formattedDay}/${formattedMonth}/${year}`;
+  }
 
 
 

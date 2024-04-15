@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -154,4 +155,69 @@ func GetPagedPanoramaImage(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, pagination)
+}
+
+func GetAllPanoramaImagesGroupedByUploadDate(c *gin.Context) {
+	type GroupedImages struct {
+		UploadDate time.Time              `json:"upload_date"`
+		Images     []models.PanoramaImage `json:"images"`
+	}
+
+	type ResultData struct {
+		Data      []GroupedImages `json:"data"`
+		TotalSize int             `json:"total_size"`
+	}
+
+	var uploadDates []time.Time
+	// Lấy danh sách các ngày tải lên khác nhau
+	if err := db.GetDB().
+		Model(&models.PanoramaImage{}).
+		Select("DISTINCT DATE(upload_date) AS upload_date").
+		Order("upload_date DESC").
+		Pluck("upload_date", &uploadDates).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not retrieve upload dates")
+		return
+	}
+
+	var groupedImages []GroupedImages
+	var totalSize int = 0
+
+	// Truy vấn hình ảnh panorama cho từng ngày tải lên
+	for _, date := range uploadDates {
+		var images []models.PanoramaImage
+		// Truy vấn hình ảnh panorama cho ngày tải lên cụ thể
+		if err := db.GetDB().
+			Where("DATE(upload_date) = DATE(?)", date).
+			Preload("User").
+			Order("id DESC").
+			Find(&images).
+			Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not retrieve panorama images for date")
+			return
+		}
+
+		// Tính tổng kích thước cho nhóm hình ảnh hiện tại
+		var currentGroupSize int = 0
+		for _, image := range images {
+			currentGroupSize += image.Size
+		}
+
+		// Tạo cấu trúc nhóm cho ngày này và thêm vào danh sách
+		groupedImages = append(groupedImages, GroupedImages{
+			UploadDate: date,
+			Images:     images,
+		})
+
+		// Cộng dồn tổng kích thước của các ảnh vào totalSize
+		totalSize += currentGroupSize
+	}
+
+	// Tạo kết quả dữ liệu
+	resultData := ResultData{
+		Data:      groupedImages,
+		TotalSize: totalSize,
+	}
+
+	// Trả về dữ liệu đã nhóm theo ngày tải lên cùng với totalSize
+	utils.SuccessResponse(c, http.StatusOK, resultData)
 }

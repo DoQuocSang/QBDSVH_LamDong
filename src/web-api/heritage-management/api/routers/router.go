@@ -117,6 +117,7 @@ func SetupRouter() *gin.Engine {
 			upload_file.POST("", controllers.CreateUploadFile)
 			upload_file.PUT("/:id", controllers.UpdateUploadFile)
 			upload_file.DELETE("/:id", controllers.DeleteUploadFile)
+			upload_file.GET("/group", controllers.GetAllUploadFileGroupedByUploadDate)
 		}
 		panorama_image := v1.Group("/panorama-image")
 		{
@@ -126,6 +127,7 @@ func SetupRouter() *gin.Engine {
 			panorama_image.PUT("/:id", controllers.UpdatePanoramaImage)
 			panorama_image.DELETE("/:id", controllers.DeletePanoramaImage)
 			panorama_image.GET("/last-inserted-id", controllers.GetLastInsertedSceneID)
+			panorama_image.GET("/group", controllers.GetAllPanoramaImagesGroupedByUploadDate)
 		}
 		scene := v1.Group("/scene")
 		{

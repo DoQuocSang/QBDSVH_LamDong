@@ -16,7 +16,7 @@ const SimplePanoramaViewer = ({ isOpen, sceneData }) => {
       pitch: 0,
       yaw: 0,
       css_class: "",
-      model_id: 0,
+      heritage_id: 0,
       model_url: "",
     },
   [currentModel, setCurrentModel] = useState(initialState);

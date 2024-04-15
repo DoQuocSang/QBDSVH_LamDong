@@ -325,6 +325,29 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
   .pnlm-container {
     background: url('${loadingGif}') center center no-repeat;
     background-size: cover;
+
+  .pnlm-panorama-info {
+    position: absolute;
+    border-top-right-radius: 15px !important;
+    bottom: 4px;
+    background-color: rgb(40 39 39 / 70%);
+    backdrop-filter: blur(2px);
+    border-radius: 0 3px 3px 0;
+    padding: 5px 15px 5px 10px;
+    color: #fff;
+    text-align: left;
+    display: none;
+    z-index: 2;
+    transform: translateZ(9999px);
+
+    .pnlm-title-box {
+      position: relative;
+      font-size: 1rem;
+      display: table;
+      padding-left: 5px;
+      margin-bottom: 3px;
+  }
+}
 `;
 
   const handleCloseModelView = () => {

@@ -373,6 +373,7 @@ func CreateHeritageAndParagraphs(c *gin.Context) {
 	var requestData struct {
 		Heritage   models.Heritage_DTO         `json:"heritage"`
 		Paragraphs []models.Heritage_Paragraph `json:"paragraphs"`
+		UploadFile models.UploadFile_DTO       `json:"upload_file"`
 	}
 
 	if err := c.ShouldBindJSON(&requestData); err != nil {
@@ -400,9 +401,21 @@ func CreateHeritageAndParagraphs(c *gin.Context) {
 		}
 	}
 
+	// Cập nhật upload_file
+	if err := db.GetDB().Model(&models.UploadFile{}).
+		Where("id = ?", requestData.UploadFile.ID).
+		Updates(models.UploadFile{
+			Heritage_ID:    requestData.Heritage.ID,
+			Is_Current_Use: 1,
+		}).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update upload file")
+		return
+	}
+
 	utils.SuccessResponse(c, http.StatusCreated, gin.H{
-		"heritage":   requestData.Heritage,
-		"paragraphs": requestData.Paragraphs,
+		"heritage":    requestData.Heritage,
+		"paragraphs":  requestData.Paragraphs,
+		"upload_file": requestData.UploadFile,
 	})
 }
 
@@ -611,6 +624,14 @@ func DeleteHeritageWithParagraphsById(c *gin.Context) {
 	// Xóa các đoạn mô tả liên quan đến di sản
 	if err := db.GetDB().Where("heritage_id = ?", heritageId).Delete(&models.Heritage_Paragraph{}).Error; err != nil {
 		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not delete heritage paragraphs")
+		return
+	}
+
+	// Cập nhật thuộc tính is_current_use của file_upload theo ID di sản thành 0
+	if err := db.GetDB().Model(&models.UploadFile{}).
+		Where("heritage_id = ?", heritageId).
+		Update("is_current_use", 0).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update is_current_use for upload file")
 		return
 	}
 

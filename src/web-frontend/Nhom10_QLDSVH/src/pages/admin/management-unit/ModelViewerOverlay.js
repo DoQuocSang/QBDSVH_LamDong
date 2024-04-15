@@ -68,8 +68,8 @@ const ModelViewerOverlay = ({
   }, [heritage, setHeritage] = useState(initialState);
 
   useEffect(() => {
-    if (currentModel.model_id !== 0) {
-        getHeritageById(currentModel.model_id).then(data => {
+    if (currentModel.heritage_id !== 0) {
+        getHeritageById(currentModel.heritage_id).then(data => {
             if (data)
                 setHeritage({
                     ...data,
