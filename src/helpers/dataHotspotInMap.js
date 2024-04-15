@@ -35,3 +35,6 @@ const HotspotInMap = {
 };
 
 export default HotspotInMap;
+
+
+//
