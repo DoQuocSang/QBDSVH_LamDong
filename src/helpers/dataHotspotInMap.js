@@ -1,5 +1,5 @@
 // Hotspots Map
-// Oject contain data for scene
+
 
 const HotspotInMap = {
   outsideOne: { // Phòng Trưng bày hiện Vật chính 

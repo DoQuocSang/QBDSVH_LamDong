@@ -3,13 +3,15 @@ import dataScene from "../helpers/dataScene.js";
 import HotspotInMapData from "../helpers/dataHotspotInMap.js";
 import HotspotInMap from "../helpers/dataHotspotInMap.js";
 
+
 export default function Map({ imageUrl, changeImage, closeMap }) {
   const [scene, setScene] = useState(dataScene["outsideOne"]);
   const [currentImage, setCurrentImage] = useState("");
   const [hotspotInMap, SetHotspotInMap] = useState(HotspotInMapData);
   // const [scene, setScene] = useState(scenes[0]);
 
-  const AddHotspotInMap = (elem, i) => {
+  
+  const AddHotspotInMap = (elem, i) => {      // Thêm điểm hotspots trên map
     return (
       <div
         key={i}
