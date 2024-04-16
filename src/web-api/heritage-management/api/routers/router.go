@@ -113,6 +113,15 @@ func SetupRouter() *gin.Engine {
 			upload_file.PUT("/:id", controllers.UpdateUploadFile)
 			upload_file.DELETE("/:id", controllers.DeleteUploadFile)
 		}
+		hotspots_map := v1.Group("/hotspots-map")
+		{
+			hotspots_map.GET("", controllers.GetAllHotsportMap)
+			hotspots_map.GET("/:id", controllers.GetHotspotsMapByID)
+			
+			hotspots_map.POST("", controllers.CreateHotspotsMap)
+			hotspots_map.PUT("/:id", controllers.UpdateHotspotsMap)
+			hotspots_map.DELETE("/:id", controllers.DeleteHHotspotsMap)
+		}
 	}
 
 	return r

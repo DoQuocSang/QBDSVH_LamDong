@@ -1,6 +1,8 @@
 package config
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type AppConfig struct {
 	Server struct {
@@ -53,7 +55,6 @@ func AddCorsHeaders() gin.HandlerFunc {
 			c.AbortWithStatus(204)
 			return
 		}
-
 		c.Next()
 	}
 }
