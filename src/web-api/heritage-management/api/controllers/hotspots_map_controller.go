@@ -59,7 +59,7 @@ func UpdateHotspotsMap(c *gin.Context) {
 	var hotspots_map models.Hotspots_Map
 
 	if err := db.GetDB().Where("id = ?", id).First(&hotspots_map).Error; err != nil {
-		utils.ErrorResponse(c, http.StatusNotFound, "Location not found")
+		utils.ErrorResponse(c, http.StatusNotFound, "Map-hotspots not found")
 		return
 	}
 
@@ -69,7 +69,7 @@ func UpdateHotspotsMap(c *gin.Context) {
 	}
 
 	if err := db.GetDB().Save(&hotspots_map).Error; err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update location")
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update hotspots_map")
 		return
 	}
 

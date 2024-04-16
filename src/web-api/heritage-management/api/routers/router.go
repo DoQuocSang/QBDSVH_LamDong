@@ -117,7 +117,6 @@ func SetupRouter() *gin.Engine {
 		{
 			hotspots_map.GET("", controllers.GetAllHotsportMap)
 			hotspots_map.GET("/:id", controllers.GetHotspotsMapByID)
-			
 			hotspots_map.POST("", controllers.CreateHotspotsMap)
 			hotspots_map.PUT("/:id", controllers.UpdateHotspotsMap)
 			hotspots_map.DELETE("/:id", controllers.DeleteHHotspotsMap)

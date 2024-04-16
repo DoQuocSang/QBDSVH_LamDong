@@ -42,5 +42,5 @@ func main() {
 // POST /v1/items (create a new item)
 // GET /v1/items (list item) /v1/items?page=1
 // GET /v1/items/:id (get item detail by id)
-// (PUT || PATH) /v1/items (update an item by ide)
+// (PUT || PATH) /v1/items (update an item by id)
 // DELETE /v1/items/:id (delete item by id)
