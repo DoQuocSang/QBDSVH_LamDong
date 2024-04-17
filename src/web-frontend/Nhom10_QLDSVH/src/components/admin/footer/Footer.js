@@ -39,7 +39,7 @@ export default () => {
             </div>
          </footer>
          <p className="text-center text-sm text-gray-500 my-10">
-            &copy; 2023 <a href="#" className="hover:underline" target="_blank">Vnesco.DSVHVN</a> All rights reserved.
+            &copy; 2023 <a href="#" className="hover:underline" target="_blank">Bảo tàng Lâm Đồng.DSVHVN</a> All rights reserved.
          </p>
       </>
    )

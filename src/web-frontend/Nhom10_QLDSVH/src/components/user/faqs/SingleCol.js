@@ -41,12 +41,12 @@ const DecoratorBlob2 = styled(SvgDecoratorBlob2)`
 export default ({
   subheading = "Hỗ trợ",
   heading = "Một vấn đề thường gặp",
-  description = "Nếu bạn đăng gặp phải khó khăn trong khi sử dụng trang web VNESCO để xem hoặc quản lý thông tin di sản văn hóa, hãy đọc các ý bên dưới.",
+  description = "Nếu bạn đăng gặp phải khó khăn trong khi sử dụng trang web Bảo tàng Lâm Đồng để xem hoặc quản lý thông tin di sản văn hóa, hãy đọc các ý bên dưới.",
   faqs = [
     {
-      question: "VNESCO là trang web gì?",
+      question: "Bảo tàng Lâm Đồng là trang web gì?",
       answer:
-        "VNESCO là một trang web cung cấp thông tin và quản lý di sản văn hóa tại Việt Nam. Trang web này được thiết kế để giúp người dùng khám phá, tìm hiểu và trải nghiệm về các di sản văn hóa độc đáo và quan trọng của nước ta. Bạn có thể tìm thấy thông tin chi tiết về các di sản văn hóa, bao gồm mô tả, hình ảnh, địa điểm và các thông tin liên quan khác. Ngoài ra, VNESCO cũng cung cấp các tính năng cho việc quản lý của admin."
+        "Bảo tàng Lâm Đồng là một trang web cung cấp thông tin và quản lý di sản văn hóa tại Việt Nam. Trang web này được thiết kế để giúp người dùng khám phá, tìm hiểu và trải nghiệm về các di sản văn hóa độc đáo và quan trọng của nước ta. Bạn có thể tìm thấy thông tin chi tiết về các di sản văn hóa, bao gồm mô tả, hình ảnh, địa điểm và các thông tin liên quan khác. Ngoài ra, Bảo tàng Lâm Đồng cũng cung cấp các tính năng cho việc quản lý của admin."
     },
     {
       question: "Làm thế nào để xem thông tin di sản văn hóa ở địa phương của bạn?",

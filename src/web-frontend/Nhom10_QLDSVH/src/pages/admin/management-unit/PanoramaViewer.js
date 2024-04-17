@@ -31,6 +31,12 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
   const [currentScene, setCurrentScene] = useState(null);
   const [newHotspotId, setNewHotspotId] = useState(0);
 
+  const initialCameraState = {
+    pitch: 0,
+    yaw: 0,
+  },
+  [currentCamera, setCurrentCamera] = useState(initialCameraState);
+
   const initialState = {
       id: 0,
       category: 1,
@@ -257,6 +263,10 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
             // setScene(DataScene["insideTwo"]);
             getSceneById(element.move_scene_id)
             // setCurrentImage(element.image_url)
+            setCurrentCamera({
+              pitch: element.pitch,
+              yaw: element.yaw,
+            })
           }}
         />
       );
@@ -422,7 +432,9 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
                 width="100%"
                 height="50vh"
                 title={(currentScene && currentScene.scene && currentScene.scene.name) ? currentScene.scene.name : "Khu vực không có tên"}
-                yaw={360}
+                // yaw={360}
+                pitch={currentCamera.pitch}
+                yaw={currentCamera.yaw}
                 hfov={110}
                 autoLoad={true}
                 // autoRotate={-5}

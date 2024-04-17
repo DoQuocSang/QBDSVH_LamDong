@@ -50,6 +50,7 @@ import { Environment, OrbitControls, PresentationControls, Stage } from "@react-
 import { Canvas } from "react-three-fiber";
 import { Suspense } from "react";
 import ModelViewer from "pages/admin/heritage/ModelViewer";
+import VRTour from "pages/user/VRTour";
 
 function App() {
   const loggedInUsername = localStorage.getItem("loggedInUsername");
@@ -94,9 +95,10 @@ function App() {
           <Route path="/gallery" element={<Gallery />} />
         </Route>
 
+        <Route path="/vr-tour/:id" element={<VRTour />} />
+
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/heritage/model-view" element={<ModelViewer />} />
-
 
         {loggedInUsername && (
         <Route path="/admin/dashboard" element={<AdminLayout />}>

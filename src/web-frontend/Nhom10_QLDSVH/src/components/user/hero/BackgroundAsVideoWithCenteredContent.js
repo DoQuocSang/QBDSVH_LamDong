@@ -2,7 +2,7 @@ import React from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { css } from "styled-components/macro"; //eslint-disable-line
-import HomeVideo from "images/home.mp4"
+import HomeVideo from "images/home-2.mp4"
 
 import Header, { NavLink, NavLinks, PrimaryLink as PrimaryLinkBase, LogoLink, NavToggle, DesktopNavLinks } from "../headers/light.js";
 
@@ -21,7 +21,7 @@ const Container = styled.div`
   ${tw`relative -mx-8 -mt-8 bg-center bg-cover h-screen min-h-144`}
 `;
 
-const OpacityOverlay = tw.div`z-10 absolute inset-0 bg-black opacity-25`;
+const OpacityOverlay = tw.div`z-10 absolute inset-0 bg-black opacity-50`;
 
 const HeroContainer = tw.div`z-20 relative px-6 sm:px-8 mx-auto h-full flex flex-col`;
 const Content = tw.div`px-4 flex flex-1 flex-col justify-center items-center`;
@@ -64,10 +64,10 @@ export default () => {
             Chào mừng bạn đến với
           </SubHeading>
           <Heading>
-            VNESCO - DI SẢN VĂN HÓA VIỆT NAM
+            BẢO TÀNG LÂM ĐỒNG
           </Heading>
           <Description>
-          Hãy khám phá vẻ đẹp và giá trị văn hóa độc đáo của Việt Nam qua những di sản tuyệt vời. Tại VNESCO, chúng tôi tự hào giới thiệu cho bạn những di sản có một không hai của đất nước ta. Hãy dạo một vòng quanh trang web để khám phá câu chuyện và giá trị văn hóa của các di tích lịch sử và danh hiệu UNESCO. 
+          Bảo tàng Lâm Đồng hân hạnh chào đón du khách đến với hành trình khám phá kho tàng lịch sử và văn hóa phong phú của vùng đất Tây Nguyên đại ngàn. Nơi đây lưu giữ hơn 15.000 hiện vật quý giá, mở ra cánh cửa dẫn lối du khách đến với những câu chuyện đầy hấp dẫn về thiên nhiên, con người và bản sắc văn hóa độc đáo của Lâm Đồng.
           </Description>
           <PrimaryAction>Khám phá ngay</PrimaryAction>
         </Content>

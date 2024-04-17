@@ -38,7 +38,7 @@ const Image = styled.div(props => [
 
 const ControlContainer = tw.div`absolute bottom-0 right-0 bg-gray-100 px-6 py-4 rounded-tl-3xl border`;
 const ControlButton = styled(PrimaryButton)`
-  ${tw`mx-3 rounded-full text-gray-100 p-2`}
+  ${tw`mx-3 rounded-full text-gray-100 p-2 `}
   svg {
     ${tw`w-5 h-5`}
   }
@@ -77,7 +77,7 @@ export const MenuContainer = styled.div(({ flexCol }) => [
 ])
 
 const PrimaryButtonContent = styled(PrimaryButton)(props => [
-  tw`mt-2 text-sm inline-block mx-auto md:mx-0`,
+  tw`mt-2 text-sm inline-block mx-auto md:mx-0 bg-amber-500 hover:bg-amber-600 hocus:bg-amber-600`,
   props.buttonRounded && tw`rounded-full`
 ]);
 
