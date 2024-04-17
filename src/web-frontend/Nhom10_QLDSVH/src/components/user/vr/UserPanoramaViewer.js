@@ -13,7 +13,6 @@ import MainLogo from "../../../images/logo-btld-3.png";
 import HotspotGif from "../../../images/trans.gif";
 import SceneGif from "../../../images/icon_scene.gif";
 
-
 const UserPanoramaViewer = ({ isOpen, sceneData }) => {
   // const [sceneData, setsceneData] = useState();
   const [currentScene, setCurrentScene] = useState(null);
@@ -21,10 +20,10 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
   const OpenModelView = () => setIsOpenModelView(true);
 
   const initialCameraState = {
-    pitch: 0,
-    yaw: 0,
-  },
-  [currentCamera, setCurrentCamera] = useState(initialCameraState);
+      pitch: 0,
+      yaw: 0,
+    },
+    [currentCamera, setCurrentCamera] = useState(initialCameraState);
 
   const pannellumRef = useRef(null);
   let { id } = useParams();
@@ -91,8 +90,7 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
           if (data.scenes.length > 0) {
             setCurrentScene(data.scenes[0]);
           }
-        }
-        else setManagementUnitData(initialManagementUnitState);
+        } else setManagementUnitData(initialManagementUnitState);
         console.log(data);
       });
     }
@@ -165,95 +163,120 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
     cursor: pointer;
   }
 
-  .hotspotMoveScene {
+  .custom-hotspot-icon {
     content: url(${SceneGif});
     width: 5em;
     height: 5em;
-    overflow: visible;
     filter: hue-rotate(250deg);
-    transform: rotate(-450deg);
     cursor: pointer;
   }
 
-//   div.custom-tooltip span {
-//     visibility: hidden;
-//     position: absolute;
-//     border-radius: 3px;
-//     background-color: #fff;
-//     color: #000;
-//     text-align: center;
-//     max-width: 200px;
-//     padding: 5px 10px;
-//     margin-left: -220px;
-//     cursor: default;
-// }
-// div.custom-tooltip:hover span{
-//     visibility: visible;
-// }
-// div.custom-tooltip:hover span:after {
-//     content: '';
-//     position: absolute;
-//     width: 0;
-//     height: 0;
-//     border-width: 10px;
-//     border-style: solid;
-//     border-color: #fff transparent transparent transparent;
-//     bottom: -20px;
-//     left: -10px;
-//     margin: 0 50%;
+  .hotspot-icon-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .preview-hotspot-container {
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-105%);
+    width: 200px;
+    height: auto;
+    opacity: 0;
+    background-color: #ffffffd1;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    border-radius: 6px;
+    color: #22b472;
+    transition: all .3s ease-in;
+}
+
+.pnlm-hotspot-base.hotspotMoveScene.pnlm-pointer:hover .preview-hotspot-container {
+  top: 0;
+  opacity: 100%;
+}
+
+// .preview-hotspot-container:hover {
+//   background-color: #22b472;
+//   color: white
 // }
 
-// div.custom-tooltip span {
-//   visibility: hidden;
-//   position: absolute;
-//   border-radius: 3px;
-//   background-color: #fff;
-//   color: #000;
-//   text-align: center;
-//   max-width: 200px;
-//   padding: 5px 10px;
-//   margin-left: -220px;
-//   cursor: default;
+// .preview-hotspot-container:hover span.preview-hotspot-title::before {
+//   border-color: #22b472 transparent transparent transparent;
 // }
-// div.custom-tooltip:hover span{
-//   visibility: visible;
-// }
-// div.custom-tooltip:hover span:after {
-//   content: '';
-//   position: absolute;
-//   width: 0;
-//   height: 0;
-//   border-width: 10px;
-//   border-style: solid;
-//   border-color: #fff transparent transparent transparent;
-//   bottom: -20px;
-//   left: -10px;
-//   margin: 0 50%;
-// }
+
+.preview-hotspot-image {
+  width: 100%;
+  height: 100px;
+  box-sizing: border-box;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+}
+
+span.preview-hotspot-title::before {
+  content: "";
+  height: 100%;
+  width: 20px;
+  bottom: calc(-100% - 6px);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px 10px 0 10px;
+  border-style: solid;
+  border-color: #ffffffd1 transparent transparent transparent;
+  transition: all .3s ease-in;
+}
   
+span.preview-hotspot-title {
+  font-size: 1rem;
+  text-align: center;
+  display: block;
+}
     `;
 
-    const hotspotTooltip = (hotSpotDiv, args) => {
-      hotSpotDiv.classList.add('custom-tooltip');
-      var span = document.createElement('span');
-      span.innerHTML = args;
-      hotSpotDiv.appendChild(span);
-      // Apply styles to the <span> element
-    // Position the tooltip above the hotspot
-    span.style.position = 'absolute';
-    span.style.padding = '5px';
-    span.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    span.style.color = 'white';
-    span.style.borderRadius = '5px';
-    span.style.fontSize = '14px';
-    span.style.whiteSpace = 'nowrap';
-    span.style.top = '-30px'; // Adjust the position as needed
-    span.style.left = '50%';
-    span.style.transform = 'translateX(-50%)';
+  const hotspotTooltip = (hotSpotDiv, args) => {
+    // const { name, img_url } = args;
 
-    // Set the visibility of the tooltip
-    span.style.visibility = 'visible';
-    };
+    // preview
+    var previewImageContainerDiv = document.createElement("div");
+    previewImageContainerDiv.classList.add("preview-hotspot-container");
+    previewImageContainerDiv.style.position = "absolute";
+
+    var imgDiv = document.createElement("div");
+    imgDiv.classList.add("preview-hotspot-image");
+    // img.src = args.panorama_image.thumbnail_url;
+    imgDiv.style.backgroundImage = `url('${args.panorama_image.thumbnail_url}')`;
+
+    previewImageContainerDiv.appendChild(imgDiv);
+
+
+    var span = document.createElement("span");
+    span.classList.add("preview-hotspot-title")
+    span.style.position = "relative";
+    span.innerHTML = args.scene.name;
+    
+    previewImageContainerDiv.appendChild(span);
+
+    // icon
+    var hotspotIconContainerDiv = document.createElement("div");
+    hotspotIconContainerDiv.classList.add("hotspot-icon-container");
+    hotspotIconContainerDiv.style.position = "relative";
+
+    var hotspotIconDiv = document.createElement("div");
+    hotspotIconDiv.classList.add("custom-hotspot-icon");
+
+    hotspotIconContainerDiv.appendChild(hotspotIconDiv);
+
+    hotspotIconContainerDiv.appendChild(previewImageContainerDiv);
+    hotSpotDiv.appendChild(hotspotIconContainerDiv);
+  };
 
   const hotspots = (element, i) => {
     // Hotspot hiện vật
@@ -277,7 +300,6 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
     // Hotspot chuyển cảnh
     else if (element.category === 2)
       return (
-        <div className="hotspot-container relative">
         <Pannellum.Hotspot
           key={i}
           type="custom"
@@ -285,7 +307,7 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
           yaw={element.yaw}
           cssClass={element.css_class}
           tooltip={hotspotTooltip}
-          tooltipArg={"Hotspot 01230120"}
+          tooltipArg={getSceneInfoById(element.move_scene_id)}
           handleClick={() => {
             // setScene(DataScene["insideTwo"]);
             getSceneById(element.move_scene_id);
@@ -293,11 +315,9 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
             setCurrentCamera({
               pitch: element.pitch,
               yaw: element.yaw,
-            })
+            });
           }}
         />
-        <p className="absolute top-0 left-0">sdaasdsd</p>
-        </div>
       );
   };
 
@@ -308,8 +328,15 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
     setCurrentScene(scene);
   };
 
-   //Xử lý khi thay đổi hostpot ở component con
-   const resetIsOpenModelView = () => {
+  const getSceneInfoById = (id) => {
+    const scene = managementUnitData.scenes.find(
+      (item) => item.scene.id === id
+    );
+    return scene;
+  };
+
+  //Xử lý khi thay đổi hostpot ở component con
+  const resetIsOpenModelView = () => {
     setIsOpenModelView(false);
   };
 
@@ -320,7 +347,11 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
         <Pannellum
           width="100%"
           height="100vh"
-          title={(currentScene && currentScene.scene && currentScene.scene.name) ? currentScene.scene.name : "Khu vực không có tên"}
+          title={
+            currentScene && currentScene.scene && currentScene.scene.name
+              ? currentScene.scene.name
+              : "Khu vực không có tên"
+          }
           // yaw={360}
           hfov={110}
           autoLoad={true}
@@ -342,21 +373,19 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
           }
           ref={pannellumRef}
         >
-            <div className="hotspot-container">
-        <Pannellum.Hotspot
-          type="custom"
-          pitch={0}
-          yaw={0}
-          cssClass={"hotspotMoveScene"}
-          handleClick={() => {
-           
-          }}
-        />
-          <p className="absolute top-0 left-0">sdaasdsd</p>
-        </div>
-          
+          {currentScene &&
+          currentScene.hotspots &&
+          currentScene.hotspots.length > 0 ? (
+            currentScene.hotspots.map((element, i) => hotspots(element, i))
+          ) : (
+            <></>
+          )}
         </Pannellum>
-        <UserModelContainer currentModel={currentModel} isOpenModelView={isOpenModelView} resetIsOpenModelView={resetIsOpenModelView}/>
+        <UserModelContainer
+          currentModel={currentModel}
+          isOpenModelView={isOpenModelView}
+          resetIsOpenModelView={resetIsOpenModelView}
+        />
       </div>
       <MediaTaskbar pannellumRef={pannellumRef} increaseStep={15} />
       <Link to="/">
