@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetAllHotsportMap trả về danh sách tất cả các địa điểm
+// GetAllHotsportMap trả về danh sách tất cả các địa điểm trên map
 func GetAllHotsportMap(c *gin.Context) {
 	var hotspots_map []models.Hotspots_Map
 
