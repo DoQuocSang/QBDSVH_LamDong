@@ -131,6 +131,7 @@ func SetupRouter() *gin.Engine {
 		}
 		scene := v1.Group("/scene")
 		{
+			scene.GET("/:id", controllers.GetPagedSceneByManagementUnitID)
 			scene.GET("/last-inserted-id", controllers.GetLastInsertedSceneID)
 		}
 		hotspot := v1.Group("/hotspot")

@@ -2,7 +2,7 @@ import { Pannellum } from "pannellum-react";
 import React, { useEffect, useRef, useState } from "react";
 import loadingGif from "../../../images/loading-pano.gif";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import MainLogo from "../../../images/logo2.png";
+import MainLogo from "../../../images/logo-btld-2.png";
 import HotspotNull from "../../../images/cat-hotspot-null-2.png";
 import {
   faCircleInfo,

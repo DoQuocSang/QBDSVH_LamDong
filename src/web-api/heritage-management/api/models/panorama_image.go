@@ -19,6 +19,7 @@ type PanoramaImage struct {
 type PanoramaImage_DTO struct {
 	ID             int    `json:"id" gorm:"column:id;"`
 	File_Url       string `json:"file_url" gorm:"column:file_url;"`
+	Scene_ID       int    `json:"scene_id" gorm:"column:scene_id;"`
 	Thumbnail_Url  string `json:"thumbnail_url" gorm:"column:thumbnail_url;"`
 	Is_Current_Use int    `json:"is_current_use" gorm:"is_current_use"`
 }
