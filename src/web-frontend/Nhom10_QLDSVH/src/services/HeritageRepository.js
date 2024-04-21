@@ -56,6 +56,12 @@ export function getRelatedHeritagesBySlug(
     // return get_api(`https://localhost:7245/api/users?PageSize=30&PageNumber=1`)
 }
 
+export function getHeritageSlugById(
+    id = 0,
+    ) {    
+    return get_api(`http://localhost:8080/api/v1/heritage/slug-by-id/${id}`)
+}
+
 export function getHeritagesForCombobox() {    
     return get_api(`http://localhost:8080/api/v1/heritage/combobox`)
     // return get_api(`http://localhost:3000/v1/heritage?page=${page}&limit=${limit}`)

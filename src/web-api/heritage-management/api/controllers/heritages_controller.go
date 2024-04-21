@@ -1044,3 +1044,20 @@ func GetPagedHeritagesImagesForGallery(c *gin.Context) {
 
 	utils.SuccessResponse(c, http.StatusOK, pagination)
 }
+
+// GetHeritageByID trả về thông tin của một di sản văn hóa dựa trên ID
+func GetHeritageSlugByID(c *gin.Context) {
+	id := c.Param("id")
+
+	var heritage models.Heritage
+	var slug string
+
+	if id != "0" {
+		if err := db.GetDB().Model(&heritage).Select("urlslug").Where("id = ?", id).Scan(&slug).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusNotFound, "Heritage not found")
+			return
+		}
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, gin.H{"slug": slug})
+}

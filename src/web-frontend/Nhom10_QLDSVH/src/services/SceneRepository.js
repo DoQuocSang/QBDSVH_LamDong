@@ -13,7 +13,7 @@ export function getScenes(
     page = 1,
     limit = 30,
     columnName = "id",
-    sortOrder = "DESC"
+    sortOrder = "ASC"
     ) {    
     return get_api(`http://localhost:8080/api/v1/scene/${id}?page=${page}&limit=${limit}&columnName=${columnName}&sortOrder=${sortOrder}`)
     // return get_api(`https://localhost:7245/api/users?PageSize=30&PageNumber=1`)

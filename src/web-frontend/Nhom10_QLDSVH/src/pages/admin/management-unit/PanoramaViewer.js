@@ -14,7 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import MainLogo from "../../../images/logo2.png";
 import HotspotNull from "../../../images/hotspot-null.png";
-import { getLastHotspotId } from "services/HotspotRepository copy.js";
+import { getLastHotspotId } from "services/HotspotRepository.js";
 
 const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, isBackToMainScene, onClickMoveScene }) => {
   // var image360url = localStorage.getItem("image360url");

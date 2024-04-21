@@ -37,6 +37,7 @@ func SetupRouter() *gin.Engine {
 			heritage.GET("/increase-view-count/:urlSlug", controllers.IncreaseViewCount)
 			heritage.GET("/gallery", controllers.GetPagedHeritagesImagesForGallery)
 			heritage.GET("/search", controllers.SearchHeritage)
+			heritage.GET("/slug-by-id/:id", controllers.GetHeritageSlugByID)
 		}
 		heritage_paragraph := v1.Group("/heritage-paragraph")
 		{
@@ -137,6 +138,15 @@ func SetupRouter() *gin.Engine {
 		hotspot := v1.Group("/hotspot")
 		{
 			hotspot.GET("/last-inserted-id", controllers.GetLastInsertedHotspotID)
+		}
+		hotspots_map := v1.Group("/hotspots-map")
+		{
+			hotspots_map.GET("", controllers.GetAllHotspotMap)
+			hotspots_map.GET("/by-management-unit/:id", controllers.GetAllHotspotMapByManagementUnitID)
+			hotspots_map.GET("/:id", controllers.GetHotspotsMapByID)
+			hotspots_map.POST("", controllers.CreateHotspotsMap)
+			hotspots_map.PUT("/:id", controllers.UpdateHotspotsMap)
+			hotspots_map.DELETE("/:id", controllers.DeleteHHotspotsMap)
 		}
 	}
 

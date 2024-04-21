@@ -74,9 +74,9 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
       initialManagementUnitState
     );
 
-    const preloadImage = (url) => {
-      const img = new Image();
-      img.src = url;
+  const preloadImage = (url) => {
+    const img = new Image();
+    img.src = url;
 
     //   img.onload = () => {
     //     console.log("Image loaded:", img);
@@ -84,7 +84,7 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
     // };
 
     img.onerror = () => {
-        console.log("Image failed to load");
+      console.log("Image failed to load");
     };
   };
 
@@ -95,19 +95,18 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
 
   // Function to handle scene change
   const handleSceneChange = (newSceneId) => {
-      // Start transitioning
-      setOpacity(0);
-      setScale(1.5)
+    // Start transitioning
+    setOpacity(0);
+    setScale(1.5);
 
-      // After a short delay, change the scene
-      setTimeout(() => {
-          getSceneById(newSceneId);
-          // setCurrentScene(newScene);
-          setOpacity(1);
-          setScale(1)
-      }, 1000); // Adjust the delay as needed
+    // After a short delay, change the scene
+    setTimeout(() => {
+      getSceneById(newSceneId);
+      // setCurrentScene(newScene);
+      setOpacity(1);
+      setScale(1);
+    }, 1000); // Adjust the delay as needed
   };
-
 
   useEffect(() => {
     if (id !== 0) {
@@ -126,20 +125,18 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
             setCurrentScene(data.scenes[0]);
           }
 
-          data.scenes.forEach(scene => {
+          data.scenes.forEach((scene) => {
             if (scene.panorama_image && scene.panorama_image.file_url) {
-                preloadImage(scene.panorama_image.file_url);
+              preloadImage(scene.panorama_image.file_url);
             }
           });
         } else setManagementUnitData(initialManagementUnitState);
-        console.log(data);
+        // console.log(data);
       });
     }
-
-
   }, []);
 
-  console.log(currentScene);
+  // console.log(currentScene);
 
   const customStyles = `
     .pnlm-container {
@@ -303,12 +300,11 @@ span.preview-hotspot-title {
 
     previewImageContainerDiv.appendChild(imgDiv);
 
-
     var span = document.createElement("span");
-    span.classList.add("preview-hotspot-title")
+    span.classList.add("preview-hotspot-title");
     span.style.position = "relative";
     span.innerHTML = args.scene.name;
-    
+
     previewImageContainerDiv.appendChild(span);
 
     // icon
@@ -357,7 +353,7 @@ span.preview-hotspot-title {
           tooltipArg={getSceneInfoById(element.move_scene_id)}
           handleClick={() => {
             // setScene(DataScene["insideTwo"]);
-            handleSceneChange(element.move_scene_id)
+            handleSceneChange(element.move_scene_id);
             // getSceneById(element.move_scene_id);
             // setCurrentImage(element.image_url)
             setCurrentCamera({
@@ -391,7 +387,10 @@ span.preview-hotspot-title {
   return (
     <>
       <style>{customStyles}</style>
-      <div className="relative w-full h-full fade" style={{ opacity: opacity, scale: scale }}>
+      <div
+        className="relative w-full h-full fade"
+        style={{ opacity: opacity, scale: scale }}
+      >
         <Pannellum
           width="100%"
           height="100vh"
@@ -435,7 +434,17 @@ span.preview-hotspot-title {
           resetIsOpenModelView={resetIsOpenModelView}
         />
       </div>
-      <MediaTaskbar pannellumRef={pannellumRef} increaseStep={15} getSceneById={getSceneById}/>
+      <MediaTaskbar
+        pannellumRef={pannellumRef}
+        increaseStep={15}
+        getSceneById={getSceneById}
+        currentSceneID={
+          currentScene &&
+          currentScene.scene
+            ?  currentScene.scene.id
+            : 0
+        }
+      />
       <Link to="/">
         <div className="fixed top-2 left-4 z-50 m-2 w-40 bg-[#4d4d4da1] rounded-full pr-2">
           <img src={MainLogo} />

@@ -10,7 +10,12 @@ import {
 import { getScenes } from "services/SceneRepository";
 import { useParams } from "react-router-dom";
 
-const SceneHorizontalList = ({ isShowSceneList, handleShowSceneList, getSceneById }) => {
+const SceneHorizontalList = ({
+  isShowSceneList,
+  handleShowSceneList,
+  getSceneById,
+  currentSceneID,
+}) => {
   const [scenes, setScenes] = useState([]);
 
   let { id } = useParams();
@@ -29,7 +34,7 @@ const SceneHorizontalList = ({ isShowSceneList, handleShowSceneList, getSceneByI
 
   const handleChangeScene = (id) => {
     getSceneById(id);
-};
+  };
 
   return (
     <>
@@ -76,9 +81,10 @@ const SceneHorizontalList = ({ isShowSceneList, handleShowSceneList, getSceneByI
           <h3 className="rounded-br-lg bg-[#52aea3] box-border px-4 py-2">
             Danh sách các khu vực
           </h3>
-          <button 
-          onClick={() => handleShowSceneList}
-          className="text-xl absolute top-2 right-4 hover:scale-125 transition-transform duration-300 ease-in-out cursor-pointer">
+          <button
+            onClick={handleShowSceneList}
+            className="text-xl absolute top-2 right-4 hover:scale-125 transition-transform duration-300 ease-in-out cursor-pointer"
+          >
             <FontAwesomeIcon icon={faXmark} className="" />
           </button>
         </div>
@@ -117,9 +123,11 @@ const SceneHorizontalList = ({ isShowSceneList, handleShowSceneList, getSceneByI
                           </p>
                         </div>
 
-                        {/* <span className="absolute right-2 top-2 z-10 inline-flex select-none rounded-md bg-red-500 px-2 py-1 text-xs font-semibold text-white">
-                        Đang xem
-                      </span> */}
+                        {item.id === currentSceneID && (
+                          <span className="absolute right-2 top-2 z-10 inline-flex select-none rounded-md bg-red-500 px-2 py-1 text-xs font-semibold text-white">
+                            Đang xem
+                          </span>
+                        )}
                       </div>
                     </div>
                   </a>

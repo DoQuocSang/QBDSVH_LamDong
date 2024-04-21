@@ -35,6 +35,8 @@ import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons";
 import { UilInfoCircle } from '@iconscout/react-unicons'
 import { UilQuestionCircle } from '@iconscout/react-unicons'
 import { UilRotate360 } from '@iconscout/react-unicons'
+import { UilFileAlt } from '@iconscout/react-unicons'
+import { getHeritageSlugById } from "services/HeritageRepository";
 
 const UserModelContainer = ({
   currentModel,
@@ -54,6 +56,16 @@ const UserModelContainer = ({
 
   const handleCloseModelInfo = () => {
     setShowModelInfo(false);
+  };
+
+  const HandleGetHeritageSlugById = (id) => {
+    if (id !== 0) {
+      getHeritageSlugById(id).then((data) => {
+        if (data) {
+          window.location = `/heritage-detail/${data.slug}`;
+        }
+      });
+    }
   };
 
   return (
@@ -80,6 +92,13 @@ const UserModelContainer = ({
                   >
                     {/* <FontAwesomeIcon icon={faCircleInfo} className="w-6 h-6" /> */}
                     <UilInfoCircle size="30"/>
+                  </button>
+                  <button onClick={() => HandleGetHeritageSlugById(currentModel.heritage_id)} className="transition-all duration-300 text-[#a9a9a9] hover:text-white">
+                    {/* <FontAwesomeIcon
+                      icon={faCircleQuestion}
+                      className="w-6 h-6"
+                    /> */}
+                    <UilFileAlt size="30"/>
                   </button>
                   <button className="transition-all duration-300 text-[#a9a9a9] hover:text-white">
                     {/* <FontAwesomeIcon
