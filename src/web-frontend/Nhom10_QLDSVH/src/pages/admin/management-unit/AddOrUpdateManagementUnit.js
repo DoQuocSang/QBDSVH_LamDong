@@ -8,6 +8,7 @@ import {
   faCheckCircle,
   faCircle,
   faCircleNotch,
+  faMapLocationDot,
   faPenToSquare,
   faPencil,
   faXmarkCircle,
@@ -53,6 +54,7 @@ import AllHotspot from "../hotspot/AllHotspot";
 import ThumbnailDefault from "../../../images/post-default-full.png";
 import AddOrUpdateScene from "../scene/AddOrUpdateScene";
 import { getLastPanoramaImageId } from "services/PanoramaImageRepository";
+import UploadingGif from "../../../images/loading.gif";
 
 export default ({ type = "" }) => {
   document.title = "Thêm/Cập nhật đơn vị quản lý";
@@ -68,9 +70,10 @@ export default ({ type = "" }) => {
     address: "",
     description: "",
     short_description: "",
+    map_url: "",
   };
 
-  const defaultScenes =[
+  const defaultScenes = [
     // {
     //   id: 0,
     //   name: "",
@@ -78,7 +81,7 @@ export default ({ type = "" }) => {
     //   pitch: 0,
     //   yaw: 0,
     // }
-  ]; 
+  ];
 
   const initialState = {
       management_unit: {
@@ -104,6 +107,8 @@ export default ({ type = "" }) => {
   const [sceneAction, setSceneAction] = useState("add");
   const [sceneIndexToUpdate, setSceneIndexToUpdate] = useState(0);
   const [isBackToMainScene, setIsBackToMainScene] = useState(false);
+  const [mapUploadFile, setMapUploadFile] = useState(null);
+  const [mapUploadProgress, setMapUploadProgress] = useState(0);
   // localStorage.setItem(
   //   "image360url",
   //   managementUnitData.management_unit.image_360_url
@@ -135,20 +140,18 @@ export default ({ type = "" }) => {
       getFullInfoOfManagementUnitById(id).then((data) => {
         if (data)
           setManagementUnitData((prevState) => ({
-              ...prevState,
-              management_unit: {
-                  ...prevState.management_unit,
-                  ...data.management_unit,
-              },
-              scenes: data.scenes !== null ? data.scenes : [],
+            ...prevState,
+            management_unit: {
+              ...prevState.management_unit,
+              ...data.management_unit,
+            },
+            scenes: data.scenes !== null ? data.scenes : [],
           }));
         else setManagementUnitData(initialState);
         console.log(data);
       });
     }
   }, []);
-
-  console.log(managementUnitData);
 
   //validate lỗi bổ trống
   const validateAllInput = () => {
@@ -193,6 +196,7 @@ export default ({ type = "" }) => {
   };
 
   const handleSubmit = () => {
+    console.log(managementUnitData);
     // Nếu không có lỗi mới xóa hoặc cập nhật
     if (validateAllInput() === false) {
       if (id === 0) {
@@ -200,12 +204,10 @@ export default ({ type = "" }) => {
           SetSuccessFlag(data);
         });
       } else {
-        putManagementUnitAndSceneData(id, managementUnitData).then(
-          (data) => {
-            SetSuccessFlag(data);
-            //console.log(data);
-          }
-        );
+        putManagementUnitAndSceneData(id, managementUnitData).then((data) => {
+          SetSuccessFlag(data);
+          //console.log(data);
+        });
       }
     }
   };
@@ -224,7 +226,7 @@ export default ({ type = "" }) => {
   const canvasRef = useRef(null);
 
   const handleOpenPanoramaViewer = (index) => {
-    setCurrentScene(managementUnitData.scenes[index])
+    setCurrentScene(managementUnitData.scenes[index]);
     setIsPanoramaViewerOpen(true);
     setEditingIndex(index);
     setIsBackToMainScene(true);
@@ -238,7 +240,7 @@ export default ({ type = "" }) => {
   const handleOpenAddSceneForm = () => {
     setSceneAction("add");
     setIsOpenSceneForm(true);
-    
+
     // Tắt view hiện tại
     setIsPanoramaViewerOpen(false);
   };
@@ -253,7 +255,7 @@ export default ({ type = "" }) => {
     // Tắt view hiện tại
     setIsPanoramaViewerOpen(false);
   };
-  
+
   const handleCloseAddSceneForm = () => {
     setIsOpenSceneForm(false);
   };
@@ -262,7 +264,7 @@ export default ({ type = "" }) => {
     setManagementUnitData((prevState) => ({
       ...prevState,
       scenes: [
-        ...prevState.scenes, 
+        ...prevState.scenes,
         {
           ...newScene,
         },
@@ -293,7 +295,7 @@ export default ({ type = "" }) => {
         ...prevState,
         scenes: updatedScenes,
       }));
-    
+
       // alert(editingIndex)
       // alert(updatedScene.hotspots ? updatedScene.hotspots.length : "ko co" )
       setCurrentScene(updatedScene);
@@ -301,7 +303,7 @@ export default ({ type = "" }) => {
   };
 
   const handleChangeCurrentScene = (updatedScene) => {
-      setCurrentScene(updatedScene);
+    setCurrentScene(updatedScene);
   };
 
   const handleDeleteSceneByIndex = (index) => {
@@ -313,7 +315,7 @@ export default ({ type = "" }) => {
         scenes: updatedScenes,
       };
     });
-    
+
     // Tắt view hiện tại
     setIsPanoramaViewerOpen(false);
   };
@@ -327,6 +329,70 @@ export default ({ type = "" }) => {
   //     scenes: updatedScene,
   //   }));
   // };
+
+  const clearMapFile = () => {
+    // Clear the uploaded file and reset model_360_url in state
+    setMapUploadFile(null);
+    setMapUploadProgress(0);
+    setManagementUnitData((managementUnitData) => ({
+      ...managementUnitData,
+      management_unit: {
+        ...managementUnitData.management_unit,
+        map_url: "",
+      },
+    }));
+  };
+
+  const handleMapUploadFile = async (e) => {
+    const file = e.target.files[0];
+    console.log(file);
+    setMapUploadFile(file);
+
+    if (file) {
+      // Xóa tất cả các khoảng trắng trong tên tệp
+      const fileNameWithoutSpaces = file.name.replace(/\s/g, "");
+
+      const extension = fileNameWithoutSpaces.split(".").pop(); // Get the file extension
+      const uniqueId = uuidv4();
+      const modifiedFileName = `${
+        fileNameWithoutSpaces.split(".")[0]
+      }_${uniqueId}.${extension}`;
+
+      const storageRef = ref(storage, `maps/${modifiedFileName}`);
+
+      // Upload the file and manually track the progress
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setMapUploadProgress(progress);
+        },
+        (error) => {
+          console.error("Lỗi trong quá trình upload:", error);
+        },
+        async () => {
+          try {
+            // Get the download URL after successful upload
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            // alert("Upload file thành công");
+
+            setManagementUnitData((managementUnitData) => ({
+              ...managementUnitData,
+              management_unit: {
+                ...managementUnitData.management_unit,
+                map_url: downloadURL,
+              },
+            }));
+          } catch (error) {
+            console.error("Error getting download URL:", error);
+          }
+        }
+      );
+    }
+  };
 
   return (
     <main>
@@ -532,62 +598,222 @@ export default ({ type = "" }) => {
             </>
           )}
 
+          <h2 className="font-semibold text-sm text-teal-500">Bản đồ</h2>
+          <div className="mb-6 pt-4">
+            {/* Hiển thị thông tin file đã tải lên nếu có */}
+            <div className="flex justify-center items-center gap-4">
+              {mapUploadFile && (
+                <div className="flex-1 w-full relative mt-0">
+                  <div className="mb-2 flex items-center justify-between">
+                    <div>
+                      {mapUploadProgress < 100 ? (
+                        <span className="inline-block rounded-full bg-yellow-200 px-3 py-1 text-xs font-semibold uppercase text-orange-600">
+                          Đang tải lên server
+                        </span>
+                      ) : (
+                        <span className="inline-block rounded-full bg-teal-500 px-3 py-1 text-xs font-semibold uppercase text-white">
+                          Đã tải xong
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <span className="inline-block text-sm font-bold text-blue-600">
+                        {Math.round(mapUploadProgress)}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mb-4 flex h-2 overflow-hidden rounded bg-gray-200 text-xs">
+                    <style>
+                      {`
+                        /* WebKit (Safari, Chrome) */
+                        ::-webkit-progress-bar {
+                        background-color: #E5E7EB; /* Set the background color */
+                        border-radius: 4px; /* Optional: Set the border radius */
+                        }
+
+                        ::-webkit-progress-value {
+                        background-color: #4CAF50; /* Set the progress bar color */
+                        border-radius: 4px; /* Optional: Set the border radius */
+                        }
+
+                        /* Firefox */
+                        ::-moz-progress-bar {
+                        background-color: #4CAF50; /* Set the progress bar color */
+                        border-radius: 4px; /* Optional: Set the border radius */
+                        }
+                    `}
+                    </style>
+                    <progress
+                      value={mapUploadProgress}
+                      max="100"
+                      className="flex flex-col justify-center bg-teal-500 text-white shadow-none w-full"
+                    ></progress>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {mapUploadFile || managementUnitData.management_unit.map_url ? (
+              <>
+                {(mapUploadProgress === 100 ||
+                  managementUnitData.management_unit.map_url) && (
+                  <img
+                    className="w-full h-auto rounded-lg mb-4"
+                    src={
+                      managementUnitData.management_unit.map_url
+                        ? managementUnitData.management_unit.map_url
+                        : mapUploadFile.name
+                    }
+                  />
+                )}
+              </>
+            ) : (
+              <div className="flex items-center justify-center w-full mb-4">
+                <div className="overflow-hidden relative flex items-center justify-between w-full min-h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 ">
+                  <div className="flex-1 w-full h-auto">
+                    <input
+                      type="file"
+                      name="map_file"
+                      id="map_file"
+                      className="sr-only"
+                      onChange={handleMapUploadFile}
+                    />
+                    <label
+                      for="map_file"
+                      className="flex flex-col items-center justify-center text center cursor-pointer"
+                    >
+                      <svg className="w-10 h-10 mb-3 text-gray-400">
+                        <FontAwesomeIcon icon={faMapLocationDot} />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold">Click tại đây</span> để
+                        tải lên bản đồ
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        (Các file được phép: jpg, png, jpeg)
+                      </p>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {(mapUploadFile || managementUnitData.management_unit.map_url) && (
+              <div className="rounded-lg bg-[#F5F7FB] py-4 pl-8 pr-8 border-l-4 border-purple-400">
+                <div className="flex items-center justify-between">
+                  <FontAwesomeIcon
+                    icon={faMapLocationDot}
+                    className="text-gray-500 mr-2"
+                  />
+                  <span className="flex-1 truncate pr-3 text-base font-medium text-[#07074D]">
+                    {managementUnitData.management_unit.map_url
+                      ? getFileNameFromURL(
+                          managementUnitData.management_unit.map_url,
+                          "maps%2F"
+                        )
+                      : mapUploadFile.name}
+                    {/* modelUploadFile.name */}
+                  </span>
+                  <button className="text-[#07074D]" onClick={clearMapFile}>
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 10 10"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
+                        fill="currentColor"
+                      />
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          {errors.map_url && (
+            <p className="text-red-500 mb-6 text-sm font-semibold">
+              <FontAwesomeIcon className="mr-2" icon={faXmarkCircle} />
+              {errors.map_url}
+            </p>
+          )}
+
           <h2 className="font-semibold text-sm text-teal-500">Khu vực</h2>
 
           {/* {JSON.stringify(managementUnitData)} */}
 
           <div className="mt-4 mb-6">
             <div className="grid w-full gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3">
-            {managementUnitData.scenes.map((item, index) => (
-              <div 
-                key={index}
-                className="relative flex flex-col rounded shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 max-w-sm">
-                <div className="h-auto overflow-hidden">
-                  <div
-                    onClick={() => {
-                      handleOpenPanoramaViewer(index);
-                    }}
-                    className="group relative pb-[50%] cursor-pointer"
-                  >
-                    <div className="absolute top-0 right-0 inset-0 z-20 p-5 flex flex-col justify-center items-center w-full h-full rounded">
-                      <div className="absolute top-0 right-0 inset-0 bg-amber-500 w-full h-full rounded opacity-0 transition-all duration-300 group-hover:opacity-75"></div>
-                      <span className="relative text-white text-sm font-semibold mb-1 opacity-0 transition-all duration-300 group-hover:opacity-100">
-                        Thêm/Sửa Hotspot
-                      </span>
-                    </div>
-                    <img
-                      src={item.panorama_image.thumbnail_url ? item.panorama_image.thumbnail_url : ThumbnailDefault}
-                      alt=""
-                      className="absolute top-0 right-0 inset-0 z-10 object-cover w-full h-full"
-                    />
-                  </div>
-                </div>
-                <div className="bg-white px-4 py-2">
-                  <h3 className="text-sm mb-1 font-semibold text-teal-500 cursor-pointer line-clamp-1">
-                    {item.scene.name ? item.scene.name : "Không có tên"}
-                  </h3>
-                  <div className="flex justify-between items-center pb-2">
-                    {/* <p className="text-xs text-gray-600">Số hotspot: {item.scene.scene_index} {item.scene.management_unit_id}</p> */}
-                    <p className="text-xs text-gray-600">{item.hotspots ? `Số hotspot: ${item.hotspots.length}` : "Chưa có hotspot"}</p>
-
-                    <div className="relative z-40 flex items-center gap-2 text-sm">
-                      <button 
-                       onClick={() => {
-                        handleOpenEditSceneForm(index);
+              {managementUnitData.scenes.map((item, index) => (
+                <div
+                  key={index}
+                  className="relative flex flex-col rounded shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 max-w-sm"
+                >
+                  <div className="h-auto overflow-hidden">
+                    <div
+                      onClick={() => {
+                        handleOpenPanoramaViewer(index);
                       }}
-                      className="text-gray-500 transition-all duration-300 hover:text-amber-500 cursor-pointer">
-                        <FontAwesomeIcon icon={faPencil} />
-                      </button>
-                      <button 
-                        onClick={() => handleDeleteSceneByIndex(index)}
-                        className="text-gray-500 transition-all duration-300 hover:text-amber-500 cursor-pointer">
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
+                      className="group relative pb-[50%] cursor-pointer"
+                    >
+                      <div className="absolute top-0 right-0 inset-0 z-20 p-5 flex flex-col justify-center items-center w-full h-full rounded">
+                        <div className="absolute top-0 right-0 inset-0 bg-amber-500 w-full h-full rounded opacity-0 transition-all duration-300 group-hover:opacity-75"></div>
+                        <span className="relative text-white text-sm font-semibold mb-1 opacity-0 transition-all duration-300 group-hover:opacity-100">
+                          Thêm/Sửa Hotspot
+                        </span>
+                      </div>
+                      <img
+                        src={
+                          item.panorama_image.thumbnail_url
+                            ? item.panorama_image.thumbnail_url
+                            : ThumbnailDefault
+                        }
+                        alt=""
+                        className="absolute top-0 right-0 inset-0 z-10 object-cover w-full h-full"
+                      />
+                    </div>
+                  </div>
+                  <div className="bg-white px-4 py-2">
+                    <h3 className="text-sm mb-1 font-semibold text-teal-500 cursor-pointer line-clamp-1">
+                      {item.scene.name ? item.scene.name : "Không có tên"}
+                    </h3>
+                    <div className="flex justify-between items-center pb-1">
+                      {/* <p className="text-xs text-gray-600">Số hotspot: {item.scene.scene_index} {item.scene.management_unit_id}</p> */}
+                      <p className="text-xs text-gray-600">
+                        {item.hotspots
+                          ? `Số hotspot: ${item.hotspots.length}`
+                          : "Chưa có hotspot"}
+                      </p>
+
+                      <div className="relative z-40 flex items-center gap-2 text-sm">
+                        <button
+                          onClick={() => {
+                            handleOpenEditSceneForm(index);
+                          }}
+                          className="text-gray-500 transition-all duration-300 hover:text-amber-500 cursor-pointer"
+                        >
+                          <FontAwesomeIcon icon={faPencil} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSceneByIndex(index)}
+                          className="text-gray-500 transition-all duration-300 hover:text-amber-500 cursor-pointer"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-             ))}
+              ))}
 
               <div
                 onClick={() => {
@@ -620,12 +846,12 @@ export default ({ type = "" }) => {
             </div>
           </div>
 
-          <AddOrUpdateScene 
-            isOpen={isOpenSceneForm} 
-            onSave={handleAddScene} 
+          <AddOrUpdateScene
+            isOpen={isOpenSceneForm}
+            onSave={handleAddScene}
             onUpdate={handleUpdateScene}
-            handleClose={handleCloseAddSceneForm} 
-            action={sceneAction} 
+            handleClose={handleCloseAddSceneForm}
+            action={sceneAction}
             editingScene={editingScene}
             editingIndex={editingIndex}
             managementUnitId={id}
@@ -643,7 +869,7 @@ export default ({ type = "" }) => {
 
           <div>
             {/* <canvas ref={canvasRef} className="hidden"></canvas> */}
-            
+
             <PanoramaViewer
               title={managementUnitData.management_unit.name}
               isOpen={isPanoramaViewerOpen}
@@ -656,7 +882,9 @@ export default ({ type = "" }) => {
               // sceneIndexToUpdate={editingIndex}
             />
 
-            {currentScene && currentScene.panorama_image && currentScene.panorama_image.file_url &&
+            {currentScene &&
+              currentScene.panorama_image &&
+              currentScene.panorama_image.file_url &&
               isPanoramaViewerOpen && (
                 <button
                   onClick={handleClosePanoramaViewer}

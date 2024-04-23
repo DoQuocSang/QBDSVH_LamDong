@@ -8,9 +8,10 @@ import {
 import MapImage from "../../../images/mapedit.png";
 import { getAllHotspotsInMapByManagementUnitID } from "services/HotspotMapRepository";
 import { useParams } from "react-router-dom";
-import defaultHotspotMapIcon from '../../../images/default_hotspot_map.png'
+import defaultHotspotMapIcon from '../../../images/default_hotspot_map.png';
+import '../../../asset/css/hotspot-map.css'
 
-const HotspotMap = ({ getSceneById }) => {
+const HotspotMap = ({ getSceneById, currentSceneID }) => {
   const [mapVisible, setMapVisible] = useState(false);
   const [hotspotsInMap, setHotspotsInMap] = useState([]);
 
@@ -63,21 +64,32 @@ const HotspotMap = ({ getSceneById }) => {
       if (data) {
         setHotspotsInMap(data);
       } else setHotspotsInMap([]);
-      // console.log(data);
+      console.log(data);
     });
   }, []);
 
   // Thêm điểm hotspots trên map
   const AddHotspotInMap = (elem, i) => {    
     return (
-      <img 
+      <div 
       key={i}
       onClick={() => {
-        getSceneById(elem.scene_id);
+        if(currentSceneID !== elem.scene_id){
+          getSceneById(elem.scene_id);
+        }
         handleCloseMap();
       }}
       style={{ top: elem.top, left: elem.left }}
-      src={defaultHotspotMapIcon} alt="Hotspot Map" class="w-10 h-10 rounded-full absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer" />
+      className="group w-10 h-10 absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer flex justify-center items-center">
+      {elem.scene_id === currentSceneID && (
+        <div className="group-hover:hidden circle-animate w-full h-full border-4 border-red-500 rounded-full top-0 left-0 absolute transform -translate-x-1/2 -translate-y-1/2"/>
+      )}
+      <img 
+        src={defaultHotspotMapIcon} alt="Hotspot Map" class="w-full h-full rounded-full border-0 border-red-500 group-hover:border-4 transition-all duration-300" />
+        <p className="text-xs font-semibold text-white bg-red-500 px-0 py-0 rounded-full whitespace-nowrap transfrom -translate-x-full transition-all duration-300 w-0 opacity-0 group-hover:opacity-100 group-hover:px-4 overflow-hidden group-hover:overflow-visible group-hover:py-2 group-hover:w-56 group-hover:translate-x-0 group-hover:mx-2">
+          {elem.scene_name}
+        </p>
+      </div>
     );
   };
   
@@ -96,19 +108,6 @@ const HotspotMap = ({ getSceneById }) => {
 
   return (
     <>
-    <style>
-    {`
-// .hotspot-map {
-//   position: absolute;
-//   width: 2.5rem;
-//   height: 2.5rem;
-//   content: url("../assets/icons/hotspot_map.png");
-//   border-radius: 50%;
-//   transform: translate(-50%, -50%);
-//   cursor: pointer;
-// }
-    `}
-  </style>
     <div
       id="hotspot_map_overlay"
       className="transform scale-0 transition-transform duration-300 w-full h-screen animated fadeIn fixed left-0 top-0 z-[100]"

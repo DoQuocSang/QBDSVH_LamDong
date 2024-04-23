@@ -746,6 +746,10 @@ func UpdateManagementUnitWithSceneData(c *gin.Context) {
 		sceneIDs = append(sceneIDs, scene.ID)
 	}
 
+	// Lấy danh sách hotspot hiện có trong cơ sở dữ liệu cho management unit này
+	existingHotspots := make(map[int]bool)
+	db.GetDB().Model(&models.Hotspot{}).Where("scene_id IN (?)", sceneIDs).Pluck("id", &existingHotspots)
+
 	db.GetDB().Where("scene_id IN (?)", sceneIDs).Delete(&models.Hotspot{})
 
 	db.GetDB().Where("scene_id IN (?)", sceneIDs).Model(&models.PanoramaImage{}).Update("is_current_use", 0)
@@ -760,7 +764,7 @@ func UpdateManagementUnitWithSceneData(c *gin.Context) {
 		// Tạo scene mới
 		newScene := sceneData.Scene
 		// Loại bỏ giá trị id để cơ sở dữ liệu tự động tạo id mới
-		newScene.ID = 0
+		// newScene.ID = 0
 
 		// Chuyển đổi từ string sang int
 		managementUnitIDInt, err := strconv.Atoi(managementUnitID)
@@ -771,8 +775,14 @@ func UpdateManagementUnitWithSceneData(c *gin.Context) {
 
 		newScene.Management_Unit_Id = managementUnitIDInt
 
-		if err := db.GetDB().Create(&newScene).Error; err != nil {
-			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create scene")
+		// if err := db.GetDB().Create(&newScene).Error; err != nil {
+		// 	utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create scene")
+		// 	return
+		// }
+
+		// Sử dụng FirstOrCreate để thêm mới hoặc cập nhật scene
+		if err := db.GetDB().Where(models.Scene{ID: newScene.ID}).Assign(newScene).FirstOrCreate(&newScene).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create or update scene")
 			return
 		}
 
@@ -796,15 +806,19 @@ func UpdateManagementUnitWithSceneData(c *gin.Context) {
 		// Thêm mới hotspots
 		for _, hotspot := range sceneData.Hotspots {
 			// Loại bỏ giá trị ID để cơ sở dữ liệu tự động tạo ID mới
-			hotspot.ID = 0
+			// hotspot.ID = 0
 			// Liên kết scene_id và move_scene_id mới
 			hotspot.Scene_ID = sceneMap[sceneData.Scene.ID]
 			hotspot.Move_Scene_ID = sceneMap[hotspot.Move_Scene_ID]
 
-			if err := db.GetDB().Create(&hotspot).Error; err != nil {
-				utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create hotspot")
+			if err := db.GetDB().Where("id = ?", hotspot.ID).Assign(hotspot).FirstOrCreate(&hotspot).Error; err != nil {
+				utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create or update hotspot")
 				return
 			}
+			// if err := db.GetDB().Create(&hotspot).Error; err != nil {
+			// 	utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create hotspot")
+			// 	return
+			// }
 		}
 	}
 

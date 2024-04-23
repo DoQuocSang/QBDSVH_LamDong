@@ -32,7 +32,7 @@ const Background = props => {
   )
 }
 
-const ModelViewer = () => {
+const ModelViewer = ({modelUrl = ""}) => {
   return (
     <div style={{
       display: "flex",
@@ -68,7 +68,7 @@ const ModelViewer = () => {
             maxPolarAngle={Math.PI / 2} 
             />
           <Stage environment='apartment'>
-            <ModelLoader scale={0.01} />
+            <ModelLoader modelUrl={modelUrl}/>
           </Stage>
         </Suspense>
       </Canvas>

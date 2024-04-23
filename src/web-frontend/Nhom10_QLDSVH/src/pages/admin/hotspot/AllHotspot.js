@@ -1,4 +1,8 @@
-import { faCube, faMarker, faMountainSun } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCube,
+  faMarker,
+  faMountainSun,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import CatNull from "images/cat-hotspot-null.png";
@@ -263,6 +267,7 @@ export default ({
                             setCurrentHotspot((currentHotspot) => ({
                               ...currentHotspot,
                               category: parseInt(e.target.value, 10),
+                              css_class: parseInt(e.target.value, 10) === 1 ? "hotspotElement" : "hotspotMoveScene",
                             }))
                           }
                           value={currentHotspot.category}
@@ -272,7 +277,7 @@ export default ({
                           <option value={1}>Hotspot hiện vật</option>
                           <option value={2}>Hotspot chuyển cảnh</option>
                         </select>
-                       
+
                         {currentHotspot.category === 1 && (
                           <>
                             <h2 className="font-semibold text-sm text-teal-500">
@@ -376,6 +381,21 @@ export default ({
                           className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
                         />
 
+                        <h2 className="font-semibold text-sm text-teal-500">
+                          Css class
+                        </h2>
+                        <input
+                          name="name"
+                          required
+                          type="text"
+                          disabled
+                          value={
+                            currentHotspot.css_class
+                              ? currentHotspot.css_class
+                              : `Không có class`
+                          }
+                          className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-300  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
+                        />
 
                         {/* <h2 className="font-semibold text-sm text-teal-500">
                         Hình ảnh
@@ -470,40 +490,41 @@ export default ({
                                 <div className="flex flex-row items-center">
                                   {element.category === 1 ? (
                                     <div className="rounded-full bg-amber-100 p-3 group-hover:bg-white transition-all duration-300">
-                                    <span className="flex items-center">
-                                      <svg
-                                        stroke="currentColor"
-                                        fill="currentColor"
-                                        stroke-width="0"
-                                        viewBox="0 0 512 512"
-                                        className="h-6 w-6 text-amber-400 group-hover:text-red-400 transition-all duration-300"
-                                        height="1em"
-                                        width="1em"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <FontAwesomeIcon icon={faCube} />
-                                      </svg>
-                                    </span>
-                                  </div>
+                                      <span className="flex items-center">
+                                        <svg
+                                          stroke="currentColor"
+                                          fill="currentColor"
+                                          stroke-width="0"
+                                          viewBox="0 0 512 512"
+                                          className="h-6 w-6 text-amber-400 group-hover:text-red-400 transition-all duration-300"
+                                          height="1em"
+                                          width="1em"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <FontAwesomeIcon icon={faCube} />
+                                        </svg>
+                                      </span>
+                                    </div>
                                   ) : (
                                     <div className="rounded-full bg-blue-100 p-3 group-hover:bg-white transition-all duration-300">
-                                    <span className="flex items-center">
-                                      <svg
-                                        stroke="currentColor"
-                                        fill="currentColor"
-                                        stroke-width="0"
-                                        viewBox="0 0 512 512"
-                                        className="h-6 w-6 text-blue-400 group-hover:text-red-400 transition-all duration-300"
-                                        height="1em"
-                                        width="1em"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <FontAwesomeIcon icon={faMountainSun} />
-                                      </svg>
-                                    </span>
-                                  </div>
+                                      <span className="flex items-center">
+                                        <svg
+                                          stroke="currentColor"
+                                          fill="currentColor"
+                                          stroke-width="0"
+                                          viewBox="0 0 512 512"
+                                          className="h-6 w-6 text-blue-400 group-hover:text-red-400 transition-all duration-300"
+                                          height="1em"
+                                          width="1em"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <FontAwesomeIcon
+                                            icon={faMountainSun}
+                                          />
+                                        </svg>
+                                      </span>
+                                    </div>
                                   )}
-                                
                                 </div>
                                 <div className="flex flex-1 w-auto flex-col justify-center gap-1">
                                   <p className="font-dm text-sm font-semibold text-teal-500 group-hover:text-white transition-all duration-300">

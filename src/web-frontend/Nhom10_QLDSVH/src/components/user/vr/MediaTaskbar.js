@@ -27,7 +27,12 @@ import HotspotMap from "./HotspotMap";
 import SceneHorizontalList from "./SceneHorizontalList";
 import { translate } from "react-range/lib/utils";
 
-const MediaTaskbar = ({ pannellumRef, increaseStep = 10, getSceneById, currentSceneID }) => {
+const MediaTaskbar = ({
+  pannellumRef,
+  increaseStep = 10,
+  getSceneById,
+  currentSceneID,
+}) => {
   const audioRef = useRef(new Audio("../audio/copyleft-introbaotangld.mp3"));
   const bgAudio = useRef(new Audio("../audio/bgmusic.mp3"));
   const [isPlaying, setIsPlaying] = useState(false);
@@ -107,8 +112,10 @@ const MediaTaskbar = ({ pannellumRef, increaseStep = 10, getSceneById, currentSc
         className="group absolute bottom-0 bg-gradient-to-t from-[#454545bd] to-[#ffffff00] flex justity-center items-center w-screen text-white transition-all duration-300 cursor-pointer"
       >
         <div className="w-full py-4 flex justify-center items-center gap-2 group-hover:scale-125 transition-all duration-300">
-         <FontAwesomeIcon icon={faCaretUp} className="text-xl "/>
-         <p className="text-sm hidden group-hover:inline">Hiển thị thanh công cụ</p>
+          <FontAwesomeIcon icon={faCaretUp} className="text-xl " />
+          <p className="text-sm hidden group-hover:inline">
+            Hiển thị thanh công cụ
+          </p>
         </div>
       </div>
       <div
@@ -212,7 +219,7 @@ const MediaTaskbar = ({ pannellumRef, increaseStep = 10, getSceneById, currentSc
           </div>
         </div>
       </div>
-      <HotspotMap getSceneById={getSceneById}/>
+      <HotspotMap currentSceneID={currentSceneID} getSceneById={getSceneById} />
     </>
   );
 };

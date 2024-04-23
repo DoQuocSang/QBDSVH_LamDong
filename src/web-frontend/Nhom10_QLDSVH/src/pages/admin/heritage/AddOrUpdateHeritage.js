@@ -1409,7 +1409,7 @@ export default ({ type = "" }) => {
 
             {isModelViewerOpen && (
               <div className="mt-4">
-                <ModelViewer />
+                <ModelViewer modelUrl={ heritageData.upload_file ? heritageData.upload_file.file_url : ""}/>
               </div>
             )}
 

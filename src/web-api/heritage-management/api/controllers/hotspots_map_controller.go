@@ -21,34 +21,6 @@ func GetAllHotspotMap(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, hotspots_map)
 }
 
-func GetAllHotspotMapByManagementUnitID(c *gin.Context) {
-	// Lấy management_unit_id từ tham số id
-	managementUnitID := c.Param("id")
-
-	// Lấy danh sách các scene dựa trên management_unit_id
-	var scenes []models.Scene
-	if err := db.GetDB().Where("management_unit_id = ?", managementUnitID).Find(&scenes).Error; err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get scenes by management unit ID")
-		return
-	}
-
-	// Tạo một slice chứa các ID của các scene
-	var sceneIDs []int
-	for _, scene := range scenes {
-		sceneIDs = append(sceneIDs, scene.ID)
-	}
-
-	// Lấy danh sách các hotspotmap dựa trên các ID của các scene
-	var hotspotsMap []models.Hotspots_Map
-	if err := db.GetDB().Where("scene_id IN (?)", sceneIDs).Find(&hotspotsMap).Error; err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get hotspot maps by scene IDs")
-		return
-	}
-
-	// Trả về danh sách các hotspotmap tương ứng
-	utils.SuccessResponse(c, http.StatusOK, hotspotsMap)
-}
-
 // GetHotspotsMapByID trả về thông tin của ID của hotspotsmap
 func GetHotspotsMapByID(c *gin.Context) {
 	id := c.Param("id")
@@ -121,4 +93,37 @@ func DeleteHHotspotsMap(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, gin.H{"message": "Hotspots-map deleted successfully"})
+}
+
+func GetAllHotspotMapByManagementUnitID(c *gin.Context) {
+	// Lấy management_unit_id từ tham số id
+	managementUnitID := c.Param("id")
+
+	// Lấy danh sách các scene dựa trên management_unit_id
+	var scenes []models.Scene
+	if err := db.GetDB().Where("management_unit_id = ?", managementUnitID).Find(&scenes).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get scenes by management unit ID")
+		return
+	}
+
+	// Tạo một slice chứa các ID của các scene
+	var sceneIDs []int
+	for _, scene := range scenes {
+		sceneIDs = append(sceneIDs, scene.ID)
+	}
+
+	// Lấy danh sách các hotspotmap dựa trên các ID của các scene
+	var hotspotsMap []models.Hotspots_Map
+	if err := db.GetDB().Where("scene_id IN (?)", sceneIDs).Find(&hotspotsMap).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get hotspot maps by scene IDs")
+		return
+	}
+
+	// Gán tên khu vực cho mỗi hotspotmap
+	for i := range hotspotsMap {
+		hotspotsMap[i].Scene_Name = scenes[i].Name
+	}
+
+	// Trả về danh sách các hotspotmap tương ứng
+	utils.SuccessResponse(c, http.StatusOK, hotspotsMap)
 }

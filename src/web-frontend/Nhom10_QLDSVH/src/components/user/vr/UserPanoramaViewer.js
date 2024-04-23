@@ -136,8 +136,6 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
     }
   }, []);
 
-  // console.log(currentScene);
-
   const customStyles = `
     .pnlm-container {
       background: url('${loadingGif}') center center no-repeat;
@@ -287,38 +285,40 @@ span.preview-hotspot-title {
 
   const hotspotTooltip = (hotSpotDiv, args) => {
     // const { name, img_url } = args;
+    // console.log(args);
+    if (args && args.panorama_image && args.scene) {
+      // preview
+      var previewImageContainerDiv = document.createElement("div");
+      previewImageContainerDiv.classList.add("preview-hotspot-container");
+      previewImageContainerDiv.style.position = "absolute";
 
-    // preview
-    var previewImageContainerDiv = document.createElement("div");
-    previewImageContainerDiv.classList.add("preview-hotspot-container");
-    previewImageContainerDiv.style.position = "absolute";
+      var imgDiv = document.createElement("div");
+      imgDiv.classList.add("preview-hotspot-image");
+      // img.src = args.panorama_image.thumbnail_url;
+      imgDiv.style.backgroundImage = `url('${args.panorama_image.thumbnail_url}')`;
 
-    var imgDiv = document.createElement("div");
-    imgDiv.classList.add("preview-hotspot-image");
-    // img.src = args.panorama_image.thumbnail_url;
-    imgDiv.style.backgroundImage = `url('${args.panorama_image.thumbnail_url}')`;
+      previewImageContainerDiv.appendChild(imgDiv);
 
-    previewImageContainerDiv.appendChild(imgDiv);
+      var span = document.createElement("span");
+      span.classList.add("preview-hotspot-title");
+      span.style.position = "relative";
+      span.innerHTML = args.scene.name;
 
-    var span = document.createElement("span");
-    span.classList.add("preview-hotspot-title");
-    span.style.position = "relative";
-    span.innerHTML = args.scene.name;
+      previewImageContainerDiv.appendChild(span);
 
-    previewImageContainerDiv.appendChild(span);
+      // icon
+      var hotspotIconContainerDiv = document.createElement("div");
+      hotspotIconContainerDiv.classList.add("hotspot-icon-container");
+      hotspotIconContainerDiv.style.position = "relative";
 
-    // icon
-    var hotspotIconContainerDiv = document.createElement("div");
-    hotspotIconContainerDiv.classList.add("hotspot-icon-container");
-    hotspotIconContainerDiv.style.position = "relative";
+      var hotspotIconDiv = document.createElement("div");
+      hotspotIconDiv.classList.add("custom-hotspot-icon");
 
-    var hotspotIconDiv = document.createElement("div");
-    hotspotIconDiv.classList.add("custom-hotspot-icon");
+      hotspotIconContainerDiv.appendChild(hotspotIconDiv);
 
-    hotspotIconContainerDiv.appendChild(hotspotIconDiv);
-
-    hotspotIconContainerDiv.appendChild(previewImageContainerDiv);
-    hotSpotDiv.appendChild(hotspotIconContainerDiv);
+      hotspotIconContainerDiv.appendChild(previewImageContainerDiv);
+      hotSpotDiv.appendChild(hotspotIconContainerDiv);
+    }
   };
 
   const hotspots = (element, i) => {
@@ -439,10 +439,7 @@ span.preview-hotspot-title {
         increaseStep={15}
         getSceneById={getSceneById}
         currentSceneID={
-          currentScene &&
-          currentScene.scene
-            ?  currentScene.scene.id
-            : 0
+          currentScene && currentScene.scene ? currentScene.scene.id : 0
         }
       />
       <Link to="/">

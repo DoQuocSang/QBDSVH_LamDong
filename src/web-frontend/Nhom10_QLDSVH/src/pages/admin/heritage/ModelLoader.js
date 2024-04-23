@@ -2,15 +2,15 @@ import React from "react";
 import { Canvas } from "react-three-fiber";
 import { useGLTF, Stage, PresentationControls } from "@react-three/drei";
 
-export const ModelLoader = (props) => {
-  var model360url = localStorage.getItem('model360url');
-  const { scene } = useGLTF(model360url);
+export const ModelLoader = ({modelUrl = ""}) => {
+  // var model360url = localStorage.getItem('model360url');
+  const { scene } = useGLTF(modelUrl);
 
   return (
     <>
       {/* Add your loader component here */}
       {scene ? (
-        <primitive object={scene} {...props} />
+        <primitive object={scene} scale={0.01} />
       ) : (
         <Loader />
       )}

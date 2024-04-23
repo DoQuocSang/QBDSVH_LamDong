@@ -7,6 +7,7 @@ type Management_Unit struct {
 	UrlSlug          string `json:"urlslug" gorm:"column:urlslug;"`
 	ImageUrl         string `json:"image_url" gorm:"column:image_url;"`
 	Image360Url      string `json:"image_360_url" gorm:"column:image_360_url;"`
+	MapUrl           string `json:"map_url" gorm:"column:map_url;"`
 	Address          string `json:"address" gorm:"column:address;"`
 	Note             string `json:"note" gorm:"column:note;"`
 	ShortDescription string `json:"short_description" gorm:"column:short_description;"`
@@ -29,6 +30,7 @@ type Management_Unit_FullInfo struct {
 	UrlSlug          string `json:"urlslug" gorm:"column:urlslug;"`
 	ImageUrl         string `json:"image_url" gorm:"column:image_url;"`
 	Image360Url      string `json:"image_360_url" gorm:"column:image_360_url;"`
+	MapUrl           string `json:"map_url" gorm:"column:map_url;"`
 	Address          string `json:"address" gorm:"column:address;"`
 	Note             string `json:"note" gorm:"column:note;"`
 	ShortDescription string `json:"short_description" gorm:"column:short_description;"`
