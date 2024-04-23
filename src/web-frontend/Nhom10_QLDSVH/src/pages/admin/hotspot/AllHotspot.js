@@ -307,11 +307,11 @@ export default ({
                               className=" text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400 appearance-none"
                             >
                               <option value={0}>
-                                --- Chọn loại di sản ---
+                                --- Chọn di sản ---
                               </option>
                               {heritageList.map((item, index) => (
                                 <option key={index} value={item.id}>
-                                  {item.id} {item.name}
+                                  {item.name}
                                 </option>
                               ))}
                             </select>

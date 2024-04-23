@@ -12,7 +12,7 @@ import {
   faXmark,
   faXmarkCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import MainLogo from "../../../images/logo2.png";
+import MainLogo from "../../../images/logo-btld-2.png";
 import HotspotNull from "../../../images/hotspot-null.png";
 import { getLastHotspotId } from "services/HotspotRepository.js";
 
