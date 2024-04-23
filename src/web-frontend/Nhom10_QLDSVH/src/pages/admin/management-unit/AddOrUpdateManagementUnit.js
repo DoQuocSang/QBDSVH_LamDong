@@ -55,6 +55,8 @@ import ThumbnailDefault from "../../../images/post-default-full.png";
 import AddOrUpdateScene from "../scene/AddOrUpdateScene";
 import { getLastPanoramaImageId } from "services/PanoramaImageRepository";
 import UploadingGif from "../../../images/loading.gif";
+import defaultHotspotMapIcon from "../../../images/default_hotspot_map.png";
+import "../../../asset/css/hotspot-map.css";
 
 export default ({ type = "" }) => {
   document.title = "Thêm/Cập nhật đơn vị quản lý";
@@ -394,6 +396,39 @@ export default ({ type = "" }) => {
     }
   };
 
+  // Thêm điểm hotspots trên map
+  const AddHotspotInMap = (elem, i) => {
+    return (
+      <div
+        key={i}
+        style={{
+          top: `${elem.hotspot_map.top}%`,
+          left: `${elem.hotspot_map.left}%`,
+        }}
+        className="group w-10 h-10 absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer flex justify-center items-center"
+      >
+        <img
+          src={defaultHotspotMapIcon}
+          alt="Hotspot Map"
+          class="w-full h-full rounded-full border-0 border-red-500 group-hover:border-4 transition-all duration-300"
+        />
+        <p className="text-xs font-semibold text-white bg-red-500 px-0 py-0 rounded-full whitespace-nowrap transfrom -translate-x-full transition-all duration-300 w-0 opacity-0 group-hover:opacity-100 group-hover:px-4 overflow-hidden group-hover:overflow-visible group-hover:py-2 group-hover:w-56 group-hover:translate-x-0 group-hover:mx-2">
+          {elem.scene.name}
+        </p>
+      </div>
+    );
+  };
+
+  const FilterScenesForLoađEitHotspotsMap = (scenes) => {
+    // Nếu không có editingScene hoặc sceneAction không phải 'edit', trả về scenes nguyên thủy
+    if (!editingScene || sceneAction !== 'edit') {
+        return scenes;
+    }
+
+    // Nếu có editingScene và sceneAction là 'edit', lọc scenes để loại bỏ scene đang được chỉnh sửa
+    return scenes.filter(scene => scene.scene.id !== editingScene.scene.id);
+  };
+
   return (
     <main>
       <div className="mt-12 px-4">
@@ -657,14 +692,20 @@ export default ({ type = "" }) => {
               <>
                 {(mapUploadProgress === 100 ||
                   managementUnitData.management_unit.map_url) && (
-                  <img
-                    className="w-full h-auto rounded-lg mb-4"
-                    src={
-                      managementUnitData.management_unit.map_url
-                        ? managementUnitData.management_unit.map_url
-                        : mapUploadFile.name
-                    }
-                  />
+                  <div className="relative w-full mb-4 flex flex-col gap-4 justify-center items-center">
+                    <img
+                      className="w-full h-auto rounded-lg"
+                      src={
+                        managementUnitData.management_unit.map_url
+                          ? managementUnitData.management_unit.map_url
+                          : mapUploadFile.name
+                      }
+                    />
+                    {managementUnitData.scenes &&
+                      Object.values(managementUnitData.scenes).map((elem, i) =>
+                        AddHotspotInMap(elem, i)
+                      )}
+                  </div>
                 )}
               </>
             ) : (
@@ -749,7 +790,7 @@ export default ({ type = "" }) => {
 
           <h2 className="font-semibold text-sm text-teal-500">Khu vực</h2>
 
-          {/* {JSON.stringify(managementUnitData)} */}
+          {/* {JSON.stringify(managementUnitData.scenes)} */}
 
           <div className="mt-4 mb-6">
             <div className="grid w-full gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3">
@@ -856,6 +897,8 @@ export default ({ type = "" }) => {
             editingIndex={editingIndex}
             managementUnitId={id}
             newSceneIndex={managementUnitData.scenes.length}
+            map_url={managementUnitData.management_unit.map_url}
+            hotspotsMap ={FilterScenesForLoađEitHotspotsMap(managementUnitData.scenes)}
           />
 
           {/* --------------------------------------------------------------------------------------------------------- */}

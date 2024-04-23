@@ -625,6 +625,14 @@ func GetManagementUnitWithSceneDataByID(c *gin.Context) {
 		}
 		sceneData.Hotspots = hotspots
 
+		// Truy vấn cơ sở dữ liệu để lấy vị trí hotspot trên map tương ứng với sceneg
+		var hotspotMap models.Hotspots_Map
+		if err := db.GetDB().Where("scene_id = ?", scene.ID).First(&hotspotMap).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not fetch hotspot map")
+			return
+		}
+		sceneData.HotspotMap = hotspotMap
+
 		// Thêm sceneData vào mảng kết quả
 		resultData.Scenes = append(resultData.Scenes, sceneData)
 	}
@@ -705,6 +713,16 @@ func CreateManagementUnitWithSceneData(c *gin.Context) {
 				return
 			}
 		}
+
+		// Thêm mới hotspots_map
+		hotspotMap := sceneData.HotspotMap
+		hotspotMap.Scene_ID = sceneMap[sceneData.Scene.ID]
+
+		// Thêm hoặc cập nhật hotspots_map vào bảng hotspots_maps
+		if err := db.GetDB().Create(&hotspotMap).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create hotspot map")
+			return
+		}
 	}
 	utils.SuccessResponse(c, http.StatusCreated, requestData)
 }
@@ -751,6 +769,8 @@ func UpdateManagementUnitWithSceneData(c *gin.Context) {
 	db.GetDB().Model(&models.Hotspot{}).Where("scene_id IN (?)", sceneIDs).Pluck("id", &existingHotspots)
 
 	db.GetDB().Where("scene_id IN (?)", sceneIDs).Delete(&models.Hotspot{})
+
+	db.GetDB().Where("scene_id IN (?)", sceneIDs).Delete(&models.Hotspots_Map{})
 
 	db.GetDB().Where("scene_id IN (?)", sceneIDs).Model(&models.PanoramaImage{}).Update("is_current_use", 0)
 
@@ -820,6 +840,16 @@ func UpdateManagementUnitWithSceneData(c *gin.Context) {
 			// 	return
 			// }
 		}
+
+		// Thêm mới hotspots_map
+		hotspotMap := sceneData.HotspotMap
+		hotspotMap.Scene_ID = sceneMap[sceneData.Scene.ID]
+
+		// Thêm hoặc cập nhật hotspots_map vào bảng hotspots_maps
+		if err := db.GetDB().Where("id = ?", hotspotMap.ID).Assign(hotspotMap).FirstOrCreate(&hotspotMap).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create or update hotspot map")
+			return
+		}
 	}
 
 	utils.SuccessResponse(c, http.StatusCreated, requestData)
@@ -848,6 +878,9 @@ func DeleteManagementUnitWithScenesData(c *gin.Context) {
 
 	// Xóa tất cả các hotspots của scenes
 	db.GetDB().Where("scene_id IN (?)", sceneIDs).Delete(&models.Hotspot{})
+
+	// Xóa hotspot map của scene
+	db.GetDB().Where("scene_id IN (?)", sceneIDs).Delete(&models.Hotspots_Map{})
 
 	// Cập nhật `is_current_use` của các `panorama_image` thuộc scene_id thành 0
 	db.GetDB().Where("scene_id IN (?)", sceneIDs).Model(&models.PanoramaImage{}).Update("is_current_use", 0)

@@ -1,11 +1,11 @@
 package models
 
 type Hotspots_Map struct {
-	ID         int    `json:"id" gorm:"column:id;"`
-	Top        string `json:"top" gorm:"column:top;"`
-	Left       string `json:"left" gorm:"column:left;"`
-	Scene_ID   int    `json:"scene_id" gorm:"column:scene_id;"`
-	Scene_Name string `json:"scene_name" gorm:"-"`
+	ID         int     `json:"id" gorm:"column:id;"`
+	Top        float64 `json:"top" gorm:"column:top;"`
+	Left       float64 `json:"left" gorm:"column:left;"`
+	Scene_ID   int     `json:"scene_id" gorm:"column:scene_id;"`
+	Scene_Name string  `json:"scene_name" gorm:"-"`
 }
 
 // `id` int NOT NULL AUTO_INCREMENT,
