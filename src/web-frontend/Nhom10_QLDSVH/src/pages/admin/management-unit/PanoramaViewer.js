@@ -96,7 +96,7 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
     updatedScene.hotspots = updatedScene.hotspots.filter(item => item.id !== deletedValue.id);
     setHotspotArrChange(true);
   
-    alert(updatedScene.hotspots.length);
+    // alert(updatedScene.hotspots.length);
   
     // Gọi hàm onChange để cập nhật scene mới
     onChange(updatedScene);
