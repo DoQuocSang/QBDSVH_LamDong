@@ -486,18 +486,20 @@ func UpdateHeritageAndParagraphs(c *gin.Context) {
 		}
 	}
 
-	// Kiểm tra file có tồn tại không
-	var uploadFile models.UploadFile_DTO
-	if err := db.GetDB().Where("id = ?", requestData.UploadFile.ID).First(&uploadFile).Error; err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get upload file")
-		return
-	}
+	if requestData.UploadFile.ID != 0 {
+		// Kiểm tra file có tồn tại không
+		var uploadFile models.UploadFile_DTO
+		if err := db.GetDB().Where("id = ?", requestData.UploadFile.ID).First(&uploadFile).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get upload file")
+			return
+		}
 
-	// Cập nhật file
-	requestData.UploadFile.Is_Current_Use = 1
-	if err := db.GetDB().Model(&models.UploadFile_DTO{}).Where("id = ?", requestData.UploadFile.ID).Updates(requestData.UploadFile).Error; err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update file")
-		return
+		// Cập nhật file
+		requestData.UploadFile.Is_Current_Use = 1
+		if err := db.GetDB().Model(&models.UploadFile_DTO{}).Where("id = ?", requestData.UploadFile.ID).Updates(requestData.UploadFile).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update file")
+			return
+		}
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, gin.H{

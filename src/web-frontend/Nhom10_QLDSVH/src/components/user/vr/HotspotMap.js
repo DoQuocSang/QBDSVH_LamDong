@@ -79,7 +79,7 @@ const HotspotMap = ({ getSceneById, currentSceneID }) => {
         }
         handleCloseMap();
       }}
-      style={{ top: elem.top, left: elem.left }}
+      style={{ top: `${elem.top}%`, left: `${elem.left}%` }}
       className="group w-10 h-10 absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer flex justify-center items-center">
       {elem.scene_id === currentSceneID && (
         <div className="group-hover:hidden circle-animate w-full h-full border-4 border-red-500 rounded-full top-0 left-0 absolute transform -translate-x-1/2 -translate-y-1/2"/>

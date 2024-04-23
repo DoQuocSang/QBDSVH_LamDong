@@ -148,6 +148,14 @@ func SetupRouter() *gin.Engine {
 			hotspots_map.PUT("/:id", controllers.UpdateHotspotsMap)
 			hotspots_map.DELETE("/:id", controllers.DeleteHHotspotsMap)
 		}
+		audio := v1.Group("/audio")
+		{
+			audio.GET("", controllers.GetPagedAudios)
+			audio.GET("/:id", controllers.GetAudioByID)
+			audio.POST("", controllers.CreateAudio)
+			audio.PUT("/:id", controllers.UpdateAudio)
+			audio.DELETE("/:id", controllers.DeleteAudio)
+		}
 	}
 
 	return r
