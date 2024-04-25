@@ -4,7 +4,7 @@ import { Container as ContainerBase } from "components/user/misc/Layouts";
 import tw from "twin.macro";
 import styled from "styled-components";
 import illustration from "images/login-illustration.svg";
-import logo from "images/logo1.png";
+import logo from "images/logo-btld-2.png";
 import googleIconImageSrc from "images/google-icon.png";
 import facebookIconImageSrc from "images/facebook-icon.png";
 import { ReactComponent as LoginIcon } from "feather-icons/dist/icons/log-in.svg";

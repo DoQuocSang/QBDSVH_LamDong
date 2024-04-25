@@ -135,7 +135,7 @@ const CustomHeadingContainer = tw.div`mt-10 mb-5`
 const CustomHeading = styled.p(({ color1, color2 }) => [
   tw`px-4 py-3 rounded-tl-3xl rounded-br-3xl rounded-bl-sm rounded-tr-sm inline text-white text-base font-semibold`,
   color1 && tw`bg-teal-500`,
-  color2 && tw`bg-primary-500`,
+  color2 && tw`bg-amber-500`,
 ])
 
 const ContactContainer = tw.div`w-full my-10 py-5 flex items-center justify-center bg-gray-100 rounded-lg shadow-lg`
@@ -164,7 +164,7 @@ export default () => {
     name: '',
     short_description: '',
     time: '',
-    image_360_url: '',
+    model_360_url: '',
     urlslug: '',
     video_url: '',
     location_id: 0,
@@ -420,7 +420,7 @@ export default () => {
                 </CustomHeading>
               </CustomHeadingContainer>
 
-              {isEmptyOrSpaces(heritageData.heritage.image_360_url) ? (
+              {isEmptyOrSpaces(heritageData.heritage.model_360_url) ? (
                 <BlogImage src={CatDefault} />
               ) : (
                 <p>Có ảnh 360</p>

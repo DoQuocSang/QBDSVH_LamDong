@@ -35,7 +35,7 @@ const SubmitButton = tw(PrimaryButtonBase)`inline-block mt-8`
 
 export default ({
   subheading = "Contact Us",
-  heading = <>Liên hệ với <span tw="text-primary-500">VNESCO</span><wbr/></>,
+  heading = <>Liên hệ với <span tw="text-primary-500">Bảo tàng Lâm Đồng</span><wbr/></>,
   description = "Nếu bạn có bất kỳ câu hỏi nào về di sản văn hóa Việt Nam, hoặc muốn chia sẻ thông tin về các địa điểm, truyền thống, lễ hội hoặc câu chuyện độc đáo, hãy liên hệ với chúng tôi. Chúng tôi luôn sẵn lòng lắng nghe và trao đổi để mang đến cho bạn trải nghiệm tốt nhất trên trang web của chúng tôi.",
   submitButtonText = "Gửi phản hồi",
   formAction = "#",

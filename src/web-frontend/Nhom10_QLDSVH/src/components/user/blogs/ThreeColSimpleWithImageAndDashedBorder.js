@@ -44,8 +44,8 @@ const Link = styled(PrimaryButtonBase).attrs({ as: "a" })`
   ${tw`inline-block mt-4 text-sm font-semibold`}
 `
 const ButtonContainer = tw.div`flex justify-center`;
-const LoadMoreButton = tw(PrimaryButton)`mt-16 mx-auto`;
-const ShortenButton = tw(PrimaryButton)`mt-16 mx-auto bg-red-500`;
+const LoadMoreButton = tw(PrimaryButton)`mt-16 mx-auto bg-amber-500 hover:bg-amber-600 hocus:bg-amber-600`;
+const ShortenButton = tw(PrimaryButton)`mt-16 mx-auto bg-red-500 hover:bg-red-600 hocus:bg-red-600`;
 
 const AddressContainer = tw.div`flex items-center text-sm mt-3 font-semibold`;
 const AddressText = tw.p`pl-2 text-sm text-left`;
@@ -62,7 +62,7 @@ const DecoratorBlob2 = tw(
 )`-z-10 absolute top-0 left-0 w-48 h-48 transform -translate-x-32 translate-y-full opacity-25`;
 
 const CardRatingContainer = tw.div`leading-none absolute bottom-0 left-0`;
-const CardRatingItem = tw.div`inline-flex items-center bg-teal-400 ml-4 mb-4 rounded-full px-5 py-2`;
+const CardRatingItem = tw.div`inline-flex items-center bg-amber-500 ml-4 mb-4 rounded-full px-5 py-2`;
 const CardRating = styled.div`
   ${tw`mr-1 text-sm font-bold flex items-end text-white`}
   svg {
@@ -76,7 +76,7 @@ const CustomLink = tw.a`hover:text-primary-500 transition duration-300`;
 export default ({
   subheading = "",
   heading = <>Danh sách<span tw="text-primary-500"> đơn vị quản lý di sản</span></>,
-  description = `Bạn có thêm xem các di sản văn hóa thuộc từng đơn vị quản lí hiện có tại VNESCO, hãy bấm "Xem chi tiết" để xem danh sách di sản tương ứng với mỗi đơn vị quản lí.`,
+  description = `Bạn có thêm xem các di sản văn hóa thuộc từng đơn vị quản lí hiện có tại Bảo tàng Lâm Đồng, hãy bấm "Xem chi tiết" để xem danh sách di sản tương ứng với mỗi đơn vị quản lí.`,
 
 }) => {
   const [managementUnitList, setManagementUnitList] = useState([]);

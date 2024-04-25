@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Logo from "images/logo1.png"
+import Logo from "images/logo-btld-2.png"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faGear, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import DefaultUserImage from "images/post-default.png"
@@ -51,7 +51,7 @@ export default () => {
        {heritageList.map((item, index) => (
           <p key={index}>{item.Name}</p>
        ))} */}
-      <nav className="bg-white border-b border-gray-200 fixed z-30 w-full">
+      <nav className="bg-white border-b border-gray-200 fixed z-50 w-full">
          <div className="px-3 py-3 lg:px-5 lg:pl-3 shadow-md">
             <div className="flex items-center justify-between">
                <div className="flex items-center justify-start">

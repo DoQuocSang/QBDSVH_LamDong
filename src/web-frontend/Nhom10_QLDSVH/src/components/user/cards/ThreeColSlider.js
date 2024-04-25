@@ -70,7 +70,7 @@ const ErrorImage = tw.img`max-w-3xl h-auto mx-auto rounded-lg pt-4`;
 const PrimaryButton = tw(PrimaryButtonBase)`mt-auto sm:text-lg rounded-none w-full rounded sm:rounded-none sm:rounded-br-4xl py-3 sm:py-6`;
 
 const CardRatingContainer = tw.div`leading-none absolute bottom-0 left-0`;
-const CardRatingItem = tw.div`inline-flex items-center bg-teal-400 ml-4 mb-4 rounded-full px-5 py-2`;
+const CardRatingItem = tw.div`inline-flex items-center bg-amber-500 ml-4 mb-4 rounded-full px-5 py-2`;
 const CardRating = styled.div`
   ${tw`mr-1 text-sm font-bold flex items-end text-white`}
   svg {

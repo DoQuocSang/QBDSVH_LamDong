@@ -6,7 +6,7 @@ type Heritage struct {
 	Name                 string                `json:"name" gorm:"column:name;"`
 	Short_Description    string                `json:"short_description" gorm:"column:short_description;"`
 	Times                string                `json:"time" gorm:"column:time;"`
-	Image_360_URL        string                `json:"image_360_url" gorm:"column:image_360_url;"`
+	Model_360_URL        string                `json:"model_360_url" gorm:"column:model_360_url;"`
 	UrlSlug              string                `json:"urlslug" gorm:"column:urlslug;"`
 	VideoURL             string                `json:"video_url" gorm:"column:video_url;"`
 	Location_ID          int                   `json:"location_id" gorm:"column:location_id;"`
@@ -27,7 +27,7 @@ type Heritage_DTO struct {
 	Name                 string   `json:"name" gorm:"column:name;"`
 	Short_Description    string   `json:"short_description" gorm:"column:short_description;"`
 	Times                string   `json:"time" gorm:"column:time;"`
-	Image_360_URL        string   `json:"image_360_url" gorm:"column:image_360_url;"`
+	Model_360_URL        string   `json:"model_360_url" gorm:"column:model_360_url;"`
 	UrlSlug              string   `json:"urlslug" gorm:"column:urlslug;"`
 	VideoURL             string   `json:"video_url" gorm:"column:video_url;"`
 	Location_ID          int      `json:"location_id" gorm:"column:location_id;"`
@@ -47,7 +47,7 @@ type Heritage_Gallery struct {
 	ID                int      `json:"id" gorm:"column:id;"`
 	Name              string   `json:"name" gorm:"column:name;"`
 	Short_Description string   `json:"short_description" gorm:"column:short_description;"`
-	Image_360_URL     string   `json:"image_360_url" gorm:"column:image_360_url;"`
+	Model_360_URL     string   `json:"model_360_url" gorm:"column:model_360_url;"`
 	VideoURL          string   `json:"video_url" gorm:"column:video_url;"`
 	UrlSlug           string   `json:"urlslug" gorm:"column:urlslug;"`
 	Images            []string `json:"images" gorm:"-"`
@@ -55,5 +55,16 @@ type Heritage_Gallery struct {
 }
 
 func (Heritage_Gallery) TableName() string {
+	return "heritages"
+}
+
+// Heritage struct
+type Heritage_Combobox struct {
+	ID         int            `json:"id" gorm:"column:id;"`
+	Name       string         `json:"name" gorm:"column:name;"`
+	UploadFile UploadFile_DTO `json:"upload_file,omitempty" gorm:"-"`
+}
+
+func (Heritage_Combobox) TableName() string {
 	return "heritages"
 }

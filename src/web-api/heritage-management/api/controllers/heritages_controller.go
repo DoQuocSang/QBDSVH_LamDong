@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -10,6 +11,7 @@ import (
 	"heritage-management/api/utils"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // GetPagedHeritages trả về danh sách tất cả các di sản văn hóa với phân trang
@@ -61,15 +63,78 @@ func GetPagedHeritages(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, pagination)
 }
 
+// GetPagedHeritages trả về danh sách tất cả các di sản văn hóa với phân trang
+func GetAllHeritagesForCombobox(c *gin.Context) {
+	// Phân trang
+	columnName := c.DefaultQuery("columnName", "id")
+	sortOrder := c.DefaultQuery("sortOrder", "desc")
+	var heritages []models.Heritage_Combobox
+
+	orderClause := columnName + " " + sortOrder
+	if err := db.GetDB().Order(orderClause).Find(&heritages).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get data")
+		return
+	}
+
+	var uploadFiles []models.UploadFile_DTO
+
+	// Khởi tạo slice và cấp phát kích thước mảng bằng chiều dài mảng heritages
+	heritageIDs := make([]int, len(heritages))
+	for i, heritage := range heritages {
+		heritageIDs[i] = heritage.ID
+	}
+
+	// Dùng slice ở trên để lọc upload_file
+	if err := db.GetDB().Where("heritage_id IN (?) AND is_current_use = 1", heritageIDs).Find(&uploadFiles).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get upload files")
+		return
+	}
+
+	// Tạo map có khóa kiểu in và giá trị thuộc kiểu UploadFile_DTO
+	uploadFileMap := make(map[int]models.UploadFile_DTO)
+	for _, uploadFile := range uploadFiles {
+		uploadFileMap[uploadFile.Heritage_ID] = uploadFile
+	}
+
+	// uploadFileMap[heritages[i].ID] dùng để truy cập map theo id di sản và trả về tru nếu tồn tại, sau đó tiến hành gán
+	for i := range heritages {
+		if uploadFile, exists := uploadFileMap[heritages[i].ID]; exists {
+			heritages[i].UploadFile = uploadFile
+		}
+	}
+	// // Truy vấn để lấy danh sách upload_file có id khác 0 và is_current_use = 1
+	// var filteredUploadFiles []models.UploadFile_DTO
+	// if err := db.GetDB().
+	// 	Where("id <> ? AND is_current_use = ?", 0, true).
+	// 	Find(&filteredUploadFiles).Error; err != nil {
+	// 	utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get filtered upload files")
+	// 	return
+	// }
+
+	// // Sử dụng danh sách upload_file được lọc để truy vấn theo id heritage
+	// for i := range heritages {
+	// 	for _, uploadFile := range filteredUploadFiles {
+	// 		if uploadFile.Heritage_ID == heritages[i].ID {
+	// 			heritages[i].UploadFile = uploadFile
+	// 			break // Ngừng tìm kiếm sau khi tìm thấy match
+	// 		}
+	// 	}
+	// }
+
+	utils.SuccessResponse(c, http.StatusOK, heritages)
+}
+
 // GetHeritageByID trả về thông tin của một di sản văn hóa dựa trên ID
 func GetHeritageByID(c *gin.Context) {
 	id := c.Param("id")
 
 	var heritage models.Heritage
 
-	if err := db.GetDB().Where("id = ?", id).First(&heritage).Error; err != nil {
-		utils.ErrorResponse(c, http.StatusNotFound, "Heritage not found")
-		return
+	if id != "0" {
+		if err := db.GetDB().Where("id = ?", id).First(&heritage).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusNotFound, "Heritage not found")
+			return
+		}
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, heritage)
@@ -109,6 +174,41 @@ func UpdateHeritage(c *gin.Context) {
 		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid request body")
 		return
 	}
+
+	// Lưu thông tin cập nhật vào cơ sở dữ liệu
+	if err := db.GetDB().Save(&heritage).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update heritage")
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, heritage)
+}
+
+// UpdateHeritage cập nhật thông tin của một di sản văn hóa dựa trên ID
+func UpdateHeritageModel(c *gin.Context) {
+	id := c.Param("id")
+
+	var heritage models.Heritage_DTO
+
+	// Lấy thông tin về di sản văn hóa dựa trên ID từ cơ sở dữ liệu
+	if err := db.GetDB().Where("id = ?", id).First(&heritage).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusNotFound, "Heritage not found")
+		return
+	}
+
+	// Tạo một struct để chứa thông tin cập nhật chỉ thuộc tính model_360_url
+	var updateData struct {
+		Model_360_URL string `json:"model_360_url"`
+	}
+
+	// Parse thông tin cập nhật từ request body
+	if err := c.ShouldBindJSON(&updateData); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	// Cập nhật chỉ thuộc tính model_360_url
+	heritage.Model_360_URL = updateData.Model_360_URL
 
 	// Lưu thông tin cập nhật vào cơ sở dữ liệu
 	if err := db.GetDB().Save(&heritage).Error; err != nil {
@@ -273,6 +373,7 @@ func CreateHeritageAndParagraphs(c *gin.Context) {
 	var requestData struct {
 		Heritage   models.Heritage_DTO         `json:"heritage"`
 		Paragraphs []models.Heritage_Paragraph `json:"paragraphs"`
+		UploadFile models.UploadFile_DTO       `json:"upload_file"`
 	}
 
 	if err := c.ShouldBindJSON(&requestData); err != nil {
@@ -300,9 +401,21 @@ func CreateHeritageAndParagraphs(c *gin.Context) {
 		}
 	}
 
+	// Cập nhật upload_file
+	if err := db.GetDB().Model(&models.UploadFile{}).
+		Where("id = ?", requestData.UploadFile.ID).
+		Updates(models.UploadFile{
+			Heritage_ID:    requestData.Heritage.ID,
+			Is_Current_Use: 1,
+		}).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update upload file")
+		return
+	}
+
 	utils.SuccessResponse(c, http.StatusCreated, gin.H{
-		"heritage":   requestData.Heritage,
-		"paragraphs": requestData.Paragraphs,
+		"heritage":    requestData.Heritage,
+		"paragraphs":  requestData.Paragraphs,
+		"upload_file": requestData.UploadFile,
 	})
 }
 
@@ -332,6 +445,7 @@ func UpdateHeritageAndParagraphs(c *gin.Context) {
 	var requestData struct {
 		Heritage   models.Heritage_DTO         `json:"heritage"`
 		Paragraphs []models.Heritage_Paragraph `json:"paragraphs"`
+		UploadFile models.UploadFile_DTO       `json:"upload_file"`
 	}
 
 	if err := c.ShouldBindJSON(&requestData); err != nil {
@@ -372,9 +486,26 @@ func UpdateHeritageAndParagraphs(c *gin.Context) {
 		}
 	}
 
+	if requestData.UploadFile.ID != 0 {
+		// Kiểm tra file có tồn tại không
+		var uploadFile models.UploadFile_DTO
+		if err := db.GetDB().Where("id = ?", requestData.UploadFile.ID).First(&uploadFile).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get upload file")
+			return
+		}
+
+		// Cập nhật file
+		requestData.UploadFile.Is_Current_Use = 1
+		if err := db.GetDB().Model(&models.UploadFile_DTO{}).Where("id = ?", requestData.UploadFile.ID).Updates(requestData.UploadFile).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update file")
+			return
+		}
+	}
+
 	utils.SuccessResponse(c, http.StatusOK, gin.H{
-		"heritage":   requestData.Heritage,
-		"paragraphs": requestData.Paragraphs,
+		"heritage":    requestData.Heritage,
+		"paragraphs":  requestData.Paragraphs,
+		"upload_file": requestData.UploadFile,
 	})
 }
 
@@ -452,9 +583,30 @@ func GetHeritageWithParagraphsById(c *gin.Context) {
 	// Gán danh sách hình ảnh vào thuộc tính Images của di sản tương ứng
 	heritage.Images = images
 
+	// var uploadFile models.UploadFile_DTO
+	// if err := db.GetDB().Where("heritage_id = ? AND is_current_use = ?", heritage.ID, 1).First(&uploadFile).Error; err != nil {
+	// 	utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get upload file")
+	// }
+
+	var uploadFile models.UploadFile_DTO
+	var uploadFilePointer *models.UploadFile_DTO = &uploadFile // Khởi tạo một con trỏ trỏ đến biến uploadFile
+
+	// Lấy tệp tải lên
+	if err := db.GetDB().Where("heritage_id = ? AND is_current_use = ?", heritage.ID, 1).First(uploadFilePointer).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// Nếu không tìm thấy tệp tải lên, đặt uploadFile thành nil
+			uploadFilePointer = nil
+		} else {
+			// Nếu xảy ra lỗi không mong muốn, trả về một phản hồi lỗi máy chủ nội bộ
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Không thể lấy tệp tải lên")
+			return
+		}
+	}
+
 	response := gin.H{
-		"heritage":   heritage,
-		"paragraphs": paragraphs,
+		"heritage":    heritage,
+		"paragraphs":  paragraphs,
+		"upload_file": uploadFile,
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, response)
@@ -474,6 +626,14 @@ func DeleteHeritageWithParagraphsById(c *gin.Context) {
 	// Xóa các đoạn mô tả liên quan đến di sản
 	if err := db.GetDB().Where("heritage_id = ?", heritageId).Delete(&models.Heritage_Paragraph{}).Error; err != nil {
 		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not delete heritage paragraphs")
+		return
+	}
+
+	// Cập nhật thuộc tính is_current_use của file_upload theo ID di sản thành 0
+	if err := db.GetDB().Model(&models.UploadFile{}).
+		Where("heritage_id = ?", heritageId).
+		Update("is_current_use", 0).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update is_current_use for upload file")
 		return
 	}
 
@@ -885,4 +1045,21 @@ func GetPagedHeritagesImagesForGallery(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, pagination)
+}
+
+// GetHeritageByID trả về thông tin của một di sản văn hóa dựa trên ID
+func GetHeritageSlugByID(c *gin.Context) {
+	id := c.Param("id")
+
+	var heritage models.Heritage
+	var slug string
+
+	if id != "0" {
+		if err := db.GetDB().Model(&heritage).Select("urlslug").Where("id = ?", id).Scan(&slug).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusNotFound, "Heritage not found")
+			return
+		}
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, gin.H{"slug": slug})
 }

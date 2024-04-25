@@ -29,6 +29,10 @@ import AdminAddOrUpdateUser from "pages/admin/user/AddOrUpdateUser"
 
 import AdminLogin from "pages/admin/login/Login"
 
+import AdminAllModel from "pages/admin/media/AllModel";
+import AdminAllPanoramaImage from "pages/admin/media/AllPanoramaImage";
+import AdminMediaLayout from "components/admin/layout/MediaLayout";
+
 //user
 import HomePage from "pages/user/HomePage"
 import NotFound404 from "pages/user/NotFound404"
@@ -41,13 +45,12 @@ import ContactUs from "pages/user/ContactUs"
 import Gallery from "pages/user/Gallery"
 
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import ModelView from "pages/admin/heritage/ModelView";
 
 import { Environment, OrbitControls, PresentationControls, Stage } from "@react-three/drei";
 import { Canvas } from "react-three-fiber";
 import { Suspense } from "react";
-import { AmbientLight } from "three";
 import ModelViewer from "pages/admin/heritage/ModelViewer";
+import VRTour from "pages/user/VRTour";
 
 function App() {
   const loggedInUsername = localStorage.getItem("loggedInUsername");
@@ -92,9 +95,10 @@ function App() {
           <Route path="/gallery" element={<Gallery />} />
         </Route>
 
+        <Route path="/vr-tour/:id" element={<VRTour />} />
+
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/heritage/model-view" element={<ModelViewer />} />
-
 
         {loggedInUsername && (
         <Route path="/admin/dashboard" element={<AdminLayout />}>
@@ -123,6 +127,10 @@ function App() {
           <Route path="/admin/dashboard/add-user" element={<AdminAddOrUpdateUser type="add" />} />
           <Route path="/admin/dashboard/update-user/:id" element={<AdminAddOrUpdateUser type="update" />} />
 
+          <Route path="/admin/dashboard/all-media/" element={<AdminMediaLayout />}>
+            <Route path="/admin/dashboard/all-media/model" element={<AdminAllModel />} />
+            <Route path="/admin/dashboard/all-media/panorama-image" element={<AdminAllPanoramaImage />} />
+          </Route>
         </Route>
         )}
 

@@ -17,31 +17,31 @@ export default () => {
     <AnimationRevealPage>
       <MainFeature1
         subheading={<Subheading>Di sản văn hóa Việt</Subheading>}
-        heading="VNESCO - Thế giới Di sản Văn hóa Việt Nam"
-        description={"VNESCO là một trang web với mục đích giới thiệu và tôn vinh di sản văn hóa đặc biệt của Việt Nam. Với sứ mệnh quảng bá và bảo tồn di sản văn hóa của đất nước, VNESCO mang đến cho người Việt Nam và du khách quốc tế một cửa sổ thú vị để khám phá, tìm hiểu và trân quý những giá trị văn hóa độc đáo của đất nước này.\n VNESCO mang đến một tập hợp đa dạng của các địa điểm và hiện vật mang tính biểu tượng, lịch sử và văn hóa ở đất nước Việt Nam."}
-        imageSrc="http://hoangthanhthanglong.com/store/uploads/2022/11/z3898777482646_c6dc7d692be7f6e40479db5abfcbb239.jpg"
+        heading="Bảo tàng Lâm Đồng - Thế giới Di sản Văn hóa Việt Nam"
+        description={"Bảo tàng Lâm Đồng là một trang web với mục đích giới thiệu và tôn vinh di sản văn hóa đặc biệt của Việt Nam. Với sứ mệnh quảng bá và bảo tồn di sản văn hóa của đất nước, Bảo tàng Lâm Đồng mang đến cho người Việt Nam và du khách quốc tế một cửa sổ thú vị để khám phá, tìm hiểu và trân quý những giá trị văn hóa độc đáo của đất nước này.\n Bảo tàng Lâm Đồng mang đến một tập hợp đa dạng của các địa điểm và hiện vật mang tính biểu tượng, lịch sử và văn hóa ở đất nước Việt Nam."}
+        imageSrc="https://cdn3.ivivu.com/2022/10/b%E1%BA%A3o-t%C3%A0ng-l%C3%A2m-%C4%91%E1%BB%93ng-ivivu.jpg"
       />
       <MainFeature1
-        subheading={<Subheading>SỨ MỆNH CỦA VNESCO</Subheading>}
+        subheading={<Subheading>SỨ MỆNH CỦA Bảo tàng Lâm Đồng</Subheading>}
         heading="Cung cấp thông tin di sản cho mọi người"
-        description={"Trang web VNESCO cung cấp thông tin chi tiết về mỗi di sản văn hóa, bao gồm lịch sử, kiến trúc, nghệ thuật, giá trị văn hóa và những câu chuyện đặc biệt xung quanh chúng. Bạn có thể tìm hiểu về các địa điểm như cố đô Huế, thành phố cổ Hội An, vịnh Hạ Long, đền Hùng và rất nhiều điểm đến khác mà Việt Nam tự hào có. \n Hãy khám phá VNESCO ngay hôm nay và truy cập vào thế giới phong phú của di sản văn hóa Việt Nam. Mỗi trang trên VNESCO là một chuyến hành trình đưa bạn đến gần hơn với những nét đẹp và giá trị sâu sắc của di sản văn hóa đặc biệt này"}
+        description={"Trang web Bảo tàng Lâm Đồng cung cấp thông tin chi tiết về mỗi di sản văn hóa, bao gồm lịch sử, kiến trúc, nghệ thuật, giá trị văn hóa và những câu chuyện đặc biệt xung quanh chúng. Bạn có thể tìm hiểu về các địa điểm như cố đô Huế, thành phố cổ Hội An, vịnh Hạ Long, đền Hùng và rất nhiều điểm đến khác mà Việt Nam tự hào có. \n Hãy khám phá Bảo tàng Lâm Đồng ngay hôm nay và truy cập vào thế giới phong phú của di sản văn hóa Việt Nam. Mỗi trang trên Bảo tàng Lâm Đồng là một chuyến hành trình đưa bạn đến gần hơn với những nét đẹp và giá trị sâu sắc của di sản văn hóa đặc biệt này"}
         textOnLeft={false}
-        imageSrc="http://hoangthanhthanglong.com/store/uploads/2022/11/z3898777484086_f26a17d07f51dfc5f4c668d3184039e1.jpg"
+        imageSrc="https://cdn3.ivivu.com/2022/10/Bao-tang-Lam-Dong-03.jpg"
       />
       <Features
         subheading={<Subheading>Phương châm hoạt động</Subheading>}
-        heading="Đây là 3 tiêu chí đi đầu của VNESCO"
-        description="VNESCO hoạt động dựa trên ba phương châm chính để mang đến trải nghiệm tốt nhất cho người dùng"
+        heading="Đây là 3 tiêu chí đi đầu của Bảo tàng Lâm Đồng"
+        description="Bảo tàng Lâm Đồng hoạt động dựa trên ba phương châm chính để mang đến trải nghiệm tốt nhất cho người dùng"
         cards={[
           {
             imageSrc: SupportIconImage,
             title: "Khám phá",
-            description: "VNESCO tập trung vào việc khám phá và tìm hiểu về di sản văn hóa độc đáo của Việt Nam"
+            description: "Bảo tàng Lâm Đồng tập trung vào việc khám phá và tìm hiểu về di sản văn hóa độc đáo của Việt Nam"
           },
           {
             imageSrc: ShieldIconImage,
             title: "Bảo tồn",
-            description: "VNESCO nhấn mạnh vai trò quan trọng của việc bảo tồn và xây dựng nhận thức cộng đồng về giá trị của di sản văn hóa"
+            description: "Bảo tàng Lâm Đồng nhấn mạnh vai trò quan trọng của việc bảo tồn và xây dựng nhận thức cộng đồng về giá trị của di sản văn hóa"
           },
           {
             imageSrc: CustomerLoveIconImage,
@@ -53,8 +53,8 @@ export default () => {
       />
       <TeamCardGrid 
         subheading={<Subheading>Đội ngũ của chúng tôi</Subheading>}
-        heading="Các thành viên chủ chốt của VNESCO"
-        description="Dưới đây là những người đã sáng lập nên VNESCO và có những đóng góp to lớn vào sự nghiệp phát triển của công ty"
+        heading="Các thành viên chủ chốt của Bảo tàng Lâm Đồng"
+        description="Dưới đây là những người đã sáng lập nên Bảo tàng Lâm Đồng và có những đóng góp to lớn vào sự nghiệp phát triển của công ty"
       />
     </AnimationRevealPage>
   );
