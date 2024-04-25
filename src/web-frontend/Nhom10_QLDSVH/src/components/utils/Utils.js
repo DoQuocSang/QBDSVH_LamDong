@@ -296,3 +296,66 @@ export const getVideoIdFromUrl = (url) => {
         return null;
     }
 }
+
+export const getFileNameFromURL = (modelURL, prefix) => {
+    const modelName = modelURL.split('/').pop().split('?')[0];
+    // const cleanedFileName = modelName.replace("models%2F", "");
+    const cleanedFileName = modelName.replace(prefix, "");
+    return cleanedFileName;
+}
+
+export const convertSize = (sizeInBytes) => {
+    let result = 0;
+    let type = '';
+    
+    if(sizeInBytes >= 1024 * 1024) {
+        result = sizeInBytes / (1024 * 1024);
+        type = 'MB';
+    } else if(sizeInBytes >= 1024) {
+        result = sizeInBytes / 1024;
+        type = 'KB';
+    } else {
+        result = sizeInBytes;
+        type = 'B';
+    }
+    
+    return `${result.toFixed(2)} ${type}`;
+}
+
+export const uppercasedFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export const truncateString = (str, maxLength) => {
+    if (str.length <= maxLength) {
+      return str;
+    } else {
+      return str.substring(0, maxLength) + "...";
+    }
+}
+
+export const calculateTotalSizePercent = (totalSize) => {
+    const value = Math.round((totalSize / (1024 * 1024 * 1024)) * 100).toString() + "%";
+    return value;
+}
+
+export const formatDate = (dateString) => {
+    // Create a Date object from the date string
+    const date = new Date(dateString);
+  
+    // Extract day, month, and year from the Date object
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Months are zero-based
+    const year = date.getFullYear();
+  
+    // Add leading zeros to day and month if they are less than 10
+    const formattedDay = day < 10 ? `0${day}` : day;
+    const formattedMonth = month < 10 ? `0${month}` : month;
+  
+    // Format the date as dd/mm/yyyy
+    return `${formattedDay}/${formattedMonth}/${year}`;
+  }
+
+
+
+

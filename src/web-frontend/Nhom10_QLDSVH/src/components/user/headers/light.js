@@ -7,10 +7,10 @@ import { css } from "styled-components/macro"; //eslint-disable-line
 
 import useAnimatedNavToggler from "../../../helpers/useAnimatedNavToggler.js";
 import CatDefault from "images/cat-default-nobg.png";
-import logo from "images/logo1.png";
+import logo from "images/logo-btld-2.png";
 import { ReactComponent as MenuIcon } from "feather-icons/dist/icons/menu.svg";
 import { ReactComponent as CloseIcon } from "feather-icons/dist/icons/x.svg";
-import { faBriefcase, faCaretDown, faCaretUp, faComment, faCube, faHeadset, faImage, faLocationDot, faMinusCircle, faPlusCircle, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faBriefcase, faCaretDown, faCaretUp, faComment, faCube, faHeadset, faImage, faLocationDot, faMinusCircle, faPlusCircle, faShoppingCart, faVrCardboard } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileLines } from "@fortawesome/free-solid-svg-icons";
 import { faPeopleRoof } from "@fortawesome/free-solid-svg-icons";
@@ -310,10 +310,10 @@ export default ({ roundedHeaderButton = false, logoLink, links, className, colla
         </NavLink>
       </Link>
 
-      <Link to="/contact">
+      <Link to="/vr-tour/48">
         <NavLink>
-          <FontAwesomeIcon icon={faComment} css={tw`mr-2 text-base`} />
-          Liên hệ
+          <FontAwesomeIcon icon={faVrCardboard} css={tw`mr-2 text-base`} />
+          VR Tour
         </NavLink>
       </Link>
 
@@ -321,6 +321,13 @@ export default ({ roundedHeaderButton = false, logoLink, links, className, colla
         <NavLink>
           <FontAwesomeIcon icon={faImage} css={tw`mr-2 text-base`} />
           Thư viện
+        </NavLink>
+      </Link>
+
+      <Link to="/contact">
+        <NavLink>
+          <FontAwesomeIcon icon={faComment} css={tw`mr-2 text-base`} />
+          Liên hệ
         </NavLink>
       </Link>
 

@@ -94,6 +94,7 @@ export default () => {
       // Đăng nhập thành công, chuyển hướng đến trang chủ của admin
       setLoggedInUsername(user.user_name);
       localStorage.setItem("loggedInUsername", user.user_name);
+      localStorage.setItem("loggedInUserID", user.id);
 
       navigate("/admin/dashboard");
     } else {

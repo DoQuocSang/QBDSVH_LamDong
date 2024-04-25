@@ -53,8 +53,8 @@ const Title = tw.div`mt-1 font-black text-xl text-gray-900 group-hover:text-prim
 const Description = tw.div``;
 
 const ButtonContainer = tw.div`flex justify-center`;
-const LoadMoreButton = tw(PrimaryButton)`mt-16 mx-auto`;
-const ShortenButton = tw(PrimaryButton)`mt-16 mx-auto bg-red-500`;
+const LoadMoreButton = tw(PrimaryButton)`mt-16 mx-auto bg-amber-500 hover:bg-amber-600`;
+const ShortenButton = tw(PrimaryButton)`mt-16 mx-auto bg-red-500 hover:bg-red-600`;
 
 // const TagContainer = tw.div`my-3 flex flex-wrap mt-12`;
 // const TagItem = tw.p`mr-3 my-2 py-2 px-3 bg-teal-400 rounded-lg font-semibold text-xs text-white`;
@@ -76,7 +76,7 @@ const InfoText = tw.span`pl-4 font-semibold`;
 
 
 const CardRatingContainer = tw.div`leading-none absolute bottom-0 left-0`;
-const CardRatingItem = tw.div`inline-flex items-center bg-teal-400 ml-4 mb-4 rounded-full px-5 py-2`;
+const CardRatingItem = tw.div`inline-flex items-center bg-amber-500 ml-4 mb-4 rounded-full px-5 py-2`;
 const CardRating = styled.div`
   ${tw`mr-1 text-sm font-bold flex items-end text-white`}
   svg {
@@ -87,7 +87,7 @@ const CardReview = tw.div`font-medium text-xs text-white`;
 
 export default ({
   heading = <>Danh sách<span tw="text-primary-500"> địa điểm</span></>,
-  description = `Bạn có thêm xem các di sản văn hóa thuộc từng điểm điểm hiện có tại VNESCO, hãy bấm vào địa điểm để xem danh sách di sản tương ứng với mỗi địa điểm.`,
+  description = `Bạn có thêm xem các di sản văn hóa thuộc từng điểm điểm hiện có tại Bảo tàng Lâm Đồng, hãy bấm vào địa điểm để xem danh sách di sản tương ứng với mỗi địa điểm.`,
 }) => {
 
   const [visible, setVisible] = useState(7);

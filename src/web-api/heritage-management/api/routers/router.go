@@ -20,8 +20,10 @@ func SetupRouter() *gin.Engine {
 		heritage := v1.Group("/heritage")
 		{
 			heritage.GET("", controllers.GetPagedHeritagesWithImages)
+			heritage.GET("/combobox", controllers.GetAllHeritagesForCombobox)
 			heritage.GET("/:id", controllers.GetHeritageByID)
 			heritage.POST("", controllers.CreateHeritage)
+			heritage.PUT("/model/:id", controllers.UpdateHeritageModel)
 			heritage.PUT("/:id", controllers.UpdateHeritage)
 			heritage.DELETE("/:id", controllers.DeleteHeritageWithParagraphsById)
 			heritage.GET("/random", controllers.GetRandomHeritages)
@@ -35,6 +37,7 @@ func SetupRouter() *gin.Engine {
 			heritage.GET("/increase-view-count/:urlSlug", controllers.IncreaseViewCount)
 			heritage.GET("/gallery", controllers.GetPagedHeritagesImagesForGallery)
 			heritage.GET("/search", controllers.SearchHeritage)
+			heritage.GET("/slug-by-id/:id", controllers.GetHeritageSlugByID)
 		}
 		heritage_paragraph := v1.Group("/heritage-paragraph")
 		{
@@ -62,11 +65,17 @@ func SetupRouter() *gin.Engine {
 			management_unit.GET("/:id", controllers.GetManagementUnitByID)
 			management_unit.POST("", controllers.CreateManagementUnit)
 			management_unit.PUT("/:id", controllers.UpdateManagementUnit)
+			management_unit.PUT("/image360/:id", controllers.UpdateManagementUnitImage360)
 			management_unit.DELETE("/:id", controllers.DeleteManagementUnit)
 			management_unit.GET("/slug/:urlSlug/heritages", controllers.GetHeritageByUnitSlug)
 			management_unit.GET("/slug/:urlSlug", controllers.GetManagementUnitBySlug)
 			management_unit.GET("/slug/:urlSlug/heritages/paged", controllers.GetPagedHeritageByUnitSlug)
 			management_unit.GET("/search", controllers.SearchUnit)
+			management_unit.GET("/full-info/:id", controllers.GetManagementUnitWithSceneDataByID)
+			management_unit.POST("/full-info", controllers.CreateManagementUnitWithSceneData)
+			management_unit.PUT("/full-info/:id", controllers.UpdateManagementUnitWithSceneData)
+			management_unit.DELETE("/full-info/:id", controllers.DeleteManagementUnitWithScenesData)
+
 		}
 		location := v1.Group("/location")
 		{
@@ -101,6 +110,51 @@ func SetupRouter() *gin.Engine {
 			heritage_category.GET("/slug/:urlSlug", controllers.GetHeritageCategoryBySlug)
 			heritage_category.GET("/slug/:urlSlug/heritages/paged", controllers.GetPagedHeritageByCategorySlug)
 			heritage_category.GET("/search", controllers.SearchCategory)
+		}
+		upload_file := v1.Group("/upload-file")
+		{
+			upload_file.GET("", controllers.GetPagedUploadFile)
+			upload_file.GET("/:id", controllers.GetUploadFileByID)
+			upload_file.POST("", controllers.CreateUploadFile)
+			upload_file.PUT("/:id", controllers.UpdateUploadFile)
+			upload_file.DELETE("/:id", controllers.DeleteUploadFile)
+			upload_file.GET("/group", controllers.GetAllUploadFileGroupedByUploadDate)
+		}
+		panorama_image := v1.Group("/panorama-image")
+		{
+			panorama_image.GET("", controllers.GetPagedPanoramaImage)
+			panorama_image.GET("/:id", controllers.GetPanoramaImageByID)
+			panorama_image.POST("", controllers.CreatePanoramaImage)
+			panorama_image.PUT("/:id", controllers.UpdatePanoramaImage)
+			panorama_image.DELETE("/:id", controllers.DeletePanoramaImage)
+			panorama_image.GET("/last-inserted-id", controllers.GetLastInsertedSceneID)
+			panorama_image.GET("/group", controllers.GetAllPanoramaImagesGroupedByUploadDate)
+		}
+		scene := v1.Group("/scene")
+		{
+			scene.GET("/:id", controllers.GetPagedSceneByManagementUnitID)
+			scene.GET("/last-inserted-id", controllers.GetLastInsertedSceneID)
+		}
+		hotspot := v1.Group("/hotspot")
+		{
+			hotspot.GET("/last-inserted-id", controllers.GetLastInsertedHotspotID)
+		}
+		hotspots_map := v1.Group("/hotspots-map")
+		{
+			hotspots_map.GET("", controllers.GetAllHotspotMap)
+			hotspots_map.GET("/by-management-unit/:id", controllers.GetAllHotspotMapByManagementUnitID)
+			hotspots_map.GET("/:id", controllers.GetHotspotsMapByID)
+			hotspots_map.POST("", controllers.CreateHotspotsMap)
+			hotspots_map.PUT("/:id", controllers.UpdateHotspotsMap)
+			hotspots_map.DELETE("/:id", controllers.DeleteHHotspotsMap)
+		}
+		audio := v1.Group("/audio")
+		{
+			audio.GET("", controllers.GetPagedAudios)
+			audio.GET("/:id", controllers.GetAudioByID)
+			audio.POST("", controllers.CreateAudio)
+			audio.PUT("/:id", controllers.UpdateAudio)
+			audio.DELETE("/:id", controllers.DeleteAudio)
 		}
 	}
 

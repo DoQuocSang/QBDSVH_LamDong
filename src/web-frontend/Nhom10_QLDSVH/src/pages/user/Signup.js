@@ -4,7 +4,7 @@ import { Container as ContainerBase } from "components/user/misc/Layouts";
 import tw from "twin.macro";
 import styled from "styled-components";
 import illustration from "images/signup-illustration.svg";
-import logo from "images/logo1.png";
+import logo from "images/logo-btld-2.png";
 import googleIconImageSrc from "images/google-icon.png";
 import facebookIconImageSrc from "images/facebook-icon.png";
 import { ReactComponent as SignUpIcon } from "feather-icons/dist/icons/user-plus.svg";

@@ -12,7 +12,7 @@ const YellowSpan = tw.span`text-primary-500`;
 
 export default ({
   heading = <>Hôm nay<YellowSpan> xem gì?</YellowSpan></>,
-  description = `Dưới đây là 3 di sản văn hóa mà VNESCO đề xuất cho bạn, hãy bấm vào nút "Tìm hiểu thêm" để khám phá ngay`,
+  description = `Dưới đây là 3 di sản văn hóa mà Bảo tàng Lâm Đồng đề xuất cho bạn, hãy bấm vào nút "Tìm hiểu thêm" để khám phá ngay`,
 }) => {
   const [heritageList, setHeritageList] = useState([]);
 
