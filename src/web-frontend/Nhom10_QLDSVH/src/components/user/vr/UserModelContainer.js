@@ -32,11 +32,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import HotspotMap from "./HotspotMap";
 import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons";
-import { UilInfoCircle } from '@iconscout/react-unicons'
-import { UilQuestionCircle } from '@iconscout/react-unicons'
-import { UilRotate360 } from '@iconscout/react-unicons'
-import { UilFileAlt } from '@iconscout/react-unicons'
+import { UilInfoCircle } from "@iconscout/react-unicons";
+import { UilQuestionCircle } from "@iconscout/react-unicons";
+import { UilRotate360 } from "@iconscout/react-unicons";
+import { UilFileAlt } from "@iconscout/react-unicons";
+import { UilClapperBoard } from "@iconscout/react-unicons";
 import { getHeritageSlugById } from "services/HeritageRepository";
+import UserVideoViewerOverlay from "./UserVideoViewerOverlay";
 
 const UserModelContainer = ({
   currentModel,
@@ -71,77 +73,86 @@ const UserModelContainer = ({
   return (
     <>
       {isOpenModelView && (
-        <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/3 z-30 h-4/5 w-1/2">
-          <div className="relative w-full h-full">
-            {!showModelInfo && currentModel.model_url && (
-              <>
-                <div className="absolute bottom-0 left-0 z-50 m-2 w-32">
-                  <img src={MainLogo} />
-                </div>
+        <>
+          <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/3 z-30 h-4/5 w-1/2">
+            <div className="relative w-full h-full">
+                <div className={!showModelInfo && currentModel.model_url ? "" : "hidden"}>
+                  <div className="absolute bottom-0 left-0 z-50 m-2 w-32">
+                    <img src={MainLogo} />
+                  </div>
 
-                <div className="absolute bottom-0 right-0 z-50 m-2 flex item-center gap-2">
-                  <button className="transition-all duration-300 text-[#a9a9a9] hover:text-white">
-                    {/* <FontAwesomeIcon icon={faRotate} className="w-6 h-6" /> */}
-                    <UilRotate360 size="30"/>
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleOpenModelInfo();
-                    }}
-                    className="transition-all duration-300 text-[#a9a9a9] hover:text-white"
-                  >
-                    {/* <FontAwesomeIcon icon={faCircleInfo} className="w-6 h-6" /> */}
-                    <UilInfoCircle size="30"/>
-                  </button>
-                  <button onClick={() => HandleGetHeritageSlugById(currentModel.heritage_id)} className="transition-all duration-300 text-[#a9a9a9] hover:text-white">
-                    {/* <FontAwesomeIcon
+                  <div className="absolute bottom-0 right-0 z-50 m-2 flex item-center gap-2">
+                    <button
+                      id="video_buttonmodal"
+                      className="video_buttonmodal transition-all duration-300 text-[#a9a9a9] hover:text-white"
+                    >
+                      {/* <FontAwesomeIcon icon={faRotate} className="w-6 h-6" /> */}
+                      <UilClapperBoard size="30" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleOpenModelInfo();
+                      }}
+                      className="transition-all duration-300 text-[#a9a9a9] hover:text-white"
+                    >
+                      {/* <FontAwesomeIcon icon={faCircleInfo} className="w-6 h-6" /> */}
+                      <UilInfoCircle size="30" />
+                    </button>
+                    <button
+                      onClick={() =>
+                        HandleGetHeritageSlugById(currentModel.heritage_id)
+                      }
+                      className="transition-all duration-300 text-[#a9a9a9] hover:text-white"
+                    >
+                      {/* <FontAwesomeIcon
                       icon={faCircleQuestion}
                       className="w-6 h-6"
                     /> */}
-                    <UilFileAlt size="30"/>
-                  </button>
-                  <button className="transition-all duration-300 text-[#a9a9a9] hover:text-white">
-                    {/* <FontAwesomeIcon
+                      <UilFileAlt size="30" />
+                    </button>
+                    <button className="transition-all duration-300 text-[#a9a9a9] hover:text-white">
+                      {/* <FontAwesomeIcon
                       icon={faCircleQuestion}
                       className="w-6 h-6"
                     /> */}
-                    <UilQuestionCircle size="30"/>
-                  </button>
+                      <UilQuestionCircle size="30" />
+                    </button>
+                  </div>
                 </div>
-              </>
-            )}
-            <button
-              onClick={() => {
-                handleCloseModelView();
-              }}
-              className="absolute top-0 right-0 z-50 m-2 transition-all duration-300 text-[#a9a9a9] hover:text-white "
-            >
-              <FontAwesomeIcon icon={faXmark} className="w-6 h-6" />
-            </button>
-
-            {currentModel.model_url ? (
-              <UserModelViewerOverlay
-                currentModel={currentModel}
-                showModelInfo={showModelInfo}
-                closeModelInfo={handleCloseModelInfo}
-              />
-            ) : (
-              <div
-                style={{
-                  borderRadius: "10px",
-                  overflow: "hidden",
-                  backgroundColor: "#4d4d4d8c", // Mờ đục với độ trong suốt 0.6
-                  backdropFilter: "blur(2px)", // Hiệu ứng mờ đục
+              <button
+                onClick={() => {
+                  handleCloseModelView();
                 }}
-                className="h-full w-full flex flex-col justify-center p-10"
+                className="absolute top-0 right-0 z-50 m-2 transition-all duration-300 text-[#a9a9a9] hover:text-white "
               >
-                <div className="w-full flex justify-center">
-                  <img src={HotspotNull} className="max-w-[75%] " />
+                <FontAwesomeIcon icon={faXmark} className="w-6 h-6" />
+              </button>
+
+              {currentModel.model_url ? (
+                <UserModelViewerOverlay
+                  currentModel={currentModel}
+                  showModelInfo={showModelInfo}
+                  closeModelInfo={handleCloseModelInfo}
+                />
+              ) : (
+                <div
+                  style={{
+                    borderRadius: "10px",
+                    overflow: "hidden",
+                    backgroundColor: "#4d4d4d8c", // Mờ đục với độ trong suốt 0.6
+                    backdropFilter: "blur(2px)", // Hiệu ứng mờ đục
+                  }}
+                  className="h-full w-full flex flex-col justify-center p-10"
+                >
+                  <div className="w-full flex justify-center">
+                    <img src={HotspotNull} className="max-w-[75%] " />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+          <UserVideoViewerOverlay heritageId={currentModel.heritage_id} />
+        </>
       )}
     </>
   );

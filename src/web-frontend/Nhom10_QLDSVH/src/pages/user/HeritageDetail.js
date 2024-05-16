@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import AnimationRevealPage from "helpers/AnimationRevealPage.js";
 import { Container, ContentWithPaddingXl } from "components/user/misc/Layouts";
 import { motion } from "framer-motion";
@@ -8,12 +8,29 @@ import styled from "styled-components";
 import { css } from "styled-components/macro";
 import { SectionHeading } from "components/user/misc/Headings";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faCalendarCheck, faCaretDown, faCaretUp, faClapperboard, faFaceFrownOpen, faFaceLaughBeam, faFaceMeh, faImage, faTag, faUserPen } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faCalendarCheck,
+  faCaretDown,
+  faCaretUp,
+  faClapperboard,
+  faFaceFrownOpen,
+  faFaceLaughBeam,
+  faFaceMeh,
+  faImage,
+  faTag,
+  faUserPen,
+} from "@fortawesome/free-solid-svg-icons";
 import PostDefault from "images/post-default.png";
 import PostDefaultFull from "images/post-default-full.png";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import InfoSidebar from "../../components/user/blogs/InfoSidebar";
-import { checkImageArray, checkImageUrl, formatDateTme, toThousandFormat } from "../../components/utils/Utils";
+import {
+  checkImageArray,
+  checkImageUrl,
+  formatDateTme,
+  toThousandFormat,
+} from "../../components/utils/Utils";
 import { isEmptyOrSpaces } from "../../components/utils/Utils";
 import { FormatParagraph } from "../../components/utils/Utils";
 import { getHeritageWithDetailBySlug } from "../../services/HeritageRepository";
@@ -27,6 +44,7 @@ import { ReactComponent as YoutubeIcon } from "images/youtube-icon.svg";
 import { FacebookShareButton } from "react-share";
 import { getVideoIdFromUrl } from "../../components/utils/Utils";
 import CatDefault from "images/cat-404-full-2.png";
+import ReactPlayer from "react-player";
 
 const HeadingRow = tw.div`flex`;
 const BlogImage = tw.img`w-full h-auto rounded-lg my-4`;
@@ -131,42 +149,42 @@ const SocialLink = styled.p`
 const VideoContainer = tw.div`mt-8 mb-10 flex items-center justify-center`;
 const VideoYT = tw.div`shadow-lg rounded`;
 
-const CustomHeadingContainer = tw.div`mt-10 mb-5`
+const CustomHeadingContainer = tw.div`mt-10 mb-5`;
 const CustomHeading = styled.p(({ color1, color2 }) => [
   tw`px-4 py-3 rounded-tl-3xl rounded-br-3xl rounded-bl-sm rounded-tr-sm inline text-white text-base font-semibold`,
   color1 && tw`bg-teal-500`,
   color2 && tw`bg-amber-500`,
-])
+]);
 
-const ContactContainer = tw.div`w-full my-10 py-5 flex items-center justify-center bg-gray-100 rounded-lg shadow-lg`
+const ContactContainer = tw.div`w-full my-10 py-5 flex items-center justify-center bg-gray-100 rounded-lg shadow-lg`;
 const ContactItem = styled.div(({ flexCol, normal }) => [
   tw`flex mx-4`,
   flexCol && tw`flex-col items-start`,
   normal && tw`items-center`,
-])
-const ContactSubTex = tw.div`font-semibold text-primary-500 text-sm`
-const ContactText = tw.div`font-semibold text-gray-800 text-base`
+]);
+const ContactSubTex = tw.div`font-semibold text-primary-500 text-sm`;
+const ContactText = tw.div`font-semibold text-gray-800 text-base`;
 const ContactButton = styled.div(({ color1, color2, color3 }) => [
   tw`flex flex-col items-center mx-4 text-4xl transition duration-300 cursor-pointer`,
   color1 && tw`text-teal-500 hover:text-teal-600`,
   color2 && tw`text-yellow-500 hover:text-yellow-600`,
   color3 && tw`text-red-500 hover:text-red-600`,
-])
-const ContactButtonText = tw.div`font-semibold text-gray-800 text-sm mt-3`
+]);
+const ContactButtonText = tw.div`font-semibold text-gray-800 text-sm mt-3`;
 
 export default () => {
-  document.title = 'Thông tin di sản';
-  
+  document.title = "Thông tin di sản";
+
   const { slug } = useParams();
 
   const defaultHeritage = {
     id: 0,
-    name: '',
-    short_description: '',
-    time: '',
-    model_360_url: '',
-    urlslug: '',
-    video_url: '',
+    name: "",
+    short_description: "",
+    time: "",
+    model_360_url: "",
+    urlslug: "",
+    video_url: "",
     location_id: 0,
     management_unit_id: 0,
     heritage_type_id: 0,
@@ -174,82 +192,108 @@ export default () => {
     view_count: 0,
     heritage_category: {
       id: 0,
-      name: '',
-      description: '',
-      urlslug: ''
+      name: "",
+      description: "",
+      urlslug: "",
     },
     heritage_type: {
       id: 0,
-      name: '',
-      description: '',
-      urlslug: ''
+      name: "",
+      description: "",
+      urlslug: "",
     },
     location: {
       id: 0,
-      name: '',
-      urlslug: '',
-      image_url: '',
-      description: '',
-      short_description: ''
+      name: "",
+      urlslug: "",
+      image_url: "",
+      description: "",
+      short_description: "",
     },
     management_unit: {
       id: 0,
-      name: '',
-      description: '',
-      urlslug: '',
-      image_url: '',
-      address: '',
-      note: '',
-      short_description: ''
+      name: "",
+      description: "",
+      urlslug: "",
+      image_url: "",
+      address: "",
+      note: "",
+      short_description: "",
     },
-    images: []
+    images: [],
   };
 
   const defaultParagraphs = [
     {
       id: 0,
-      title: '',
-      description: '',
-      image_description: '',
-      image_url: '',
-      heritage_id: 0
-    }
+      title: "",
+      description: "",
+      image_description: "",
+      image_url: "",
+      heritage_id: 0,
+    },
   ];
 
   const initialState = {
-    heritage: {
-      ...defaultHeritage,
+      heritage: {
+        ...defaultHeritage,
+      },
+      paragraphs: defaultParagraphs,
     },
-    paragraphs: defaultParagraphs
-  }, [heritageData, setHeritageData] = useState(initialState);
+    [heritageData, setHeritageData] = useState(initialState);
 
   const [videoId, setVideoId] = useState("");
 
   useEffect(() => {
-    getHeritageWithDetailBySlug(slug).then(data => {
+    getHeritageWithDetailBySlug(slug).then((data) => {
       if (data) {
         setHeritageData(data);
-        setVideoId(getVideoIdFromUrl(data.heritage.video_url))
+        // setVideoId(getVideoIdFromUrl(data.heritage.video_url));
         //console.log(data)
-      }
-      else
-        setHeritageData(initialState);
-    })
+      } else setHeritageData(initialState);
+    });
 
-    increaseViewCount(slug).then(data => {
+    increaseViewCount(slug).then((data) => {
       if (data) {
-        console.log(data)
-      }
-      else
-        console.log("Lỗi")
-    })
+        console.log(data);
+      } else console.log("Lỗi");
+    });
 
+    // // Tạo một player YouTube khi component được tạo
+    // const tag = document.createElement("script");
+    // tag.src = "https://www.youtube.com/iframe_api";
+    // const firstScriptTag = document.getElementsByTagName("script")[0];
+    // firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // window.onYouTubeIframeAPIReady = () => {
+    //   new window.YT.Player("youtube-player", {
+    //     videoId: videoId,
+    //     playerVars: {
+    //       autoplay: 0, // Đặt autoplay thành 0 để tắt tự động phát
+    //     },
+    //     events: {
+    //       onReady: onPlayerReady,
+    //     },
+    //   });
+    // };
+
+    // // Callback khi player YouTube đã sẵn sàng
+    // function onPlayerReady(event) {
+    //   event.target.pauseVideo();
+    // }
+
+    // return () => {
+    //   // Loại bỏ tham chiếu đến đối tượng YT bằng cách gán nó thành undefined
+    //   window.YT = undefined;
+    //   // Xoá các script và event khác khi component bị hủy
+    //   delete window.onYouTubeIframeAPIReady;
+    // };
+    // }, [videoId]);
   }, []);
-
 
   const [visible, setVisible] = useState(3);
   const onLoadMoreClick = () => {
-    setVisible(v => v + 3);
+    setVisible((v) => v + 3);
   };
   const onShortenClick = () => {
     setVisible(3);
@@ -257,46 +301,12 @@ export default () => {
 
   const postBackgroundSizeAnimation = {
     rest: {
-      backgroundSize: "100%"
+      backgroundSize: "100%",
     },
     hover: {
-      backgroundSize: "110%"
-    }
+      backgroundSize: "110%",
+    },
   };
-
-
-  // Youtube player
-  useEffect(() => {
-    // Tạo một player YouTube khi component được tạo
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName("script")[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    window.onYouTubeIframeAPIReady = () => {
-      new window.YT.Player("youtube-player", {
-        videoId: videoId,
-        playerVars: {
-          autoplay: 0, // Đặt autoplay thành 0 để tắt tự động phát
-        },
-        events: {
-          onReady: onPlayerReady,
-        },
-      });
-    };
-
-    // Callback khi player YouTube đã sẵn sàng
-    function onPlayerReady(event) {
-      event.target.pauseVideo();
-    }
-
-    return () => {
-      // Loại bỏ tham chiếu đến đối tượng YT bằng cách gán nó thành undefined
-      window.YT = undefined;
-      // Xoá các script và event khác khi component bị hủy
-      delete window.onYouTubeIframeAPIReady;
-    };
-  }, [videoId]);
 
   return (
     <AnimationRevealPage>
@@ -307,7 +317,8 @@ export default () => {
             <Heading>{heritageData.heritage.name}</Heading>
             <InfoItem>
               <FontAwesomeIcon icon={faEye} className="mr-2" />
-              {"Số lượt xem: "}{toThousandFormat(heritageData.heritage.view_count)}
+              {"Số lượt xem: "}
+              {toThousandFormat(heritageData.heritage.view_count)}
             </InfoItem>
             <TableOfContentContainer>
               <TableOfContentHeading>
@@ -316,51 +327,73 @@ export default () => {
               </TableOfContentHeading>
               <TableOfContent>
                 <ol type="1">
-                  {heritageData.paragraphs.slice(0, visible).map((paragraph, index) => (
-                    <li key={index}>
-                      <a href={`#paragraph-${index}`} onClick={(e) => {
-                        e.preventDefault();
-                        document.getElementById(`paragraph-${index}`).scrollIntoView({ behavior: "smooth" });
-                      }}>
-                        <p>{paragraph.title}</p>
-                      </a>
-                    </li>
-                  ))}
+                  {heritageData.paragraphs
+                    .slice(0, visible)
+                    .map((paragraph, index) => (
+                      <li key={index}>
+                        <a
+                          href={`#paragraph-${index}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            document
+                              .getElementById(`paragraph-${index}`)
+                              .scrollIntoView({ behavior: "smooth" });
+                          }}
+                        >
+                          <p>{paragraph.title}</p>
+                        </a>
+                      </li>
+                    ))}
                   <li>
-                    <a href={`#paragraph-video`} onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById(`paragraph-video`).scrollIntoView({ behavior: "smooth" });
-                    }}>
+                    <a
+                      href={`#paragraph-video`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document
+                          .getElementById(`paragraph-video`)
+                          .scrollIntoView({ behavior: "smooth" });
+                      }}
+                    >
                       <p>Video chi tiết</p>
                     </a>
                   </li>
-                  <li>
-                    <a href={`#paragraph-image360`} onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById(`paragraph-image360`).scrollIntoView({ behavior: "smooth" });
-                    }}>
+                  {/* <li>
+                    <a
+                      href={`#paragraph-image360`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document
+                          .getElementById(`paragraph-image360`)
+                          .scrollIntoView({ behavior: "smooth" });
+                      }}
+                    >
                       <p>Ảnh 360</p>
                     </a>
-                  </li>
+                  </li> */}
                 </ol>
                 {visible < heritageData.paragraphs.length ? (
                   <ButtonContainer>
                     <LoadMoreButton onClick={onLoadMoreClick}>
-                      <FontAwesomeIcon icon={faCaretDown} css={tw`mr-2 text-base`} />
+                      <FontAwesomeIcon
+                        icon={faCaretDown}
+                        css={tw`mr-2 text-base`}
+                      />
                       Xem thêm
                     </LoadMoreButton>
                   </ButtonContainer>
-                )
-                  :
-                  (
-                    heritageData.paragraphs.length > 3 &&
+                ) : (
+                  heritageData.paragraphs.length > 3 && (
                     <ButtonContainer>
                       <ShortenButton onClick={onShortenClick}>
-                        <FontAwesomeIcon icon={faCaretUp} css={tw`mr-2 text-base`} />
+                        <FontAwesomeIcon
+                          icon={faCaretUp}
+                          css={tw`mr-2 text-base`}
+                        />
                         Ẩn bớt
                       </ShortenButton>
                     </ButtonContainer>
-                  )}
+                  )
+                )}
               </TableOfContent>
             </TableOfContentContainer>
 
@@ -390,7 +423,8 @@ export default () => {
 
               <DescriptionContainer>
                 {heritageData.paragraphs.map((paragraph, index) => (
-                  <DescriptionWithImage key={index}
+                  <DescriptionWithImage
+                    key={index}
                     title={paragraph.title}
                     description={paragraph.description}
                     image_description={paragraph.image_description}
@@ -401,21 +435,40 @@ export default () => {
               </DescriptionContainer>
               <CustomHeadingContainer>
                 <CustomHeading id={`paragraph-video`} color1>
-                  <FontAwesomeIcon icon={faClapperboard} className="mr-2"/>
+                  <FontAwesomeIcon icon={faClapperboard} className="mr-2" />
                   Video chi tiết
                 </CustomHeading>
               </CustomHeadingContainer>
-              {videoId === null ? (
+              {/* {videoId === null ? (
                 <BlogImage src={CatDefault} />
               ) : (
                 <VideoContainer>
-                <VideoYT id="youtube-player" />
-              </VideoContainer>
+                  <VideoYT id="youtube-player" />
+                </VideoContainer>
+              )} */}
+
+              {heritageData.heritage.video_url ? (
+                <div
+                  className="relative h-0 rounded-lg overflow-hidden mt-8 mb-10 "
+                  style={{ paddingTop: "56.25%" }}
+                >
+                  <div className="absolute inset-0">
+                    <ReactPlayer
+                      className="w-full h-full"
+                      controls={true}
+                      url={heritageData.heritage.video_url}
+                      width="100%"
+                      height="100%"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <BlogImage src={CatDefault} />
               )}
-    
-              <CustomHeadingContainer>
+
+              {/* <CustomHeadingContainer>
                 <CustomHeading id={`paragraph-image360`} color2>
-                  <FontAwesomeIcon icon={faImage} className="mr-2"/>
+                  <FontAwesomeIcon icon={faImage} className="mr-2" />
                   Ảnh 360 độ
                 </CustomHeading>
               </CustomHeadingContainer>
@@ -424,12 +477,14 @@ export default () => {
                 <BlogImage src={CatDefault} />
               ) : (
                 <p>Có ảnh 360</p>
-              )}
+              )} */}
 
               <ContactContainer>
                 <ContactItem flexCol>
                   <ContactSubTex>Phản hồi</ContactSubTex>
-                  <ContactText>Bạn cảm thấy mô tả trên như thế nào?</ContactText>
+                  <ContactText>
+                    Bạn cảm thấy mô tả trên như thế nào?
+                  </ContactText>
                 </ContactItem>
                 <ContactItem normal>
                   <ContactButton color1>
@@ -447,9 +502,7 @@ export default () => {
                 </ContactItem>
               </ContactContainer>
               <ShareContainer>
-                <ShareText>
-                  Chia sẻ:
-                </ShareText>
+                <ShareText>Chia sẻ:</ShareText>
                 <SocialLinksContainer>
                   <FacebookShareButton url={window.location.href}>
                     <SocialLink>
@@ -466,7 +519,10 @@ export default () => {
             </PostsContainer>
           </PopularPostsContainer>
 
-          <InfoSidebar heritage={heritageData.heritage} image={checkImageArray(heritageData.heritage.images)[0]} />
+          <InfoSidebar
+            heritage={heritageData.heritage}
+            image={checkImageArray(heritageData.heritage.images)[0]}
+          />
         </Row>
         <ThreeColSlider />
       </Container>
