@@ -15,7 +15,7 @@ export default () => {
     const navigate = useNavigate();
 
     const handleContinue = () => {
-        localStorage.setItem("loggedInUsername", "");
+        sessionStorage.setItem("loggedInUsername", "");
         navigate("/admin");
     };
 

@@ -16,6 +16,7 @@ import {
   faImage,
   faPenToSquare,
   faPencil,
+  faVolumeHigh,
   faXmarkCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -62,6 +63,8 @@ import DefaultModel1 from "../../../images/default-model-1.png";
 import DefaultModel2 from "../../../images/default-model-2.png";
 import DefaultModel3 from "../../../images/default-model-3.png";
 import DefaultThumbnail from "../../../images/cat-404-full-2.png";
+import axios from "axios";
+import UploadingGif from "../../../images/loading.gif";
 
 export default ({ type = "" }) => {
   document.title = "Thêm/Cập nhật di sản";
@@ -128,15 +131,16 @@ export default ({ type = "" }) => {
   const [thumbnailUploadFile, setThumbnailUploadFile] = useState(null);
   const [isUploadFile, setIsUploadFile] = useState(false);
   const [loggedInUserID, setLoggedInUserID] = useState(
-    parseInt(localStorage.getItem("loggedInUserID"), 10) || 1
+    parseInt(sessionStorage.getItem("loggedInUserID"), 10) || 1
   );
 
   const [modelUploadProgress, setModelUploadProgress] = useState(0);
   const [thumbnailUploadProgress, setThumbnailUploadProgress] = useState(0);
-//   localStorage.setItem("model360url", heritageData.upload_file.file_url);
+  //   sessionStorage.setItem("model360url", heritageData.upload_file.file_url);
 
   const [isModelViewerOpen, setIsModelViewerOpen] = useState(false);
   const [isThumbnailViewerOpen, setIsThumbnailViewerOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   let { id } = useParams();
   id = id ?? 0;
@@ -282,17 +286,21 @@ export default ({ type = "" }) => {
       },
     }));
 
+    setIsLoading(true);
+
     // Nếu không có lỗi mới xóa hoặc cập nhật
     if (validateAllHeritageInput() === false) {
       if (id === 0) {
         addHeritageWithParagraphs(heritageData).then((data) => {
           SetSuccessFlag(data);
+          setIsLoading(false);
           //console.log(data);
         });
       } else {
         putHeritageWithParagraphs(id, heritageData).then((data) => {
           SetSuccessFlag(data);
-          console.log(heritageData);
+          setIsLoading(false);
+          // console.log(heritageData);
         });
       }
     }
@@ -491,7 +499,7 @@ export default ({ type = "" }) => {
               upload_date: new Date().toISOString(),
             });
             // putUploadFile({
-            //     heritage_id: id,
+            //     heritage_id: parseInt(id, 10),
             //     thumbnail_url: downloadURL
             // }).then(data => {
             //     console.log(data);
@@ -612,8 +620,8 @@ export default ({ type = "" }) => {
     //             alert("Xóa file thành công");
     //             console.log('File deleted successfully');
 
-    //             // Remove the item from localStorage
-    //             // localStorage.removeItem("yourLocalStorageKey");
+    //             // Remove the item from sessionStorage
+    //             // sessionStorage.removeItem("yoursessionStorageKey");
     //         })
     //         .catch((error) => {
     //             alert("Có lỗi khi xóa file");
@@ -702,8 +710,8 @@ export default ({ type = "" }) => {
     //             alert("Xóa file thành công");
     //             console.log('File deleted successfully');
 
-    //             // Remove the item from localStorage
-    //             // localStorage.removeItem("yourLocalStorageKey");
+    //             // Remove the item from sessionStorage
+    //             // sessionStorage.removeItem("yoursessionStorageKey");
     //         })
     //         .catch((error) => {
     //             alert("Có lỗi khi xóa file");
@@ -749,15 +757,6 @@ export default ({ type = "" }) => {
         },
       }));
     }
-  };
-
-  const scrollToBottom = () => {
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: "smooth",
-    });
-
-    console.log(heritageData);
   };
 
   return (
@@ -1035,7 +1034,7 @@ export default ({ type = "" }) => {
                         placeholder="Nhập link ảnh 360 độ"
                         className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400" /> */}
           {/* {JSON.stringify(heritageData)} */}
-          <div className="mb-6 pt-4">
+          <div className="mb-0 pt-4">
             {/* Hiển thị thông tin file đã tải lên nếu có */}
             <div className="flex justify-center items-center gap-4">
               {modelUploadFile && (
@@ -1150,13 +1149,27 @@ export default ({ type = "" }) => {
                     onChange={handleModelFileUpload}
                   />
                   <label
-                    for= {(thumbnailUploadProgress > 0 && thumbnailUploadProgress < 100) ? "" :  "model_file"}
-                    className= {(thumbnailUploadProgress > 0 && thumbnailUploadProgress < 100) ? 
-                        "text-center flex flex-col items-center justify-center border-dashed pt-5 pb-6 h-full px-10 cursor-wait"
-                        :  
-                        "text-center flex flex-col items-center justify-center border-dashed pt-5 pb-6 h-full px-10 cursor-pointer"}
+                    for={
+                      thumbnailUploadProgress > 0 &&
+                      thumbnailUploadProgress < 100
+                        ? ""
+                        : "model_file"
+                    }
+                    className={
+                      thumbnailUploadProgress > 0 &&
+                      thumbnailUploadProgress < 100
+                        ? "text-center flex flex-col items-center justify-center border-dashed pt-5 pb-6 h-full px-10 cursor-wait"
+                        : "text-center flex flex-col items-center justify-center border-dashed pt-5 pb-6 h-full px-10 cursor-pointer"
+                    }
                   >
-                    <div className={(thumbnailUploadProgress > 0 && thumbnailUploadProgress < 100) ? "cursor-wait" :  "cursor-pointer"}>
+                    <div
+                      className={
+                        thumbnailUploadProgress > 0 &&
+                        thumbnailUploadProgress < 100
+                          ? "cursor-wait"
+                          : "cursor-pointer"
+                      }
+                    >
                       {modelUploadFile ||
                       (heritageData.upload_file &&
                         heritageData.upload_file.file_url) ? (
@@ -1240,11 +1253,16 @@ export default ({ type = "" }) => {
                     onChange={handleThumbnailFileUpload}
                   />
                   <label
-                    for={(modelUploadProgress > 0 && modelUploadProgress < 100) ? "" :  "thumbnail_file"}
-                    className={(modelUploadProgress > 0 && modelUploadProgress < 100) ? 
-                        "flex flex-col items-center justify-center text center border-l-2 border-dashed border-gray-300 pt-5 pb-6 h-full px-10 cursor-wait" 
-                        :  
-                        "flex flex-col items-center justify-center text center border-l-2 border-dashed border-gray-300 pt-5 pb-6 h-full px-10 cursor-pointer"}
+                    for={
+                      modelUploadProgress > 0 && modelUploadProgress < 100
+                        ? ""
+                        : "thumbnail_file"
+                    }
+                    className={
+                      modelUploadProgress > 0 && modelUploadProgress < 100
+                        ? "flex flex-col items-center justify-center text center border-l-2 border-dashed border-gray-300 pt-5 pb-6 h-full px-10 cursor-wait"
+                        : "flex flex-col items-center justify-center text center border-l-2 border-dashed border-gray-300 pt-5 pb-6 h-full px-10 cursor-pointer"
+                    }
                   >
                     {thumbnailUploadFile ||
                     (heritageData.upload_file &&
@@ -1408,14 +1426,20 @@ export default ({ type = "" }) => {
             )}
 
             {isModelViewerOpen && (
-              <div className="mt-4">
-                <ModelViewer modelUrl={ heritageData.upload_file ? heritageData.upload_file.file_url : ""}/>
+              <div className="mt-4 mb-6">
+                <ModelViewer
+                  modelUrl={
+                    heritageData.upload_file
+                      ? heritageData.upload_file.file_url
+                      : ""
+                  }
+                />
               </div>
             )}
 
             {isThumbnailViewerOpen && (
               <img
-                className="mt-4 flex justify-cent items-center h-auto w-full rounded-md"
+                className="mt-4 mb-6 flex justify-cent items-center h-auto w-full rounded-md"
                 src={
                   heritageData.upload_file &&
                   heritageData.upload_file.thumbnail_url
@@ -1611,18 +1635,12 @@ export default ({ type = "" }) => {
             </button>
           </div>
 
-          <button
-            className="fixed bottom-4 right-4 text-red-500 font-bold px-4 py-2 rounded-lg border-2 border-red-500 transition duration-300 bg-red-500 hover:bg-red-600 text-white"
-            onClick={scrollToBottom}
-          >
-            <FontAwesomeIcon icon={faArrowDown} />
-          </button>
-
           <NotificationModal
             mainAction={maintAction}
             isSuccess={successFlag}
             isContinue={childToParent}
             type="heritage"
+            isLoading={isLoading}
           />
         </div>
       </div>

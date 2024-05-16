@@ -75,7 +75,7 @@ export default ({ type = "" }) => {
   const [uploadSectionVisible, setUploadSectionVisible] = useState(false);
   const [yaw, setYaw] = useState(0);
   const [pitch, setPitch] = useState(0);
-  localStorage.setItem("image360url", managementUnit.image_360_url);
+  sessionStorage.setItem("image360url", managementUnit.image_360_url);
 
   let { id } = useParams();
   id = id ?? 0;
@@ -310,7 +310,7 @@ export default ({ type = "" }) => {
             }
           );
 
-          localStorage.setItem("image360url", downloadURL);
+          sessionStorage.setItem("image360url", downloadURL);
         } catch (error) {
           alert("Có lỗi khi upload file");
           console.error("Error getting download URL:", error);
@@ -340,8 +340,8 @@ export default ({ type = "" }) => {
           alert("Xóa file thành công");
           console.log("File deleted successfully");
 
-          // Remove the item from localStorage
-          // localStorage.removeItem("yourLocalStorageKey");
+          // Remove the item from sessionStorage
+          // sessionStorage.removeItem("yoursessionStorageKey");
         })
         .catch((error) => {
           alert("Có lỗi khi xóa file");
@@ -360,7 +360,7 @@ export default ({ type = "" }) => {
       console.log(data);
     });
 
-    localStorage.setItem("image360url", "");
+    sessionStorage.setItem("image360url", "");
   };
 
   const handleOpenPanoramaViewer = () => {
@@ -851,7 +851,7 @@ export default ({ type = "" }) => {
             <PanoramaViewer
               title={managementUnit.name}
               isOpen={isPanoramaViewerOpen}
-              image360Url={localStorage.getItem("image360url")}
+              image360Url={sessionStorage.getItem("image360url")}
             />
             {/* <MyPanorama /> */}
             {/* <PanoramaDemo imagePath={managementUnit.image_360_url} /> */}

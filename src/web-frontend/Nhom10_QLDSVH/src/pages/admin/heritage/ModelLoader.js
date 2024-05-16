@@ -3,7 +3,7 @@ import { Canvas } from "react-three-fiber";
 import { useGLTF, Stage, PresentationControls } from "@react-three/drei";
 
 export const ModelLoader = ({modelUrl = ""}) => {
-  // var model360url = localStorage.getItem('model360url');
+  // var model360url = sessionStorage.getItem('model360url');
   const { scene } = useGLTF(modelUrl);
 
   return (

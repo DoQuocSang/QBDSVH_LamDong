@@ -2,7 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBug,
+  faPause,
   faTrash,
+  faVolumeHigh,
   faXmark,
   faXmarkCircle,
 } from "@fortawesome/free-solid-svg-icons";
@@ -39,6 +41,7 @@ import HotspotMap from "components/user/vr/HotspotMap";
 import { Scene } from "three";
 import defaultHotspotMapIcon from "../../../images/default_hotspot_map.png";
 import "../../../asset/css/hotspot-map.css";
+import { addAudio, putAudio } from "services/AudioRepository";
 
 export default ({
   isOpen,
@@ -80,11 +83,24 @@ export default ({
     is_current_use: 0,
   };
 
+  const defaultAudioFile = {
+    id: 0,
+    name: "",
+    audio_url: "",
+    size: 0,
+    user_id: 1,
+    upload_date: "2023-06-07T12:00:00Z",
+    extension: "",
+    scene_id: 0,
+    is_current_use: 0,
+  };
+
   const initialState = {
       scene: {
         ...defaultScene,
       },
       panorama_image: defaultPanoramaFile,
+      audio: defaultAudioFile,
       hotspot_map: defaultHotspotMap,
     },
     [sceneData, setSceneData] = useState(initialState);
@@ -100,12 +116,18 @@ export default ({
   const [isThumbnailViewerOpen, setIsThumbnailViewerOpen] = useState(false);
   const [isMapViewerOpen, setIsMapViewerOpen] = useState(false);
   const [loggedInUserID, setLoggedInUserID] = useState(
-    parseInt(localStorage.getItem("loggedInUserID"), 10) || 1
+    parseInt(sessionStorage.getItem("loggedInUserID"), 10) || 1
   );
   const [newSceneId, setNewSceneId] = useState(0);
   const [inputNumberStep, setInputNumberStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const [currentAudio, setCurrentAudio] = useState("");
+  const [audioUploadFile, setAudioUploadFile] = useState(null);
+  const [audioUploadProgress, setAudioUploadProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     // Drop zone (file upload)
@@ -203,6 +225,10 @@ export default ({
       validationErrors.thumbnail_url = "Vui lòng tải ảnh minh họa";
     }
 
+    if (sceneData.audio.audio_url.trim() === "") {
+      validationErrors.audio_url = "Vui lòng tải lên audio giới thiệu";
+    }
+
     setErrors(validationErrors);
     // Kiểm tra nếu có lỗi
     if (Object.keys(validationErrors).length === 0) {
@@ -224,6 +250,10 @@ export default ({
     setThumbnailUploadFile(null);
     setIsThumbnailViewerOpen(false);
     setThumbnailUploadProgress(0);
+
+    // Audio
+    setAudioUploadFile(null);
+    setAudioUploadProgress(0);
 
     // Error
     setErrors({});
@@ -370,7 +400,7 @@ export default ({
           //     }
           //   );
 
-          localStorage.setItem("image360url", downloadURL);
+          sessionStorage.setItem("image360url", downloadURL);
         } catch (error) {
           alert("Có lỗi khi upload file");
           console.error("Error getting download URL:", error);
@@ -397,8 +427,8 @@ export default ({
     //       alert("Xóa file thành công");
     //       console.log("File deleted successfully");
 
-    //       // Remove the item from localStorage
-    //       // localStorage.removeItem("yourLocalStorageKey");
+    //       // Remove the item from sessionStorage
+    //       // sessionStorage.removeItem("yoursessionStorageKey");
     //     })
     //     .catch((error) => {
     //       alert("Có lỗi khi xóa file");
@@ -448,7 +478,7 @@ export default ({
     //   console.log(data);
     // });
 
-    // localStorage.setItem("image360url", "");
+    // sessionStorage.setItem("image360url", "");
   };
 
   const handleOpenPanoramaViewer = () => {
@@ -460,7 +490,7 @@ export default ({
   };
 
   const handleOpenMapViewer = () => {
-      setIsMapViewerOpen(true);
+    setIsMapViewerOpen(true);
   };
 
   const handleCloseMapViewer = () => {
@@ -638,6 +668,148 @@ export default ({
     );
   };
 
+  const clearAudioFile = () => {
+    // Clear the uploaded file and reset model_360_url in state
+    setAudioUploadFile(null);
+    setAudioUploadProgress(0);
+    setSceneData((prevData) => ({
+      ...prevData,
+      audio: {
+        ...prevData.audio,
+        audio_url: "",
+      },
+    }));
+
+    //.........
+    // putPanoramaImage(sceneData.audio.id, {
+    //   audio_url: "",
+    // }).then((data) => {
+    //   console.log(data);
+    // });
+    //.........
+
+    if (sceneData.audio.file_url === "") {
+      //.................
+      // deleteAudioById(sceneData.audio.id).then((data) => {
+      //   console.log(data);
+      // });
+      //.................
+      setSceneData((prevData) => ({
+        ...prevData,
+        audio: {
+          ...defaultAudioFile,
+        },
+      }));
+    }
+  };
+  const handleAudioFileUpload = async (e) => {
+    const file = e.target.files[0];
+    console.log(file);
+    setAudioUploadFile(file);
+
+    if (file) {
+      // Xóa tất cả các khoảng trắng trong tên tệp
+      const fileNameWithoutSpaces = file.name.replace(/\s/g, "");
+
+      const extension = fileNameWithoutSpaces.split(".").pop(); // Get the file extension
+      const uniqueId = uuidv4();
+      const modifiedFileName = `${
+        fileNameWithoutSpaces.split(".")[0]
+      }_${uniqueId}.${extension}`;
+
+      const storageRef = ref(storage, `audios/${modifiedFileName}`);
+
+      // Upload the file and manually track the progress
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setAudioUploadProgress(progress);
+        },
+        (error) => {
+          console.error("Lỗi trong quá trình upload:", error);
+        },
+        async () => {
+          try {
+            // Get the download URL after successful upload
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            alert("Upload file thành công");
+
+            handleAddOrUpdateAudioUploadFile({
+              user_id: loggedInUserID,
+              scene_id: sceneData.scene.id,
+              audio_url: downloadURL,
+              upload_date: new Date().toISOString(),
+              name: file.name.split(".")[0],
+              size: file.size,
+              extension: extension,
+            });
+
+            // putUploadFile({
+            //     scene_id: parseInt(id, 10),
+            //     thumbnail_url: downloadURL
+            // }).then(data => {
+            //     console.log(data);
+            // });
+
+            setSceneData((prevData) => ({
+              ...prevData,
+              audio: {
+                ...prevData.audio,
+                user_id: loggedInUserID,
+                scene_id: sceneData.scene.id,
+                audio_url: downloadURL,
+                upload_date: new Date().toISOString(),
+                name: file.name.split(".")[0],
+                size: file.size,
+                extension: extension,
+              },
+            }));
+          } catch (error) {
+            console.error("Error getting download URL:", error);
+          }
+        }
+      );
+    }
+  };
+
+  const handleAddOrUpdateAudioUploadFile = (val) => {
+    console.log(val);
+    // alert(JSON.stringify(sceneData))
+    if (sceneData.audio.id === 0) {
+      //.............
+      addAudio(val).then((data) => {
+        setSceneData((prevData) => ({
+          ...prevData,
+          audio: {
+            ...prevData.audio,
+            id: data.data.id,
+          },
+        }));
+        console.log(sceneData);
+      });
+      //.............
+    } else {
+      //.............
+      putAudio(sceneData.audio.id, val).then((data) => {
+        console.log(sceneData);
+      });
+      //.............
+    }
+  };
+
+  const handleAudioToggle = () => {
+    if (isPlaying) {
+      audioRef.current.pause(); 
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   return (
     <>
       <div
@@ -755,6 +927,151 @@ export default ({
                 placeholder="Nhập giá trị góc quay"
                 className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
               />
+
+              <h2 className="font-semibold text-sm text-teal-500">
+                Audio mô tả
+              </h2>
+
+              <div className="mb-6 pt-4">
+                {/* Hiển thị thông tin file đã tải lên nếu có */}
+                <div className="flex justify-center items-center gap-4">
+                  {audioUploadFile && (
+                    <div className="flex-1 w-full relative mt-3">
+                      <div className="mb-2 flex items-center justify-between">
+                        <div>
+                          {audioUploadProgress < 100 ? (
+                            <span className="inline-block rounded-full bg-yellow-200 px-3 py-1 text-xs font-semibold uppercase text-orange-600">
+                              Đang tải lên server
+                            </span>
+                          ) : (
+                            <span className="inline-block rounded-full bg-teal-500 px-3 py-1 text-xs font-semibold uppercase text-white">
+                              Đã tải xong
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <span className="inline-block text-sm font-bold text-blue-600">
+                            {Math.round(audioUploadProgress)}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mb-4 flex h-2 overflow-hidden rounded bg-gray-200 text-xs">
+                        <style>
+                          {`
+                        /* WebKit (Safari, Chrome) */
+                        ::-webkit-progress-bar {
+                        background-color: #E5E7EB; /* Set the background color */
+                        border-radius: 4px; /* Optional: Set the border radius */
+                        }
+
+                        ::-webkit-progress-value {
+                        background-color: #4CAF50; /* Set the progress bar color */
+                        border-radius: 4px; /* Optional: Set the border radius */
+                        }
+
+                        /* Firefox */
+                        ::-moz-progress-bar {
+                        background-color: #4CAF50; /* Set the progress bar color */
+                        border-radius: 4px; /* Optional: Set the border radius */
+                        }
+                    `}
+                        </style>
+                        <progress
+                          value={audioUploadProgress}
+                          max="100"
+                          className="flex flex-col justify-center bg-teal-500 text-white shadow-none w-full"
+                        ></progress>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {audioUploadFile ||
+                (sceneData.audio && sceneData.audio.audio_url) ? (
+                  <div className="mb-5 rounded-lg bg-[#F5F7FB] py-4 pl-8 pr-8 border-l-4 border-purple-400">
+                    <div className="flex items-center justify-between">
+                      <audio 
+                      ref={audioRef} 
+                      src={sceneData.audio.audio_url}
+                      onEnded={() => setIsPlaying(false)} />
+                      <FontAwesomeIcon
+                        icon={isPlaying ? faPause : faVolumeHigh}
+                        onClick={handleAudioToggle}
+                        className="text-gray-500 mr-2"
+                      />
+                      {/* <audio src={audioUrl} /> */}
+                      <span className="flex-1 truncate pr-3 text-base font-medium text-[#07074D]">
+                        {sceneData.audio && sceneData.audio.audio_url
+                          ? getFileNameFromURL(
+                              sceneData.audio.audio_url,
+                              "audios%2F"
+                            )
+                          : audioUploadFile.name}
+                      </span>
+                      <button
+                        className="text-[#07074D]"
+                        onClick={clearAudioFile}
+                      >
+                        <svg
+                          width="10"
+                          height="10"
+                          viewBox="0 0 10 10"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
+                            fill="currentColor"
+                          />
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center w-full mb-4">
+                    <div className="overflow-hidden relative flex items-center justify-between w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 ">
+                      <div className="flex-1 w-full h-full">
+                        <input
+                          type="file"
+                          name="audio_file"
+                          id="audio_file"
+                          className="sr-only"
+                          onChange={handleAudioFileUpload}
+                        />
+                        <label
+                          for="audio_file"
+                          className="flex flex-col items-center justify-center text center pt-5 pb-6 h-full px-10 cursor-pointer"
+                        >
+                          <svg className="w-10 h-10 mb-3 text-gray-400">
+                            <FontAwesomeIcon icon={faVolumeHigh} />
+                          </svg>
+                          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="font-semibold">Click tại đây</span>{" "}
+                            để tải lên audio
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            (Các file được phép: jpg, png, jpeg)
+                          </p>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {errors.audio_url && (
+                <p className="text-red-500 mb-6 text-sm font-semibold">
+                  <FontAwesomeIcon className="mr-2" icon={faXmarkCircle} />
+                  {errors.audio_url}
+                </p>
+              )}
 
               <h2 className="font-semibold text-sm text-teal-500">
                 Ảnh Thumbnail
@@ -1208,7 +1525,7 @@ export default ({
                     max="100"
                     step={inputNumberStep}
                     value={sceneData.hotspot_map.top}
-                    onChange={(e) =>{
+                    onChange={(e) => {
                       handleOpenMapViewer();
                       setSceneData((sceneData) => ({
                         ...sceneData,
@@ -1216,7 +1533,7 @@ export default ({
                           ...sceneData.hotspot_map,
                           top: parseFloat(e.target.value),
                         },
-                      }))
+                      }));
                     }}
                     placeholder="Nhập giá trị top"
                     className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base   transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
@@ -1241,7 +1558,7 @@ export default ({
                           ...sceneData.hotspot_map,
                           left: parseFloat(e.target.value),
                         },
-                      }))
+                      }));
                     }}
                     placeholder="Nhập giá trị left"
                     className="text-black mb-4 placeholder-gray-600 w-full px-4 py-2.5 mt-2 text-base  transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200  focus:border-blueGray-500 focus:bg-white dark:focus:bg-gray-800 focus:outline-none focus:shadow-outline focus:ring-1 ring-offset-current ring-offset-2 ring-purple-400"
@@ -1330,7 +1647,7 @@ export default ({
                     }}
                     className="group w-10 h-10 absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer flex justify-center items-center transition-all ease-out"
                   >
-                    <div className="group-hover:hidden circle-animate w-full h-full border-4 border-red-500 rounded-full top-0 left-0 absolute transform -translate-x-1/2 -translate-y-1/2"/>
+                    <div className="group-hover:hidden circle-animate w-full h-full border-4 border-red-500 rounded-full top-0 left-0 absolute transform -translate-x-1/2 -translate-y-1/2" />
                     <img
                       src={defaultHotspotMapIcon}
                       alt="Hotspot Map"

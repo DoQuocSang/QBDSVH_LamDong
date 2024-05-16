@@ -12,11 +12,21 @@ import UserModelContainer from "./UserModelContainer";
 import MainLogo from "../../../images/logo-btld-3.png";
 import HotspotGif from "../../../images/trans.gif";
 import SceneGif from "../../../images/icon_scene.gif";
+import TourGuide from "../../../images/tour-guide-3d-corner.png";
+import TourGuideHotspot from "../../../images/tour-guide-3d-hotspot.png";
+import {
+  faCaretUp,
+  faStop,
+  faVolumeHigh,
+  faXmarkCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 const UserPanoramaViewer = ({ isOpen, sceneData }) => {
   // const [sceneData, setsceneData] = useState();
   const [currentScene, setCurrentScene] = useState(null);
   const [isOpenModelView, setIsOpenModelView] = useState(false);
+  const [showTourGuide, setShowTourGuide] = useState(true);
+  const [isPlaySceneAudio, setIsPlaySceneAudio] = useState(false);
   const OpenModelView = () => setIsOpenModelView(true);
 
   const initialCameraState = {
@@ -90,22 +100,20 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
 
   const [opacity, setOpacity] = useState(1);
   const [scale, setScale] = useState(1);
+  const audioRef = useRef(null);
 
-  // Additional code...
-
-  // Function to handle scene change
   const handleSceneChange = (newSceneId) => {
-    // Start transitioning
+    handleMuteAudio();
+
     setOpacity(0);
     setScale(1.5);
 
-    // After a short delay, change the scene
     setTimeout(() => {
       getSceneById(newSceneId);
       // setCurrentScene(newScene);
       setOpacity(1);
       setScale(1);
-    }, 1000); // Adjust the delay as needed
+    }, 1000);
   };
 
   useEffect(() => {
@@ -281,6 +289,49 @@ span.preview-hotspot-title {
 .fade {
   transition: all 1s ease-in;
 }
+
+@keyframes move-slightly {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.move-animation {
+  animation: move-slightly 2s infinite;
+}
+
+@keyframes bounce-slightly {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.bounce-animation {
+  animation: bounce-slightly 1.5s infinite;
+}
+
+.tour-dialog::after {
+  content: "";
+  position: absolute;
+  bottom: 0px;
+  right: 30%;
+  transform: translateX(50%) translateY(100%);
+  border-color: white white transparent transparent;
+  border-width: 10px;
+  border-style: solid;
+}
     `;
 
   const hotspotTooltip = (hotSpotDiv, args) => {
@@ -384,6 +435,34 @@ span.preview-hotspot-title {
     setIsOpenModelView(false);
   };
 
+  const handleHideTourGuide = () => {
+    setShowTourGuide(false);
+    handleMuteAudio();
+  };
+
+  const handleShowTourGuide = () => {
+    setShowTourGuide(true);
+  };
+
+  // const handleAudioToggle = () => {
+  //   if (isPlaySceneAudio) {
+  //     audioRef.current.pause();
+  //   } else {
+  //     audioRef.current.play();
+  //   }
+  //   setIsPlaySceneAudio(!isPlaySceneAudio);
+  // };
+
+  const handlePlayAudio = () => {
+    audioRef.current.play();
+    setIsPlaySceneAudio(true);
+  };
+
+  const handleMuteAudio = () => {
+    audioRef.current.pause();
+    setIsPlaySceneAudio(false);
+  };
+
   return (
     <>
       <style>{customStyles}</style>
@@ -447,6 +526,64 @@ span.preview-hotspot-title {
           <img src={MainLogo} />
         </div>
       </Link>
+      {currentScene && currentScene.audio && currentScene.audio.audio_url && (
+        <audio
+          ref={audioRef}
+          src={currentScene.audio.audio_url}
+          onEnded={() => setIsPlaySceneAudio(false)}
+        />
+      )}
+      {showTourGuide ? (
+        <div className="flex flex-col items-end gap-2 fixed top-1/2 transform -right-4 -translate-y-1/2 z-50 cursor-pointer hover:scale-110 transition duration-300">
+          <div className="max-w-52 mr-10">
+            <div className="tour-dialog bounce-animation relative bg-white rounded-md px-4 pt-6 pb-4 text-gray-600 font-medium text-sm bg-opacity-100">
+              <p className="absolute top-0 left-2 transform -translate-y-1/2 bg-amber-500 text-white font-semibold text-xs px-2 py-1 rounded-md">
+                <FontAwesomeIcon icon={faVolumeHigh} className="mr-1" />
+                Hướng dẫn viên
+              </p>
+              <FontAwesomeIcon
+                onClick={handleHideTourGuide}
+                icon={faXmarkCircle}
+                className="text-lg text-red-500 transition duration-300 hover:text-red-600 cursor-pointer absolute -top-2 -right-2 transform -traslate-x-1/2 -traslate-y-1/2 bg-white rounded-full"
+              />
+              {isPlaySceneAudio ? (
+                <div
+                  onClick={handleMuteAudio}
+                  className="flex justify-center items-center gap-2"
+                >
+                  <FontAwesomeIcon
+                    icon={faStop}
+                    className="rounded-full p-2 bg-gray-100"
+                  />
+                  <p className="font-medium">Dừng nghe giới thiệu</p>
+                </div>
+              ) : (
+                <p onClick={handlePlayAudio}>
+                  Bấm vào đây để nghe giới thiệu về{" "}
+                  <span className="font-semibold text-teal-500">
+                    {currentScene &&
+                    currentScene.scene &&
+                    currentScene.scene.name
+                      ? currentScene.scene.name
+                      : "Khu vực không có tên"}
+                  </span>
+                </p>
+              )}
+            </div>
+          </div>
+          <img src={TourGuide} className="w-40" />
+        </div>
+      ) : (
+        <div
+          onClick={handleShowTourGuide}
+          className="fixed top-1/2 transform right-0 -translate-y-1/2 z-50 cursor-pointer text-white -rotate-90 origin-bottom-right"
+        >
+          <p className="hover:bg-opacity-90 transition duration-300 bg-teal-500 px-10 py-0.5 rounded-tl-md rounded-tr-md bg-opacity-80">
+            <FontAwesomeIcon icon={faCaretUp} className="mr-2" />
+            Giới thiệu
+          </p>
+        </div>
+      )}
     </>
   );
 };

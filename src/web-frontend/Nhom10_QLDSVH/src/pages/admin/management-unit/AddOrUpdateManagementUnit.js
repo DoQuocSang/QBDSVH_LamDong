@@ -111,7 +111,9 @@ export default ({ type = "" }) => {
   const [isBackToMainScene, setIsBackToMainScene] = useState(false);
   const [mapUploadFile, setMapUploadFile] = useState(null);
   const [mapUploadProgress, setMapUploadProgress] = useState(0);
-  // localStorage.setItem(
+  const [isLoading, setIsLoading] = useState(false);
+
+  // sessionStorage.setItem(
   //   "image360url",
   //   managementUnitData.management_unit.image_360_url
   // );
@@ -199,15 +201,19 @@ export default ({ type = "" }) => {
 
   const handleSubmit = () => {
     console.log(managementUnitData);
+    setIsLoading(true);
+
     // Nếu không có lỗi mới xóa hoặc cập nhật
     if (validateAllInput() === false) {
       if (id === 0) {
         addManagementUnitAndSceneData(managementUnitData).then((data) => {
           SetSuccessFlag(data);
+          setIsLoading(false);
         });
       } else {
         putManagementUnitAndSceneData(id, managementUnitData).then((data) => {
           SetSuccessFlag(data);
+          setIsLoading(false);
           //console.log(data);
         });
       }
@@ -421,12 +427,12 @@ export default ({ type = "" }) => {
 
   const FilterScenesForLoađEitHotspotsMap = (scenes) => {
     // Nếu không có editingScene hoặc sceneAction không phải 'edit', trả về scenes nguyên thủy
-    if (!editingScene || sceneAction !== 'edit') {
-        return scenes;
+    if (!editingScene || sceneAction !== "edit") {
+      return scenes;
     }
 
     // Nếu có editingScene và sceneAction là 'edit', lọc scenes để loại bỏ scene đang được chỉnh sửa
-    return scenes.filter(scene => scene.scene.id !== editingScene.scene.id);
+    return scenes.filter((scene) => scene.scene.id !== editingScene.scene.id);
   };
 
   return (
@@ -898,7 +904,9 @@ export default ({ type = "" }) => {
             managementUnitId={id}
             newSceneIndex={managementUnitData.scenes.length}
             map_url={managementUnitData.management_unit.map_url}
-            hotspotsMap ={FilterScenesForLoađEitHotspotsMap(managementUnitData.scenes)}
+            hotspotsMap={FilterScenesForLoađEitHotspotsMap(
+              managementUnitData.scenes
+            )}
           />
 
           {/* --------------------------------------------------------------------------------------------------------- */}
@@ -965,6 +973,7 @@ export default ({ type = "" }) => {
             isSuccess={successFlag}
             isContinue={childToParent}
             type="management-unit"
+            isLoading={isLoading}
           />
         </div>
       </div>

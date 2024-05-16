@@ -12,7 +12,8 @@ type Audio struct {
 	User_ID    int       `json:"user_id" gorm:"column:user_id;"`
 	Scene_ID   int       `json:"scene_id" gorm:"column:scene_id;"`
 	// Dữ liệu thêm - lấy theo khóa ngoại user_id
-	User User `json:"user" gorm:"foreignKey:user_id"`
+	User           User `json:"user" gorm:"foreignKey:user_id"`
+	Is_Current_Use int  `json:"is_current_use" gorm:"is_current_use"`
 }
 
 type Audio_DTO struct {

@@ -617,6 +617,14 @@ func GetManagementUnitWithSceneDataByID(c *gin.Context) {
 		}
 		sceneData.PanoramaImage = panoramaImage
 
+		// Truy vấn cơ sở dữ liệu để lấy audio tương ứng với scene
+		var audio models.Audio
+		if err := db.GetDB().Where("scene_id = ? AND is_current_use = 1", scene.ID).First(&audio).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not fetch panorama image")
+			return
+		}
+		sceneData.Audio = audio
+
 		// Truy vấn cơ sở dữ liệu để lấy mảng các hotspots tương ứng với scene
 		var hotspots []models.Hotspot
 		if err := db.GetDB().Where("scene_id = ?", scene.ID).Find(&hotspots).Error; err != nil {
@@ -699,6 +707,19 @@ func CreateManagementUnitWithSceneData(c *gin.Context) {
 		if err := db.GetDB().Model(&panoramaImage).Where("id = ?", panoramaImage.ID).Updates(panoramaImage).Error; err != nil {
 			// Xử lý lỗi
 			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update panorama image")
+			return
+		}
+
+		// Cập nhật scene_id mới cho audio
+		audio := sceneData.Audio
+		// Loại bỏ giá trị id để cơ sở dữ liệu tự động tạo id mới
+		audio.Scene_ID = sceneMap[sceneData.Scene.ID]
+		audio.Is_Current_Use = 1
+
+		// Cập nhật audio trong bảng audios thay vì tạo mới
+		if err := db.GetDB().Model(&audio).Where("id = ?", audio.ID).Updates(audio).Error; err != nil {
+			// Xử lý lỗi
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update audio")
 			return
 		}
 
@@ -820,6 +841,17 @@ func UpdateManagementUnitWithSceneData(c *gin.Context) {
 		// Thêm hoặc cập nhật panorama_image vào bảng panorama_images
 		if err := db.GetDB().Where("id = ?", panoramaImage.ID).Assign(panoramaImage).FirstOrCreate(&panoramaImage).Error; err != nil {
 			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create or update panorama image")
+			return
+		}
+
+		// Cập nhật scene_id mới cho audio
+		audio := sceneData.Audio
+		audio.Scene_ID = sceneMap[sceneData.Scene.ID]
+		audio.Is_Current_Use = 1
+
+		// Thêm hoặc cập nhật audio vào bảng audio
+		if err := db.GetDB().Where("id = ?", audio.ID).Assign(audio).FirstOrCreate(&audio).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create or update audio")
 			return
 		}
 
