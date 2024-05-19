@@ -454,13 +454,17 @@ span.preview-hotspot-title {
   // };
 
   const handlePlayAudio = () => {
-    audioRef.current.play();
-    setIsPlaySceneAudio(true);
+    if(currentScene && currentScene.audio && currentScene.audio.audio_url){
+      audioRef.current.play();
+      setIsPlaySceneAudio(true);
+    }
   };
 
   const handleMuteAudio = () => {
-    audioRef.current.pause();
-    setIsPlaySceneAudio(false);
+    if(currentScene && currentScene.audio && currentScene.audio.audio_url){
+      audioRef.current.pause();
+      setIsPlaySceneAudio(false);
+    }
   };
 
   return (
@@ -526,13 +530,24 @@ span.preview-hotspot-title {
           <img src={MainLogo} />
         </div>
       </Link>
-      {currentScene && currentScene.audio && currentScene.audio.audio_url && (
+      {/* {currentScene && currentScene.audio && currentScene.audio.audio_url && (
         <audio
           ref={audioRef}
           src={currentScene.audio.audio_url}
           onEnded={() => setIsPlaySceneAudio(false)}
         />
-      )}
+      )} */}
+
+      <audio
+        ref={audioRef}
+        src={
+          currentScene && currentScene.audio && currentScene.audio.audio_url
+            ? currentScene.audio.audio_url
+            : ""
+        }
+        onEnded={() => setIsPlaySceneAudio(false)}
+      />
+
       {showTourGuide ? (
         <div className="flex flex-col items-end gap-2 fixed top-1/2 transform -right-4 -translate-y-1/2 z-50 cursor-pointer hover:scale-110 transition duration-300">
           <div className="max-w-52 mr-10">

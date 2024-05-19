@@ -376,7 +376,7 @@ func UpdateManagementUnitImage360(c *gin.Context) {
 	}
 
 	// Cập nhật chỉ thuộc tính model_360_url
-	management_unit.Image360Url = updateData.Image_360_URL
+	// management_unit.Image360Url = updateData.Image_360_URL
 
 	// Lưu thông tin cập nhật vào cơ sở dữ liệu
 	if err := db.GetDB().Save(&management_unit).Error; err != nil {
