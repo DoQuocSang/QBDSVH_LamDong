@@ -217,6 +217,8 @@ export default ({ type = "" }) => {
           //console.log(data);
         });
       }
+    } else {
+      setIsLoading(false);
     }
   };
 

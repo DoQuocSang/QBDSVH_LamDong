@@ -303,6 +303,8 @@ export default ({ type = "" }) => {
           // console.log(heritageData);
         });
       }
+    } else {
+      setIsLoading(false);
     }
   };
 

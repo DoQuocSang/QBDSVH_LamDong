@@ -62,6 +62,7 @@ const UserPanoramaViewer = ({ isOpen, sceneData }) => {
     address: "",
     description: "",
     short_description: "",
+    map_url: "",
   };
 
   const defaultScenes = [
@@ -524,8 +525,9 @@ span.preview-hotspot-title {
         currentSceneID={
           currentScene && currentScene.scene ? currentScene.scene.id : 0
         }
+        mapUrl={managementUnitData.management_unit.map_url}
       />
-      <Link to="/">
+      <Link to="/all-management-unit">
         <div className="fixed top-2 left-4 z-50 m-2 w-40 bg-[#4d4d4da1] rounded-full pr-2">
           <img src={MainLogo} />
         </div>

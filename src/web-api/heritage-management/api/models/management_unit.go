@@ -32,4 +32,5 @@ type Management_Unit_FullInfo struct {
 	Note             string `json:"note" gorm:"column:note;"`
 	ShortDescription string `json:"short_description" gorm:"column:short_description;"`
 	HeritageCount    int    `json:"heritage_count" gorm:"heritage_count"`
+	SceneCount       int    `json:"scene_count" gorm:"scene_count"`
 }

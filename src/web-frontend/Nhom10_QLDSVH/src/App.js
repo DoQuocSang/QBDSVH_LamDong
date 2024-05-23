@@ -44,6 +44,7 @@ import AboutUs from "pages/user/AboutUs"
 import UserHeritageDetail from "pages/user/HeritageDetail"
 import ContactUs from "pages/user/ContactUs"
 import Gallery from "pages/user/Gallery"
+import AllManagementUnitPage from "pages/user/AllManagementUnitPage"
 
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
@@ -94,6 +95,7 @@ function App() {
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/all-management-unit" element={<AllManagementUnitPage />} />
         </Route>
 
         <Route path="/vr-tour/:id" element={<VRTour />} />

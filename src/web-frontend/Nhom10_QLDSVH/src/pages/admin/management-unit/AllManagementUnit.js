@@ -219,7 +219,7 @@ export default () => {
                                                                     <img className="h-auto rounded-lg mx-auto" src={item.image_url} alt="Neil image" />
                                                                 )}
                                                             </td>
-                                                            <td className="p-4 text-sm font-normal text-gray-500 align-middle">
+                                                            <td className="p-4 text-sm font-normal text-gray-500 align-middle line-clamp-5">
                                                                 {item.description}
                                                             </td>
                                                             <td className="p-4 text-sm font-normal text-gray-500 align-middle">

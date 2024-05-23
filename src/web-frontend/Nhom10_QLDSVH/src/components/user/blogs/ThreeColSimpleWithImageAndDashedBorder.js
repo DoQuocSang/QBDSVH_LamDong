@@ -76,7 +76,7 @@ const CustomLink = tw.a`hover:text-primary-500 transition duration-300`;
 export default ({
   subheading = "",
   heading = <>Danh sách<span tw="text-primary-500"> đơn vị quản lý di sản</span></>,
-  description = `Bạn có thêm xem các di sản văn hóa thuộc từng đơn vị quản lí hiện có tại Bảo tàng Lâm Đồng, hãy bấm "Xem chi tiết" để xem danh sách di sản tương ứng với mỗi đơn vị quản lí.`,
+  description = `Bạn có thêm xem các di sản văn hóa thuộc từng đơn vị quản lí hiện có tại Di sản văn hóa Lâm Đồng, hãy bấm "Xem chi tiết" để xem danh sách di sản tương ứng với mỗi đơn vị quản lí.`,
 
 }) => {
   const [managementUnitList, setManagementUnitList] = useState([]);

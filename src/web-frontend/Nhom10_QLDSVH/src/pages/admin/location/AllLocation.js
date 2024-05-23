@@ -162,7 +162,7 @@ export default () => {
                                                                     <img className="h-auto rounded-lg mx-auto" src={item.image_url} alt="Neil image" />
                                                                 )}
                                                             </td>
-                                                            <td className="p-4 text-sm font-semibold text-gray-500">
+                                                            <td className="p-4 text-sm text-gray-500 line-clamp-5">
                                                                 {item.short_description}
                                                             </td>
                                                             <th scope="col" className="p-4 text-left text-xl font-semibold text-emerald-400 uppercase tracking-wider hover:text-emerald-600 transition duration-75">

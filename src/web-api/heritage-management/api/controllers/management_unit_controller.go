@@ -47,10 +47,31 @@ func GetPagedManagementUnits(c *gin.Context) {
 	// Phân trang
 	offset := (page - 1) * limit
 	orderClause := columnName + " " + sortOrder
+	// if err := db.GetDB().Model(&models.Management_Unit{}).
+	// 	Select("management_units.*, COUNT(heritages.id) as heritage_count, COUNT(scenes.id) as scene_count").
+	// 	Joins("LEFT JOIN heritages ON management_units.id = heritages.management_unit_id").
+	// 	Joins("LEFT JOIN scenes ON management_units.id = scenes.management_unit_id").
+	// 	Group("management_units.id").
+	// 	Order(orderClause).
+	// 	Offset(offset).
+	// 	Limit(limit).
+	// 	Find(&ManagementUnits).Error; err != nil {
+	// 	utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get data")
+	// 	return
+	// }
+
+	subQueryHeritages := db.GetDB().Table("heritages").
+		Select("management_unit_id, COUNT(*) as heritage_count").
+		Group("management_unit_id")
+
+	subQueryScenes := db.GetDB().Table("scenes").
+		Select("management_unit_id, COUNT(*) as scene_count").
+		Group("management_unit_id")
+
 	if err := db.GetDB().Model(&models.Management_Unit{}).
-		Select("management_units.*, COUNT(heritages.id) as heritage_count").
-		Joins("LEFT JOIN heritages ON management_units.id = heritages.management_unit_id").
-		Group("management_units.id").
+		Select("management_units.*, COALESCE(heritages.heritage_count, 0) as heritage_count, COALESCE(scenes.scene_count, 0) as scene_count").
+		Joins("LEFT JOIN (?) as heritages ON management_units.id = heritages.management_unit_id", subQueryHeritages).
+		Joins("LEFT JOIN (?) as scenes ON management_units.id = scenes.management_unit_id", subQueryScenes).
 		Order(orderClause).
 		Offset(offset).
 		Limit(limit).
@@ -916,6 +937,9 @@ func DeleteManagementUnitWithScenesData(c *gin.Context) {
 
 	// Cập nhật `is_current_use` của các `panorama_image` thuộc scene_id thành 0
 	db.GetDB().Where("scene_id IN (?)", sceneIDs).Model(&models.PanoramaImage{}).Update("is_current_use", 0)
+
+	// Cập nhật `is_current_use` của các `audio` thuộc scene_id thành 0
+	db.GetDB().Where("scene_id IN (?)", sceneIDs).Model(&models.Audio{}).Update("is_current_use", 0)
 
 	// Xóa các scene thuộc management unit
 	db.GetDB().Where("management_unit_id = ?", managementUnitIDInt).Delete(&models.Scene{})

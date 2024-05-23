@@ -64,10 +64,10 @@ export default () => {
             Chào mừng bạn đến với
           </SubHeading>
           <Heading>
-            BẢO TÀNG LÂM ĐỒNG
+            DI SẢN VĂN HÓA LÂM ĐỒNG
           </Heading>
           <Description>
-          Bảo tàng Lâm Đồng hân hạnh chào đón du khách đến với hành trình khám phá kho tàng lịch sử và văn hóa phong phú của vùng đất Tây Nguyên đại ngàn. Nơi đây lưu giữ hơn 15.000 hiện vật quý giá, mở ra cánh cửa dẫn lối du khách đến với những câu chuyện đầy hấp dẫn về thiên nhiên, con người và bản sắc văn hóa độc đáo của Lâm Đồng.
+          Di sản văn hóa Lâm Đồng hân hạnh chào đón du khách đến với hành trình khám phá kho tàng lịch sử và văn hóa phong phú của vùng đất Tây Nguyên đại ngàn. Nơi đây lưu giữ hơn 15.000 hiện vật quý giá, mở ra cánh cửa dẫn lối du khách đến với những câu chuyện đầy hấp dẫn về thiên nhiên, con người và bản sắc văn hóa độc đáo của Lâm Đồng.
           </Description>
           <PrimaryAction>Khám phá ngay</PrimaryAction>
         </Content>

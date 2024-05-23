@@ -32,6 +32,7 @@ const MediaTaskbar = ({
   increaseStep = 10,
   getSceneById,
   currentSceneID,
+  mapUrl,
 }) => {
   const audioRef = useRef(new Audio("../audio/copyleft-introbaotangld.mp3"));
   const bgAudio = useRef(new Audio("../audio/bgmusic.mp3"));
@@ -42,11 +43,11 @@ const MediaTaskbar = ({
 
   const handleAudioClick = () => {
     if (isPlaying) {
-      audioRef.current.pause();
+      // audioRef.current.pause();
       bgAudio.current.pause();
     } else {
       bgAudio.current.play();
-      audioRef.current.play();
+      // audioRef.current.play();
     }
     setIsPlaying(!isPlaying);
   };
@@ -121,7 +122,7 @@ const MediaTaskbar = ({
       <div
         style={{
           transform: `translateY(${showTaskbar}%)`,
-          zIndex: 50,
+          zIndex: 100,
         }}
         className="absolute bottom-6 w-3/4 flex flex-col justify-center items-center transform transition-all duration-300"
       >
@@ -219,7 +220,7 @@ const MediaTaskbar = ({
           </div>
         </div>
       </div>
-      <HotspotMap currentSceneID={currentSceneID} getSceneById={getSceneById} />
+      <HotspotMap currentSceneID={currentSceneID} getSceneById={getSceneById} mapUrl={mapUrl} />
     </>
   );
 };

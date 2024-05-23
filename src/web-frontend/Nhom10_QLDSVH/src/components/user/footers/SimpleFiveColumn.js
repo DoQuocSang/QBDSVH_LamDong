@@ -50,7 +50,7 @@ export default () => {
               <LogoImg src={LogoImage} />
             </LogoContainer>
             <CompanyDescription>
-              Bảo tàng Lâm Đồng là trang web giới thiệu di sản văn hóa tại Việt Nam.
+              Di sản văn hóa Lâm Đồng là trang web giới thiệu di sản văn hóa tại Việt Nam.
               Nếu có bất kì thắc mắc nào hãy liên hệ với chúng tôi qua những đường link bên dưới
             </CompanyDescription>
 
