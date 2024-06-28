@@ -16,7 +16,7 @@ export default () => {
    const location = useLocation();
    const queryParams = new URLSearchParams(location.search);
    const username = queryParams.get("username");
-   const [loggedInUsername, setLoggedInUsername] = useState(localStorage.getItem('loggedInUsername') || "");
+   const [loggedInUsername, setLoggedInUsername] = useState(sessionStorage.getItem('loggedInUsername') || "");
  
    const handleSearch = (key) => {
      if (!isEmptyOrSpaces(key)) {
@@ -38,7 +38,7 @@ export default () => {
      getUserByUserName(username).then((user) => {
        if (user) {
          setLoggedInUsername(user.username);
-         localStorage.setItem('loggedInUsername', user.username);
+         sessionStorage.setItem('loggedInUsername', user.username);
        }
      });
    }, [username]);

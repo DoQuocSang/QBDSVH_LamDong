@@ -32,6 +32,7 @@ export default ({ type = "" }) => {
     },[heritageCategory, setHeritageCategory] = useState(initialState);
     const [successFlag, SetSuccessFlag] = useState(false);
     const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     let { id } = useParams();
     id = id ?? 0;
@@ -88,17 +89,21 @@ export default ({ type = "" }) => {
     }
 
     const handleSubmit = () => {
+        setIsLoading(true);
+
         // Nếu không có lỗi mới xóa hoặc cập nhật
         if (validateAllInput() === false) {
             if (id === 0) {
                 addHeritageCategory(heritageCategory).then(data => {
                     SetSuccessFlag(data);
+                    setIsLoading(false);
                     //console.log(data);
                 });
             }
             else {
                 patchHeritageCategory(id, heritageCategory).then(data => {
                     SetSuccessFlag(data);
+                    setIsLoading(false);
                     //console.log(data);
                 });
             }
@@ -200,7 +205,7 @@ export default ({ type = "" }) => {
                         </button>
                     </div>
 
-                    <NotificationModal mainAction={maintAction} isSuccess={successFlag} isContinue={childToParent} type="heritage-category"/>
+                    <NotificationModal mainAction={maintAction} isSuccess={successFlag} isContinue={childToParent} type="heritage-category" isLoading={isLoading}/>
                 </div>
 
             </div>

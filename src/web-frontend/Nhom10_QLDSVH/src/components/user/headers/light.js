@@ -310,7 +310,7 @@ export default ({ roundedHeaderButton = false, logoLink, links, className, colla
         </NavLink>
       </Link>
 
-      <Link to="/vr-tour/48">
+      <Link to="/all-management-unit">
         <NavLink>
           <FontAwesomeIcon icon={faVrCardboard} css={tw`mr-2 text-base`} />
           VR Tour

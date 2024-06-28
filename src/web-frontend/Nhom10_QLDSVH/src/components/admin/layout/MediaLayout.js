@@ -22,6 +22,9 @@ export default () => {
         if (location.includes('/panorama-image')) {
             setActiveBtn(2)
         }
+        if (location.includes('/audio')) {
+            setActiveBtn(3)
+        }
 
         window.scrollTo(0, 0);
 
@@ -50,6 +53,13 @@ export default () => {
                                             <Link to="/admin/dashboard/all-media/panorama-image" onClick={() => setActiveBtn(2)}>
                                                 <button className={activeBtn === 2 ? "inline-block text-red-500 hover:text-red-600 border-red-300 rounded-t-lg py-4 px-4 text-sm font-semibold text-center border-transparent border-b-2" : "inline-block text-gray-500 hover:text-gray-600 hover:border-gray-300 rounded-t-lg py-4 px-4 text-sm font-semibold text-center border-transparent border-b-2 active"}>
                                                     Ảnh 360
+                                                </button>
+                                            </Link>
+                                        </li>
+                                        <li className="mr-2" role="presentation">
+                                            <Link to="/admin/dashboard/all-media/audio" onClick={() => setActiveBtn(3)}>
+                                                <button className={activeBtn === 3 ? "inline-block text-red-500 hover:text-red-600 border-red-300 rounded-t-lg py-4 px-4 text-sm font-semibold text-center border-transparent border-b-2" : "inline-block text-gray-500 hover:text-gray-600 hover:border-gray-300 rounded-t-lg py-4 px-4 text-sm font-semibold text-center border-transparent border-b-2 active"}>
+                                                    Audio
                                                 </button>
                                             </Link>
                                         </li>

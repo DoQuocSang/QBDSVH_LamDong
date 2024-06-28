@@ -6,7 +6,7 @@ import tw from "twin.macro";
 import styled from "styled-components";
 import { css } from "styled-components/macro"; //eslint-disable-line
 import illustration from "images/design-illustration.svg";
-import logo from "images/logo1.png";
+import logo from "images/logo-btld-2.png";
 import googleIconImageSrc from "images/google-icon.png";
 import facebookIconImageSrc from "images/facebook-icon.png";
 import { ReactComponent as LoginIcon } from "feather-icons/dist/icons/log-in.svg";
@@ -68,7 +68,7 @@ export default () => {
   const [loggedInUsername, setLoggedInUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  localStorage.setItem("loggedInUsername", "");
+  sessionStorage.setItem("loggedInUsername", "");
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -93,8 +93,8 @@ export default () => {
     if (user && user.password === password && user.permission === 1) {
       // Đăng nhập thành công, chuyển hướng đến trang chủ của admin
       setLoggedInUsername(user.user_name);
-      localStorage.setItem("loggedInUsername", user.user_name);
-      localStorage.setItem("loggedInUserID", user.id);
+      sessionStorage.setItem("loggedInUsername", user.user_name);
+      sessionStorage.setItem("loggedInUserID", user.id);
 
       navigate("/admin/dashboard");
     } else {

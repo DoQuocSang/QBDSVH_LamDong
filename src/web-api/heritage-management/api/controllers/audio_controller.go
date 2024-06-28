@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -154,4 +155,69 @@ func GetPagedAudios(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, pagination)
+}
+
+func GetAllAudioGroupedByUploadDate(c *gin.Context) {
+	type GroupedFiles struct {
+		UploadDate time.Time      `json:"upload_date"`
+		Audio      []models.Audio `json:"audio"`
+	}
+
+	type ResultData struct {
+		Data      []GroupedFiles `json:"data"`
+		TotalSize int            `json:"total_size"`
+	}
+
+	var uploadDates []time.Time
+	// Lấy danh sách các ngày tải lên khác nhau
+	if err := db.GetDB().
+		Model(&models.Audio{}).
+		Select("DISTINCT DATE(upload_date) AS upload_date").
+		Order("upload_date DESC").
+		Pluck("upload_date", &uploadDates).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Could not retrieve upload dates")
+		return
+	}
+
+	var groupedFiles []GroupedFiles
+	var totalSize int = 0
+
+	// Truy vấn file cho từng ngày tải lên
+	for _, date := range uploadDates {
+		var audios []models.Audio
+		// Truy vấn file cho ngày tải lên cụ thể
+		if err := db.GetDB().
+			Where("DATE(upload_date) = DATE(?)", date).
+			Preload("User").
+			Order("id DESC").
+			Find(&audios).
+			Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not retrieve upload file for date")
+			return
+		}
+
+		// Tính tổng kích thước cho nhóm hình ảnh hiện tại
+		var currentGroupSize int = 0
+		for _, audio := range audios {
+			currentGroupSize += audio.Size
+		}
+
+		// Tạo cấu trúc nhóm cho ngày này và thêm vào danh sách
+		groupedFiles = append(groupedFiles, GroupedFiles{
+			UploadDate: date,
+			Audio:      audios,
+		})
+
+		// Cộng dồn tổng kích thước của các ảnh vào totalSize
+		totalSize += currentGroupSize
+	}
+
+	// Tạo kết quả dữ liệu
+	resultData := ResultData{
+		Data:      groupedFiles,
+		TotalSize: totalSize,
+	}
+
+	// Trả về dữ liệu đã nhóm theo ngày tải lên cùng với totalSize
+	utils.SuccessResponse(c, http.StatusOK, resultData)
 }

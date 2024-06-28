@@ -31,6 +31,7 @@ import AdminLogin from "pages/admin/login/Login"
 
 import AdminAllModel from "pages/admin/media/AllModel";
 import AdminAllPanoramaImage from "pages/admin/media/AllPanoramaImage";
+import AdminAllAudio from "pages/admin/media/AllAudio";
 import AdminMediaLayout from "components/admin/layout/MediaLayout";
 
 //user
@@ -43,6 +44,7 @@ import AboutUs from "pages/user/AboutUs"
 import UserHeritageDetail from "pages/user/HeritageDetail"
 import ContactUs from "pages/user/ContactUs"
 import Gallery from "pages/user/Gallery"
+import AllManagementUnitPage from "pages/user/AllManagementUnitPage"
 
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
@@ -53,7 +55,7 @@ import ModelViewer from "pages/admin/heritage/ModelViewer";
 import VRTour from "pages/user/VRTour";
 
 function App() {
-  const loggedInUsername = localStorage.getItem("loggedInUsername");
+  const loggedInUsername = sessionStorage.getItem("loggedInUsername");
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin/dashboard");
 
@@ -93,12 +95,12 @@ function App() {
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/all-management-unit" element={<AllManagementUnitPage />} />
         </Route>
 
         <Route path="/vr-tour/:id" element={<VRTour />} />
 
         <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin/heritage/model-view" element={<ModelViewer />} />
 
         {loggedInUsername && (
         <Route path="/admin/dashboard" element={<AdminLayout />}>
@@ -130,11 +132,12 @@ function App() {
           <Route path="/admin/dashboard/all-media/" element={<AdminMediaLayout />}>
             <Route path="/admin/dashboard/all-media/model" element={<AdminAllModel />} />
             <Route path="/admin/dashboard/all-media/panorama-image" element={<AdminAllPanoramaImage />} />
+            <Route path="/admin/dashboard/all-media/audio" element={<AdminAllAudio />} />
           </Route>
         </Route>
         )}
 
-        {/* <Route path="*" element={<NotFound404 />} /> */}
+        <Route path="*" element={<NotFound404 />} />
 
       </Routes>
     </AnimationRevealPage>

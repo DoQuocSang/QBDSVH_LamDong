@@ -155,6 +155,7 @@ func SetupRouter() *gin.Engine {
 			audio.POST("", controllers.CreateAudio)
 			audio.PUT("/:id", controllers.UpdateAudio)
 			audio.DELETE("/:id", controllers.DeleteAudio)
+			audio.GET("/group", controllers.GetAllAudioGroupedByUploadDate)
 		}
 	}
 

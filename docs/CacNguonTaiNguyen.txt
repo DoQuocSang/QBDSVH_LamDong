@@ -1,0 +1,12 @@
+==========================
+|  CÁC NGUỒN TÀI NGUYÊN  |
+==========================
+1/ Trang Web tải model
+- Link Web Sketchfab: [https://sketchfab.com/]
+2/ Trang Web kết hợp với Street View Download 360 để tải ảnh panorama
+- Link Web Istreetview: [https://istreetview.com/]
+- Link Web Google Map: [https://www.google.com/maps]
+3/ Trang Web tạo kịch bản audio
+- Link Web Gemini: [https://gemini.google.com/app]
+4/ Trang Web tạo file audio từ văn bản
+- Link Web Narakeet: [https://www.narakeet.com/]

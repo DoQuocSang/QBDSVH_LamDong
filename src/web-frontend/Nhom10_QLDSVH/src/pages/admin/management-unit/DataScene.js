@@ -1,6 +1,6 @@
 // import insideOne from '';
 import DefaultImage from "../../../images/cat-404-full-2.png";
-var image360url = localStorage.getItem('image360url');
+var image360url = sessionStorage.getItem('image360url');
 
 const Scenes = {
     "insideOne":{

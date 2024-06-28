@@ -17,31 +17,31 @@ export default () => {
     <AnimationRevealPage>
       <MainFeature1
         subheading={<Subheading>Di sản văn hóa Việt</Subheading>}
-        heading="Bảo tàng Lâm Đồng - Thế giới Di sản Văn hóa Việt Nam"
-        description={"Bảo tàng Lâm Đồng là một trang web với mục đích giới thiệu và tôn vinh di sản văn hóa đặc biệt của Việt Nam. Với sứ mệnh quảng bá và bảo tồn di sản văn hóa của đất nước, Bảo tàng Lâm Đồng mang đến cho người Việt Nam và du khách quốc tế một cửa sổ thú vị để khám phá, tìm hiểu và trân quý những giá trị văn hóa độc đáo của đất nước này.\n Bảo tàng Lâm Đồng mang đến một tập hợp đa dạng của các địa điểm và hiện vật mang tính biểu tượng, lịch sử và văn hóa ở đất nước Việt Nam."}
-        imageSrc="https://cdn3.ivivu.com/2022/10/b%E1%BA%A3o-t%C3%A0ng-l%C3%A2m-%C4%91%E1%BB%93ng-ivivu.jpg"
+        heading="Chào mừng bạn đến với Di sản văn hóa Lâm Đồng"
+        description={"Trang web này được tạo ra với mục đích giới thiệu và tôn vinh di sản văn hóa đặc biệt của tỉnh Lâm Đồng, Việt Nam. Mang trong mình sứ mệnh quảng bá và bảo tồn những giá trị văn hóa độc đáo của quê hương, Di sản văn hóa Lâm Đồng sẽ là cầu nối đưa du khách Việt Nam và quốc tế đến gần hơn với kho tàng văn hóa phong phú của mảnh đất này."}
+        imageSrc="https://bcp.cdnchinhphu.vn/334894974524682240/2023/12/29/toan-canh-thanh-pho-da-lat-suong-mu-17038482792911456722988.jpg"
       />
       <MainFeature1
-        subheading={<Subheading>SỨ MỆNH CỦA Bảo tàng Lâm Đồng</Subheading>}
+        subheading={<Subheading>Khám phá kho tàng lịch sử và bản sắc độc đáo</Subheading>}
         heading="Cung cấp thông tin di sản cho mọi người"
-        description={"Trang web Bảo tàng Lâm Đồng cung cấp thông tin chi tiết về mỗi di sản văn hóa, bao gồm lịch sử, kiến trúc, nghệ thuật, giá trị văn hóa và những câu chuyện đặc biệt xung quanh chúng. Bạn có thể tìm hiểu về các địa điểm như cố đô Huế, thành phố cổ Hội An, vịnh Hạ Long, đền Hùng và rất nhiều điểm đến khác mà Việt Nam tự hào có. \n Hãy khám phá Bảo tàng Lâm Đồng ngay hôm nay và truy cập vào thế giới phong phú của di sản văn hóa Việt Nam. Mỗi trang trên Bảo tàng Lâm Đồng là một chuyến hành trình đưa bạn đến gần hơn với những nét đẹp và giá trị sâu sắc của di sản văn hóa đặc biệt này"}
+        description={"Lâm Đồng, mảnh đất được mệnh danh là \"Đà Lạt mộng mơ\", sở hữu kho tàng di sản văn hóa vô cùng phong phú và độc đáo. Du khách đến với Lâm Đồng không chỉ bị thu hút bởi cảnh đẹp thiên nhiên hùng vĩ mà còn bởi những giá trị văn hóa truyền thống được lưu giữ qua bao thế hệ. \n Di sản văn hóa Lâm Đồng là hành trình đưa du khách khám phá những di sản vật thể và phi vật thể quý giá, mang đậm bản sắc văn hóa của các dân tộc thiểu số Tây Nguyên. Mỗi di sản đều ẩn chứa những câu chuyện lịch sử, truyền thuyết, và những giá trị văn hóa độc đáo, góp phần tạo nên bức tranh văn hóa đa sắc màu của Lâm Đồng."}
         textOnLeft={false}
         imageSrc="https://cdn3.ivivu.com/2022/10/Bao-tang-Lam-Dong-03.jpg"
       />
       <Features
         subheading={<Subheading>Phương châm hoạt động</Subheading>}
-        heading="Đây là 3 tiêu chí đi đầu của Bảo tàng Lâm Đồng"
-        description="Bảo tàng Lâm Đồng hoạt động dựa trên ba phương châm chính để mang đến trải nghiệm tốt nhất cho người dùng"
+        heading="Đây là 3 tiêu chí đi đầu của Di sản văn hóa Lâm Đồng"
+        description="Di sản văn hóa Lâm Đồng hoạt động dựa trên ba phương châm chính để mang đến trải nghiệm tốt nhất cho người dùng"
         cards={[
           {
             imageSrc: SupportIconImage,
             title: "Khám phá",
-            description: "Bảo tàng Lâm Đồng tập trung vào việc khám phá và tìm hiểu về di sản văn hóa độc đáo của Việt Nam"
+            description: "Di sản văn hóa Lâm Đồng tập trung vào việc khám phá và tìm hiểu về di sản văn hóa độc đáo của Việt Nam"
           },
           {
             imageSrc: ShieldIconImage,
             title: "Bảo tồn",
-            description: "Bảo tàng Lâm Đồng nhấn mạnh vai trò quan trọng của việc bảo tồn và xây dựng nhận thức cộng đồng về giá trị của di sản văn hóa"
+            description: "Di sản văn hóa Lâm Đồng nhấn mạnh vai trò quan trọng của việc bảo tồn và xây dựng nhận thức cộng đồng về giá trị của di sản văn hóa"
           },
           {
             imageSrc: CustomerLoveIconImage,
@@ -53,8 +53,8 @@ export default () => {
       />
       <TeamCardGrid 
         subheading={<Subheading>Đội ngũ của chúng tôi</Subheading>}
-        heading="Các thành viên chủ chốt của Bảo tàng Lâm Đồng"
-        description="Dưới đây là những người đã sáng lập nên Bảo tàng Lâm Đồng và có những đóng góp to lớn vào sự nghiệp phát triển của công ty"
+        heading="Các thành viên chủ chốt của Di sản văn hóa Lâm Đồng"
+        description="Dưới đây là những người đã sáng lập nên Di sản văn hóa Lâm Đồng và có những đóng góp to lớn vào sự nghiệp phát triển của công ty"
       />
     </AnimationRevealPage>
   );

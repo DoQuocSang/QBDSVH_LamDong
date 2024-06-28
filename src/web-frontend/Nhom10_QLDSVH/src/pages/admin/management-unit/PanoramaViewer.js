@@ -17,7 +17,7 @@ import HotspotNull from "../../../images/hotspot-null.png";
 import { getLastHotspotId } from "services/HotspotRepository.js";
 
 const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, isBackToMainScene, onClickMoveScene }) => {
-  // var image360url = localStorage.getItem("image360url");
+  // var image360url = sessionStorage.getItem("image360url");
   const [mainImage, setMainImage] = useState("");
   // const [scene, setScene] = useState(DataScene["insideOne"]);
   const [totalConsoleContent, setTotalConsoleContent] = useState("");
@@ -139,8 +139,8 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
           // const yaw = parseFloat(matches[2]).toFixed(1);
           const pitch = parseFloat(matches[1]);
           const yaw = parseFloat(matches[2]);
-          localStorage.setItem("pitch", matches[1]);
-          localStorage.setItem("yaw", matches[2]);
+          sessionStorage.setItem("pitch", matches[1]);
+          sessionStorage.setItem("yaw", matches[2]);
           // setCurentPitch(pitch);
           // setCurentYaw(yaw);
           const timestamp = new Date().getTime();
@@ -283,8 +283,8 @@ const PanoramaViewer = ({ title, isOpen, image360Url, scene, scenes, onChange, i
       name: "",
       type: "custom",
       category: 1,
-      pitch: parseFloat(localStorage.getItem("pitch")),
-      yaw: parseFloat(localStorage.getItem("yaw")),
+      pitch: parseFloat(sessionStorage.getItem("pitch")),
+      yaw: parseFloat(sessionStorage.getItem("yaw")),
       scene_id: currentScene.scene.id,
       heritage_id: 0,
       model_url: "",

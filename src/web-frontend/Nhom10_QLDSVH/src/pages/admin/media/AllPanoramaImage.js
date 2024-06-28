@@ -68,7 +68,7 @@ export default () => {
   useEffect(() => {
     getPanoramaImages().then((data) => {
       if (data) {
-        if(data.data !== null){
+        if (data.data !== null) {
           setPanoramaImageList(data.data);
         }
         setTotalSize(data.total_size);
@@ -121,92 +121,101 @@ export default () => {
         </div>
       </div>
 
-      {panoramaImageList.length > 0 && panoramaImageList.map((item, index) => (
-        <div className="mb-10">
-          <div className="w-full flex items-center my-4">
-            <div className="h-0.5 rounded-full bg-gray-200 flex-1"> </div>
-            <span className="text-xs mx-4 text-gray-600 font-semibold">
-              {formatDate(item.upload_date)}
-            </span>
-            <div className="h-0.5 rounded-full bg-gray-200 flex-1"> </div>
-          </div>
+      {panoramaImageList.length > 0 &&
+        panoramaImageList.map((item, index) => (
+          <div className="mb-10">
+            <div className="w-full flex items-center my-4">
+              <div className="h-0.5 rounded-full bg-gray-200 flex-1"> </div>
+              <span className="text-xs mx-4 text-gray-600 font-semibold">
+                {formatDate(item.upload_date)}
+              </span>
+              <div className="h-0.5 rounded-full bg-gray-200 flex-1"> </div>
+            </div>
 
-          <div id="myTabContent">
-            {/* <h2 className="mb-4 text-xl font-bold text-gray-600">File đã tải lên hệ thống</h2> */}
-            <div className="grid w-full gap-6 sm:grid-cols-2 md:grid-cols-3  xl:grid-cols-4">
-              {item.images.map((image, index) => (
-                <div className="flex flex-col overflow-hidden rounded p-2 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-                  <div className="relative pb-[80%]">
-                    {image.thumbnail_url ? (
-                      <img
-                        src={image.thumbnail_url}
-                        alt=""
-                        className="absolute top-0 right-0 inset-0 object-cover w-full h-full rounded"
-                      />
-                    ) : (
-                      <img
-                        src={ThumbnailDefault}
-                        alt=""
-                        className="absolute top-0 right-0 inset-0 z-10 object-cover w-full h-full rounded"
-                      />
-                    )}
-                    <div className="absolute top-0 right-0 m-2 z-20">
-                      {image.is_current_use === 1 && (
-                        <span className="rounded-lg bg-red-400 px-2 py-1 text-xs font-medium text-white mr-1">
-                          Đang dùng
-                        </span>
+            <div id="myTabContent">
+              {/* <h2 className="mb-4 text-xl font-bold text-gray-600">File đã tải lên hệ thống</h2> */}
+              <div className="grid w-full gap-6 sm:grid-cols-2 md:grid-cols-3  xl:grid-cols-4">
+                {item.images.map((image, index) => (
+                  <div className="flex flex-col overflow-hidden rounded p-2 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                    <div className="relative pb-[80%]">
+                      {image.thumbnail_url ? (
+                        <img
+                          src={image.thumbnail_url}
+                          alt=""
+                          className="absolute top-0 right-0 inset-0 object-cover w-full h-full rounded"
+                        />
+                      ) : (
+                        <img
+                          src={ThumbnailDefault}
+                          alt=""
+                          className="absolute top-0 right-0 inset-0 z-10 object-cover w-full h-full rounded"
+                        />
                       )}
-                      <span className="rounded-lg bg-blue-500 px-2 py-1 text-xs font-medium text-white mr-1">
-                        .{image.extension}
-                      </span>
-                      <span className="rounded-lg bg-emerald-400 px-2 py-1 text-xs font-medium text-white">
-                        {convertSize(image.size)}
-                      </span>
-                    </div>
-                    <div className="absolute bottom-0 left-0 z-20 w-full rounded-b bg-gray-700 bg-opacity-70 px-3 py-2">
-                      <h3 className="mb-2 text-sm font-medium text-white">
-                        {image.name}
-                      </h3>
-                      <div className="flex items-center justify-between">
-                        <p className="mb-1 text-xs text-white">
-                          Người tải lên:{" "}
-                          {upperCaseFirstCharacter(image.user.user_name)}
-                        </p>
-                        <div className="relative z-40 flex items-center gap-2">
-                          <button
-                            onClick={() =>
-                              handleDownload(
-                                image.file_url,
-                                image.name + "." + image.extension
-                              )
-                            }
-                            className="text-orange-600 transition-all duration-300 hover:text-white cursor-pointer"
-                            // href={item.file_url}
-                          >
-                            <FontAwesomeIcon icon={faDownload} />
-                          </button>
-                          <p
-                            className="delete_buttonmodal text-orange-600 transition-all duration-300 hover:text-white cursor-pointer"
-                            onClick={() =>
-                              handleDelete(
-                                image.id,
-                                image.file_url,
-                                image.thumbnail_url
-                              )
-                            }
-                          >
-                            <FontAwesomeIcon icon={faTrash} />
+                      <div className="absolute top-0 right-0 m-2 z-20">
+                        {image.is_current_use === 1 && (
+                          <span className="rounded-lg bg-red-400 px-2 py-1 text-xs font-medium text-white mr-1">
+                            Đang dùng
+                          </span>
+                        )}
+                        <span className="rounded-lg bg-blue-500 px-2 py-1 text-xs font-medium text-white mr-1">
+                          .{image.extension}
+                        </span>
+                        <span className="rounded-lg bg-emerald-400 px-2 py-1 text-xs font-medium text-white">
+                          {convertSize(image.size)}
+                        </span>
+                      </div>
+                      <div className="absolute bottom-0 left-0 z-20 w-full rounded-b bg-gray-700 bg-opacity-70 px-3 py-2">
+                        <h3 className="mb-2 text-sm font-medium text-white">
+                          {image.name}
+                        </h3>
+                        <div className="flex items-center justify-between">
+                          <p className="mb-1 text-xs text-white">
+                            Người tải lên:{" "}
+                            {upperCaseFirstCharacter(image.user.user_name)}
                           </p>
+                          <div className="relative z-40 flex items-center gap-2">
+                            <button
+                              onClick={() =>
+                                handleDownload(
+                                  image.file_url,
+                                  image.name + "." + image.extension
+                                )
+                              }
+                              className="text-orange-600 transition-all duration-300 hover:text-white cursor-pointer"
+                              // href={item.file_url}
+                            >
+                              <FontAwesomeIcon icon={faDownload} />
+                            </button>
+                            {image.is_current_use === 0 ? (
+                              <p
+                                className="delete_buttonmodal text-orange-600 transition-all duration-300 hover:text-white cursor-pointer"
+                                onClick={() =>
+                                  handleDelete(
+                                    image.id,
+                                    image.file_url,
+                                    image.thumbnail_url
+                                  )
+                                }
+                              >
+                                <FontAwesomeIcon icon={faTrash} />
+                              </p>
+                             ) : (
+                              <p
+                                className="text-gray-300 cursor-not-allowed"
+                              >
+                                <FontAwesomeIcon icon={faTrash} />
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
 
       {panoramaImageList.length === 0 ? (
         <Error404 />

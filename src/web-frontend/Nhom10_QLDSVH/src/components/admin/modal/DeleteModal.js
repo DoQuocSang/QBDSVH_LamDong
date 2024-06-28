@@ -12,6 +12,7 @@ import { storage } from "../../../firebase.js"
 import { ref, deleteObject } from 'firebase/storage';
 import { getFileNameFromURL } from "components/utils/Utils";
 import { deletePanoramaImageById } from "services/PanoramaImageRepository";
+import { deleteAudioById } from "services/AudioRepository";
 
 export default ({ mainText = 'item', deleteId = 0, type = '', isDelete, deleteFileUrl, deleteThumbnailUrl }) => {
     const [changeContent, setChangeContent] = useState(false);
@@ -118,8 +119,8 @@ export default ({ mainText = 'item', deleteId = 0, type = '', isDelete, deleteFi
                         // alert("Xóa file thành công");
                         console.log('File deleted successfully');
 
-                        // Remove the item from localStorage
-                        // localStorage.removeItem("yourLocalStorageKey");
+                        // Remove the item from sessionStorage
+                        // sessionStorage.removeItem("yoursessionStorageKey");
                     })
                     .catch((error) => {
                         // alert("Có lỗi khi xóa file");
@@ -140,8 +141,8 @@ export default ({ mainText = 'item', deleteId = 0, type = '', isDelete, deleteFi
                         // alert("Xóa file thành công");
                         console.log('File deleted successfully');
 
-                        // Remove the item from localStorage
-                        // localStorage.removeItem("yourLocalStorageKey");
+                        // Remove the item from sessionStorage
+                        // sessionStorage.removeItem("yoursessionStorageKey");
                     })
                     .catch((error) => {
                         // alert("Có lỗi khi xóa file");
@@ -173,8 +174,8 @@ export default ({ mainText = 'item', deleteId = 0, type = '', isDelete, deleteFi
                         // alert("Xóa file thành công");
                         console.log('File deleted successfully');
 
-                        // Remove the item from localStorage
-                        // localStorage.removeItem("yourLocalStorageKey");
+                        // Remove the item from sessionStorage
+                        // sessionStorage.removeItem("yoursessionStorageKey");
                     })
                     .catch((error) => {
                         // alert("Có lỗi khi xóa file");
@@ -195,8 +196,41 @@ export default ({ mainText = 'item', deleteId = 0, type = '', isDelete, deleteFi
                         // alert("Xóa file thành công");
                         console.log('File deleted successfully');
 
-                        // Remove the item from localStorage
-                        // localStorage.removeItem("yourLocalStorageKey");
+                        // Remove the item from sessionStorage
+                        // sessionStorage.removeItem("yoursessionStorageKey");
+                    })
+                    .catch((error) => {
+                        // alert("Có lỗi khi xóa file");
+                        console.error('Error deleting file:', error);
+                    });
+            }
+        }
+
+        if (type === 'audio') {
+            deleteAudioById(deleteId).then(data => {
+                //Ở đây Data có kiểu trả về là boolean
+                //Gọi hàm isDelete để thực thi bên component cha AllHeritage  
+                isDelete(data);
+
+                //Thay đổi nội dung thông báo nếu xóa thành công
+                setChangeContent(true);
+            })
+
+            // Check if there is a modifiedFileName
+            var AudioName = getFileNameFromURL(deleteFileUrl, 'audios%2F');
+            if (AudioName) {
+                // Create a reference to the file in storage
+                const storageRef = ref(storage, `audios/${AudioName}`);
+                console.log("File hiện tại: " + AudioName);
+
+                // Delete the file from storage
+                deleteObject(storageRef)
+                    .then(() => {
+                        // alert("Xóa file thành công");
+                        console.log('File deleted successfully');
+
+                        // Remove the item from sessionStorage
+                        // sessionStorage.removeItem("yoursessionStorageKey");
                     })
                     .catch((error) => {
                         // alert("Có lỗi khi xóa file");

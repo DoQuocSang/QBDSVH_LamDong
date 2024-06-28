@@ -47,10 +47,31 @@ func GetPagedManagementUnits(c *gin.Context) {
 	// Phân trang
 	offset := (page - 1) * limit
 	orderClause := columnName + " " + sortOrder
+	// if err := db.GetDB().Model(&models.Management_Unit{}).
+	// 	Select("management_units.*, COUNT(heritages.id) as heritage_count, COUNT(scenes.id) as scene_count").
+	// 	Joins("LEFT JOIN heritages ON management_units.id = heritages.management_unit_id").
+	// 	Joins("LEFT JOIN scenes ON management_units.id = scenes.management_unit_id").
+	// 	Group("management_units.id").
+	// 	Order(orderClause).
+	// 	Offset(offset).
+	// 	Limit(limit).
+	// 	Find(&ManagementUnits).Error; err != nil {
+	// 	utils.ErrorResponse(c, http.StatusInternalServerError, "Could not get data")
+	// 	return
+	// }
+
+	subQueryHeritages := db.GetDB().Table("heritages").
+		Select("management_unit_id, COUNT(*) as heritage_count").
+		Group("management_unit_id")
+
+	subQueryScenes := db.GetDB().Table("scenes").
+		Select("management_unit_id, COUNT(*) as scene_count").
+		Group("management_unit_id")
+
 	if err := db.GetDB().Model(&models.Management_Unit{}).
-		Select("management_units.*, COUNT(heritages.id) as heritage_count").
-		Joins("LEFT JOIN heritages ON management_units.id = heritages.management_unit_id").
-		Group("management_units.id").
+		Select("management_units.*, COALESCE(heritages.heritage_count, 0) as heritage_count, COALESCE(scenes.scene_count, 0) as scene_count").
+		Joins("LEFT JOIN (?) as heritages ON management_units.id = heritages.management_unit_id", subQueryHeritages).
+		Joins("LEFT JOIN (?) as scenes ON management_units.id = scenes.management_unit_id", subQueryScenes).
 		Order(orderClause).
 		Offset(offset).
 		Limit(limit).
@@ -376,7 +397,7 @@ func UpdateManagementUnitImage360(c *gin.Context) {
 	}
 
 	// Cập nhật chỉ thuộc tính model_360_url
-	management_unit.Image360Url = updateData.Image_360_URL
+	// management_unit.Image360Url = updateData.Image_360_URL
 
 	// Lưu thông tin cập nhật vào cơ sở dữ liệu
 	if err := db.GetDB().Save(&management_unit).Error; err != nil {
@@ -617,6 +638,14 @@ func GetManagementUnitWithSceneDataByID(c *gin.Context) {
 		}
 		sceneData.PanoramaImage = panoramaImage
 
+		// Truy vấn cơ sở dữ liệu để lấy audio tương ứng với scene
+		var audio models.Audio
+		if err := db.GetDB().Where("scene_id = ? AND is_current_use = 1", scene.ID).First(&audio).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not fetch panorama image")
+			return
+		}
+		sceneData.Audio = audio
+
 		// Truy vấn cơ sở dữ liệu để lấy mảng các hotspots tương ứng với scene
 		var hotspots []models.Hotspot
 		if err := db.GetDB().Where("scene_id = ?", scene.ID).Find(&hotspots).Error; err != nil {
@@ -699,6 +728,19 @@ func CreateManagementUnitWithSceneData(c *gin.Context) {
 		if err := db.GetDB().Model(&panoramaImage).Where("id = ?", panoramaImage.ID).Updates(panoramaImage).Error; err != nil {
 			// Xử lý lỗi
 			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update panorama image")
+			return
+		}
+
+		// Cập nhật scene_id mới cho audio
+		audio := sceneData.Audio
+		// Loại bỏ giá trị id để cơ sở dữ liệu tự động tạo id mới
+		audio.Scene_ID = sceneMap[sceneData.Scene.ID]
+		audio.Is_Current_Use = 1
+
+		// Cập nhật audio trong bảng audios thay vì tạo mới
+		if err := db.GetDB().Model(&audio).Where("id = ?", audio.ID).Updates(audio).Error; err != nil {
+			// Xử lý lỗi
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not update audio")
 			return
 		}
 
@@ -823,6 +865,17 @@ func UpdateManagementUnitWithSceneData(c *gin.Context) {
 			return
 		}
 
+		// Cập nhật scene_id mới cho audio
+		audio := sceneData.Audio
+		audio.Scene_ID = sceneMap[sceneData.Scene.ID]
+		audio.Is_Current_Use = 1
+
+		// Thêm hoặc cập nhật audio vào bảng audio
+		if err := db.GetDB().Where("id = ?", audio.ID).Assign(audio).FirstOrCreate(&audio).Error; err != nil {
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Could not create or update audio")
+			return
+		}
+
 		// Thêm mới hotspots
 		for _, hotspot := range sceneData.Hotspots {
 			// Loại bỏ giá trị ID để cơ sở dữ liệu tự động tạo ID mới
@@ -884,6 +937,9 @@ func DeleteManagementUnitWithScenesData(c *gin.Context) {
 
 	// Cập nhật `is_current_use` của các `panorama_image` thuộc scene_id thành 0
 	db.GetDB().Where("scene_id IN (?)", sceneIDs).Model(&models.PanoramaImage{}).Update("is_current_use", 0)
+
+	// Cập nhật `is_current_use` của các `audio` thuộc scene_id thành 0
+	db.GetDB().Where("scene_id IN (?)", sceneIDs).Model(&models.Audio{}).Update("is_current_use", 0)
 
 	// Xóa các scene thuộc management unit
 	db.GetDB().Where("management_unit_id = ?", managementUnitIDInt).Delete(&models.Scene{})

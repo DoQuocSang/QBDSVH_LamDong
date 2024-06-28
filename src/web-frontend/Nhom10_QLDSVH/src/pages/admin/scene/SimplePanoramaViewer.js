@@ -4,7 +4,7 @@ import loadingGif from "../../../images/loading-pano.gif";
 
 
 const SimplePanoramaViewer = ({ isOpen, sceneData }) => {
-  var image360url = localStorage.getItem("image360url");
+  var image360url = sessionStorage.getItem("image360url");
   // const [sceneData, setsceneData] = useState();
   const [totalConsoleContent, setTotalConsoleContent] = useState("");
   const [hotspotArrChange, setHotspotArrChange] = useState(false);
