@@ -7,7 +7,9 @@ Xay dựng ứng dụng Web sử dụng ReactJS (Frontend), Golang (Backend), My
 - Quảng Văn Sương
 - Trần Đình Minh Nhật
 
-## Video demo: https://www.youtube.com/watch?v=3MlHToqMD8s
+## Video demo: 
+
+Sương Quảng. (ngày 29 tháng 08 năm 2024). Video Demo Đồ án Tốt nghiệp của nhóm-230524 [Video]. Youtube. https://www.youtube.com/watch?v=3MlHToqMD8s
 
 ## Các chức năng chính:
 
