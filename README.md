@@ -1,13 +1,15 @@
 # Ứng dụng Web quản lý di sản văn hóa Lâm Đồng
+Xay dựng ứng dụng Web sử dụng ReactJS (Frontend), Golang (Backend), MySql và Firebase (Database)
 
-**Thành viên::**
+## Thành viên:
+
 - Đỗ Quốc Sang
 - Quảng Văn Sương
 - Trần Đình Minh Nhật
 
-**Video demo:** https://www.youtube.com/watch?v=3MlHToqMD8s
+## Video demo: https://www.youtube.com/watch?v=3MlHToqMD8s
 
-Các chức năng chính:
+## Các chức năng chính:
 
 **1. Phân hệ người quản trị:**
 - Đăng nhập trang quản trị
